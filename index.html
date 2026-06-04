@@ -2383,6 +2383,18 @@
         'Group%208.svg', 'Group%209.svg', 'Group%2010.svg', 'Group%2011.svg',
         'Group%2016.svg', 'Group%2017.svg', 'Group%2019.svg', 'Group%2020.svg'
       ];
+
+      // 1. Génération de couleurs pastels harmonieuses et uniques à chaque rechargement
+      const hue1 = Math.floor(Math.random() * 360);
+      const hue2 = (hue1 + 130 + Math.floor(Math.random() * 60)) % 360; // Hues éloignées pour le contraste
+      const pastel1 = `hsl(${hue1}, 75%, 70%)`;       // Fond principal (remplace le violet #9A2FA5)
+      const pastel2 = `hsl(${hue2}, 85%, 75%)`;       // Détail/texte (remplace le rose #FF98C3)
+      const pastelLight = `hsl(${hue1}, 100%, 92%)`;   // Halo lumineux pour la face arrière
+
+      // Injection des variables CSS sur l'élément racine
+      document.documentElement.style.setProperty('--pastel-1', pastel1);
+      document.documentElement.style.setProperty('--pastel-2', pastel2);
+      document.documentElement.style.setProperty('--pastel-light', pastelLight);
       
       const movesEl = document.getElementById('memMoves');
       const pairsEl = document.getElementById('memPairs');
@@ -2391,7 +2403,28 @@
       const resetBtn = document.getElementById('memReset');
       let first, second, lock, moves, pairs;
 
-      function build() {
+      // Cache pour éviter de fetch plusieurs fois le même SVG lors des rejouer ↺
+      const svgCache = {};
+
+      async function fetchAndColorSVG(fileName) {
+        if (svgCache[fileName]) {
+          return svgCache[fileName];
+        }
+        try {
+          const res = await fetch('images/' + fileName);
+          let text = await res.text();
+          // Remplacement des couleurs par regex insensible à la casse
+          text = text.replace(/fill="#9a2fa5"/ig, `fill="${pastel1}"`);
+          text = text.replace(/fill="#ff98c3"/ig, `fill="${pastel2}"`);
+          svgCache[fileName] = text;
+          return text;
+        } catch (e) {
+          console.error('Erreur de chargement du SVG:', e);
+          return `<img src="images/${fileName}" alt="">`;
+        }
+      }
+
+      async function build() {
         first = null; second = null; lock = false; moves = 0; pairs = 0;
         movesEl.textContent = '0';
         pairsEl.textContent = '0';
@@ -2423,9 +2456,15 @@
           card.dataset.img = frontImg;
           card.innerHTML =
             '<span class="m-inner">' +
-              '<span class="m-face m-front"><img src="images/' + backSvg + '" alt=""></span>' +
+              '<span class="m-face m-front"></span>' +
               '<span class="m-face m-back"><img src="images/' + frontImg + '" alt=""></span>' +
             '</span>';
+          
+          const frontFace = card.querySelector('.m-front');
+          fetchAndColorSVG(backSvg).then(svgHtml => {
+            frontFace.innerHTML = svgHtml;
+          });
+
           card.addEventListener('click', () => flip(card));
           grid.appendChild(card);
         }

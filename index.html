@@ -217,11 +217,12 @@
 
     /* ─── Nav ────────────────────────────────────────────── */
     /* ─── Nav pilule (Dynamic Island) ───────────────────── */
+    /* ─── Nav pilule (état final après morph) ───────────────── */
     nav {
-      position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+      position: fixed; top: 1rem; left: 50%;
       z-index: 9000;
       display: flex; justify-content: center; align-items: center;
-      padding: 0.55rem 1.6rem;
+      padding: 0.85rem 2.4rem;
       background: rgba(205, 238, 255, 0.70);
       backdrop-filter: blur(16px) saturate(160%);
       -webkit-backdrop-filter: blur(16px) saturate(160%);
@@ -230,20 +231,18 @@
       box-shadow: 0 8px 28px rgba(125, 211, 252, 0.35),
                   0 2px 8px rgba(0,0,0,0.08);
       pointer-events: none;
-      /* Caché au départ, apparaît au scroll */
       opacity: 0;
-      transform: translateX(-50%) translateY(-12px) scale(0.9);
-      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translateX(-50%) scale(0.92);
+      transition: opacity 0.25s ease, transform 0.25s ease;
     }
     nav.island-visible {
       opacity: 1;
-      transform: translateX(-50%) translateY(0) scale(1);
+      transform: translateX(-50%) scale(1);
     }
     nav .logo {
       font-family: 'Londrina Solid', sans-serif;
       font-weight: 900;
-      font-size: clamp(0.95rem, 2vw, 1.2rem);
+      font-size: clamp(1.15rem, 2.2vw, 1.45rem);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--ink);
@@ -262,6 +261,29 @@
       opacity: 0.8;
     }
     nav ul { display: none; }
+
+    /* ─── Élément morph (titre → pilule) ────────────────────── */
+    .hero-morph {
+      position: fixed;
+      z-index: 9001;
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform, opacity, font-size;
+      font-family: 'Londrina Solid', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--ink);
+      -webkit-text-fill-color: var(--ink);
+      white-space: nowrap;
+      line-height: 1;
+      transform-origin: center center;
+    }
+    .hero-morph .amp {
+      font-family: 'Parisienne', cursive;
+      font-style: italic;
+      font-size: 0.7em;
+      vertical-align: middle;
+    }
 
     /* ─── Hero ───────────────────────────────────────────── */
     .hero {
@@ -2376,16 +2398,102 @@
 
     addEventListener('resize', () => { fit(pCanvas); fit(rCanvas); });
 
-    /* ─── Nav pilule : apparaît quand le H1 hero sort du viewport ─── */
+    /* ─── Titre → pilule : morph au scroll ─── */
     (function () {
       const nav  = document.querySelector('nav');
       const h1   = document.querySelector('.hero h1');
       if (!nav || !h1) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => nav.classList.toggle('island-visible', !entry.isIntersecting),
-        { threshold: 0, rootMargin: '-10px 0px 0px 0px' }
-      );
-      obs.observe(h1);
+
+      /* Cloner le h1 dans un élément morph fixé */
+      const morph = document.createElement('div');
+      morph.className = 'hero-morph';
+      morph.innerHTML = 'SANTOS <span class="amp">&amp;</span> MIMI';
+      document.body.appendChild(morph);
+
+      /* Helpers */
+      const lerp    = (a, b, t) => a + (b - a) * t;
+      const clamp01 = v => Math.min(1, Math.max(0, v));
+      const eio     = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t; // ease-in-out
+
+      /* Cache de la position absolue du h1 */
+      let h1AbsTop, h1H, h1CX;
+      function cacheH1() {
+        const r  = h1.getBoundingClientRect();
+        h1AbsTop = r.top + window.scrollY;
+        h1H      = r.height;
+        h1CX     = r.left + r.width / 2;
+      }
+      /* Taille cible de la police dans la pilule */
+      function pillFS() {
+        return parseFloat(getComputedStyle(nav.querySelector('.logo') || nav).fontSize) || 20;
+      }
+
+      /* Calcule et applique le morph à chaque scroll */
+      function update() {
+        if (!h1AbsTop) cacheH1();             // lazy init (après loader)
+        const sy  = window.scrollY;
+        const raw = clamp01((sy - (h1AbsTop - h1H * 0.1)) / (h1H * 1.1));
+        const t   = eio(raw);
+
+        if (raw <= 0) {
+          /* h1 totalement visible */
+          h1.style.opacity = '1';
+          morph.style.opacity = '0';
+          nav.classList.remove('island-visible');
+          return;
+        }
+        if (raw >= 1) {
+          /* Morph terminé : on passe à la nav pill fixe */
+          h1.style.opacity = '0';
+          morph.style.opacity = '0';
+          nav.classList.add('island-visible');
+          return;
+        }
+
+        /* En transition */
+        h1.style.opacity = String(1 - t);
+        nav.classList.remove('island-visible');
+        morph.style.opacity = String(Math.min(1, t * 2)); // apparaît vite
+
+        /* Positions : h1 center → pill center */
+        const h1VCY  = h1AbsTop + h1H / 2 - sy;           // Y centre h1 dans viewport
+        const pillCY = 16 + 22;                            // top:1rem + demi-hauteur pilule
+        const pillCX = window.innerWidth / 2;
+
+        const cx = lerp(h1CX, pillCX, t);
+        const cy = lerp(h1VCY, pillCY, t);
+
+        /* Propriétés typographiques */
+        const h1FS = parseFloat(getComputedStyle(h1).fontSize);
+        const fs   = lerp(h1FS, pillFS(), t);
+        const ls   = lerp(-0.02, 0.1, t);
+
+        /* Propriétés pilule */
+        const br   = lerp(0, 999, t);
+        const bgA  = lerp(0, 0.70, t);
+        const blur = lerp(0, 16, t);
+        const ph   = lerp(0, 38, t);
+        const pv   = lerp(0, 13, t);
+
+        morph.style.left            = cx + 'px';
+        morph.style.top             = cy + 'px';
+        morph.style.transform       = 'translate(-50%,-50%)';
+        morph.style.fontSize        = fs + 'px';
+        morph.style.letterSpacing   = ls + 'em';
+        morph.style.borderRadius    = br + 'px';
+        morph.style.padding         = pv + 'px ' + ph + 'px';
+        morph.style.background      = 'rgba(205,238,255,' + bgA + ')';
+        morph.style.backdropFilter  = 'blur(' + blur + 'px) saturate(160%)';
+        morph.style.webkitBackdropFilter = 'blur(' + blur + 'px) saturate(160%)';
+        morph.style.border          = '1px solid rgba(205,238,255,' + (bgA * 0.7) + ')';
+        morph.style.boxShadow       = '0 8px 28px rgba(125,211,252,' + (0.35*t) + '),0 2px 8px rgba(0,0,0,' + (0.08*t) + ')';
+      }
+
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', () => { cacheH1(); update(); }, { passive: true });
+      /* Recache après la disparition du loader */
+      document.getElementById('loader')?.addEventListener('transitionend', () => { cacheH1(); update(); }, { once: true });
+      update();
     })();
 
     /* ─── Bouton retour en haut ─── */

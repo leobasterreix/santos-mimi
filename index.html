@@ -1143,8 +1143,6 @@
     .patch-card.flipped .patch-inner { transform: rotateY(180deg); }
     .patch-front, .patch-back {
       border-radius: inherit;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
     }
     .patch-front {
       position: relative;
@@ -1770,7 +1768,6 @@
     .m-face {
       position: absolute; inset: 0;
       border-radius: 18px;
-      -webkit-backface-visibility: hidden; backface-visibility: hidden;
       display: grid; place-items: center;
       overflow: hidden;
       box-shadow: 0 4px 16px rgba(107, 45, 122, 0.08);

@@ -1503,7 +1503,6 @@
     /* ─── Loader deco stickers ───────────────────────── */
     .loader-deco-wrap {
       position: absolute; pointer-events: none;
-      filter: drop-shadow(0 6px 14px rgba(214, 51, 132, 0.15)) drop-shadow(0 2px 5px rgba(0,0,0,0.08));
       will-change: left, top, transform, opacity;
       z-index: 1;
       transition: left 0.9s cubic-bezier(0.76, 0, 0.24, 1),
@@ -2404,7 +2403,7 @@
       'image%2086.png', 'image%2087.png'
     ];
 
-    const numStickers = 240; // Dense wall of Y2K stickers covering the screen
+    const numStickers = 90; // Optimized sticker count for smooth 60fps rendering
     for (let i = 0; i < numStickers; i++) {
       const imgName = DECO_IMAGES[Math.floor(Math.random() * DECO_IMAGES.length)];
       
@@ -2431,8 +2430,8 @@
       const dur = Math.random() * 2.5 + 3.5; // duration 3.5s to 6s
       const delay = Math.random() * -5;
       
-      // Sizes ranging from 60px to 150px
-      const size = Math.floor(Math.random() * 90) + 60; 
+      // Sizes ranging from 80px to 170px for full visual density with fewer elements
+      const size = Math.floor(Math.random() * 90) + 80; 
       
       // Floating wobble values
       const floatX = (Math.random() - 0.5) * 20; // -10px to 10px

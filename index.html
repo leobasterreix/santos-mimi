@@ -1407,14 +1407,15 @@
     }
     .memory-section > .container {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 3rem;
+      gap: 2rem 3rem;
       max-width: 960px;
     }
     .memory-info {
-      flex: 0 0 auto;
-      width: 240px;
+      flex: 1 1 200px;
+      max-width: 260px;
       text-align: left;
       display: flex;
       flex-direction: column;
@@ -1506,18 +1507,15 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 0.7rem;
-      flex: 1 1 auto;
+      flex: 1 1 320px;
       max-width: 560px;
       margin: 0;
     }
-    /* Mobile : retour en colonne */
-    @media (max-width: 700px) {
-      .memory-section > .container {
-        flex-direction: column;
-        gap: 1.2rem;
-      }
+    /* Mobile : retour en colonne centrée */
+    @media (max-width: 600px) {
+      .memory-section > .container { gap: 1rem; }
       .memory-info {
-        width: 100%;
+        max-width: 100%;
         text-align: center;
         align-items: center;
       }
@@ -1528,6 +1526,7 @@
       .memory-grid {
         gap: 0.5rem;
         max-width: 100%;
+        flex-basis: 100%;
       }
     }
     .memory-card {

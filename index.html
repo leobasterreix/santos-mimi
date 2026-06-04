@@ -1344,17 +1344,32 @@
     /* ─── Jeu de mémoire ─────────────────────────────────── */
     .memory-section {
       text-align: center;
-      padding: 1.5rem 1.5rem 2rem !important;
+      padding: 2rem 2rem !important;
       min-height: auto;
     }
-    .memory-section .ch-tag {
+    .memory-section > .container {
+      display: flex;
+      align-items: center;
       justify-content: center;
+      gap: 3rem;
+      max-width: 960px;
+    }
+    .memory-info {
+      flex: 0 0 auto;
+      width: 240px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .memory-section .ch-tag {
+      justify-content: flex-start;
       margin-bottom: 0.5rem;
-      gap: 0.8rem;
+      gap: 0.6rem;
     }
     .memory-section .ch-tag .num {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-size: 1rem;
       font-weight: 800;
       letter-spacing: 0.08em;
       -webkit-text-stroke: 0;
@@ -1363,38 +1378,38 @@
     }
     .memory-section .ch-tag .label {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+      font-size: 0.8rem;
       font-weight: 600;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       opacity: 0.6;
     }
     .memory-section h2 {
-      margin: 0 auto 0.6rem;
-      text-align: center;
-      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      margin: 0 0 0.6rem;
+      text-align: left;
+      font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+      line-height: 1.2;
     }
     .memory-intro {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      opacity: 0.7;
-      max-width: 440px;
-      margin: 0 auto 0.8rem;
-      text-align: center;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      opacity: 0.65;
+      max-width: 100%;
+      margin: 0 0 1.2rem;
+      text-align: left;
     }
     .memory-hud {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 0.8rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
       font-family: 'Outfit', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 500;
       letter-spacing: 0.03em;
       color: var(--ink);
-      margin: 0 auto 1rem;
+      margin: 0 0 1rem;
     }
     .memory-stat {
       background: rgba(255, 255, 255, 0.35);
@@ -1403,20 +1418,20 @@
       backdrop-filter: blur(8px);
       border: 1px solid rgba(196, 30, 58, 0.08);
       box-shadow: none;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
     }
     .memory-hud strong {
       color: var(--ch2);
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
     }
     .memory-reset {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: 0.35rem 1.1rem;
+      padding: 0.4rem 1.2rem;
       border: none;
       border-radius: 999px;
       background: linear-gradient(135deg, var(--ch2), var(--teal-deep));
@@ -1432,23 +1447,29 @@
     .memory-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.8rem;
-      max-width: min(420px, 85vw);
-      margin: 0 auto 1rem;
+      gap: 0.7rem;
+      flex: 1 1 auto;
+      max-width: 560px;
+      margin: 0;
     }
-    @media (max-width: 560px) {
+    /* Mobile : retour en colonne */
+    @media (max-width: 700px) {
+      .memory-section > .container {
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+      .memory-info {
+        width: 100%;
+        text-align: center;
+        align-items: center;
+      }
+      .memory-section .ch-tag { justify-content: center; }
+      .memory-section h2 { text-align: center; }
+      .memory-intro { text-align: center; }
+      .memory-hud { flex-direction: row; justify-content: center; align-items: center; flex-wrap: wrap; }
       .memory-grid {
         gap: 0.5rem;
         max-width: 100%;
-      }
-    }
-    @media (min-height: 800px) {
-      .memory-section {
-        padding: 2rem 1.5rem 2.5rem !important;
-      }
-      .memory-grid {
-        max-width: min(460px, 85vw);
-        gap: 0.9rem;
       }
     }
     .memory-card {
@@ -1879,19 +1900,21 @@
 
   <section class="block chapter ch-2 memory-section" id="memory">
     <div class="container">
-      <div class="ch-tag">
-        <span class="num">02½</span>
-        <span class="label">le jeu de la mémoire</span>
-      </div>
-      <h2>Retrouve les paires de <em>perles</em>.</h2>
-      <p class="memory-intro">Retourne les breloques deux par deux et reconstitue toutes les paires.</p>
-      <div class="memory-hud">
-        <span class="memory-stat">coups · <strong id="memMoves">0</strong></span>
-        <span class="memory-stat">paires · <strong id="memPairs">0</strong>/6</span>
-        <button class="memory-reset" id="memReset" type="button">rejouer ↺</button>
+      <div class="memory-info">
+        <div class="ch-tag">
+          <span class="num">02½</span>
+          <span class="label">le jeu de la mémoire</span>
+        </div>
+        <h2>Retrouve les paires de <em>perles</em>.</h2>
+        <p class="memory-intro">Retourne les breloques deux par deux et reconstitue toutes les paires.</p>
+        <div class="memory-hud">
+          <span class="memory-stat">coups · <strong id="memMoves">0</strong></span>
+          <span class="memory-stat">paires · <strong id="memPairs">0</strong>/6</span>
+          <button class="memory-reset" id="memReset" type="button">rejouer ↺</button>
+        </div>
+        <p class="memory-win" id="memWin" hidden>bravo ! toutes les paires en <strong id="memWinMoves">0</strong> coups 🎉</p>
       </div>
       <div class="memory-grid" id="memoryGrid"></div>
-      <p class="memory-win" id="memWin" hidden>bravo ! toutes les paires en <strong id="memWinMoves">0</strong> coups 🎉</p>
     </div>
   </section>
 

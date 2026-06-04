@@ -3127,12 +3127,27 @@
       // Cache pour stocker le XML brut des SVGs pré-chargés
       const svgCache = {};
 
-      // Pré-chargement asynchrone en arrière-plan
+      // Pré-chargement asynchrone en arrière-plan et injection à la volée pour remplacer les images floues
       ALL_SVGS.forEach(fileName => {
         fetch('images/' + fileName)
           .then(res => res.text())
           .then(text => {
             svgCache[fileName] = text;
+            
+            // Si la grille est déjà générée, on met à jour les cartes concernées avec l'inline vectoriel
+            document.querySelectorAll('.memory-card').forEach(card => {
+              if (card.dataset.backSvg === fileName && !card.dataset.inlined) {
+                const frontFace = card.querySelector('.m-front');
+                if (frontFace) {
+                  let svgText = text.replace(/fill="#9a2fa5"/ig, `fill="${pastel1}"`);
+                  svgText = svgText.replace(/fill="#ff98c3"/ig, `fill="${pastel2}"`);
+                  svgText = svgText.replace(/(<svg[^>]*)\swidth="[0-9]+"/i, '$1');
+                  svgText = svgText.replace(/(<svg[^>]*)\sheight="[0-9]+"/i, '$1');
+                  frontFace.innerHTML = svgText;
+                  card.dataset.inlined = "true";
+                }
+              }
+            });
           })
           .catch(e => console.error('Erreur prefetch SVG:', e));
       });
@@ -3171,10 +3186,11 @@
           card.type = 'button';
           card.className = 'memory-card';
           card.dataset.img = frontImg;
+          card.dataset.backSvg = backSvg;
           card.innerHTML =
             '<span class="m-inner">' +
               '<span class="m-face m-front"></span>' +
-              '<span class="m-face m-back"><img loading="lazy" src="images/' + frontImg + '" alt=""></span>' +
+              '<span class="m-face m-back"><img src="images/' + frontImg + '" alt=""></span>' +
             '</span>';
 
           const frontFace = card.querySelector('.m-front');
@@ -3186,8 +3202,9 @@
             svgText = svgText.replace(/(<svg[^>]*)\swidth="[0-9]+"/i, '$1');
             svgText = svgText.replace(/(<svg[^>]*)\sheight="[0-9]+"/i, '$1');
             frontFace.innerHTML = svgText;
+            card.dataset.inlined = "true";
           } else {
-            frontFace.innerHTML = '<img loading="lazy" src="images/' + backSvg + '" alt="" style="filter: hue-rotate(' + hueRotation + 'deg)">';
+            frontFace.innerHTML = '<img src="images/' + backSvg + '" alt="" style="filter: hue-rotate(' + hueRotation + 'deg)">';
           }
 
           card.addEventListener('click', () => flip(card));

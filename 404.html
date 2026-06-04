@@ -33,9 +33,14 @@
 
     body::before {
       content: '';
-      position: fixed; inset: 0;
-      background-image: radial-gradient(circle, rgba(34,211,238,0.07) 1px, transparent 1px);
-      background-size: 13px 13px;
+      position: fixed;
+      inset: -10px;
+      background-image: linear-gradient(rgba(2, 12, 18, 0.55), rgba(2, 12, 18, 0.55)), url('images/404_fond.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(8px);
+      z-index: -1;
       pointer-events: none;
     }
     body::after {
@@ -45,6 +50,7 @@
         radial-gradient(ellipse 65% 45% at 8%  18%, rgba(14,116,144,0.20) 0%, transparent 65%),
         radial-gradient(ellipse 55% 40% at 92% 82%, rgba(34,211,238,0.12) 0%, transparent 65%);
       pointer-events: none;
+      z-index: -1;
     }
 
     /* ── Cursor ── */
@@ -88,15 +94,49 @@
       flex-shrink: 0;
     }
 
-    /* Individual cell fade-in */
-    @keyframes cellIn {
-      from { opacity: 0; transform: scale(0.6); }
-      to   { opacity: 1; transform: scale(1); }
+    .bead-container {
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      left: var(--left);
+      top: var(--top);
+      transform-origin: center center;
+      pointer-events: none;
+      /* Gather first, then float */
+      animation: 
+        gatherBeads 2.0s cubic-bezier(0.19, 1, 0.22, 1) both,
+        cellFloat 4.0s ease-in-out infinite 2.0s;
+      z-index: 2;
     }
-    /* Gentle individual float */
+
+    .bead-image-inner {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
+    }
+
+    /* Bead gathering from all directions */
+    @keyframes gatherBeads {
+      0% {
+        transform: translate(var(--startX), var(--startY)) rotate(var(--startRot)) scale(0.2);
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate(0, 0) rotate(var(--targetRot)) scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Gentle individual float once gathered */
     @keyframes cellFloat {
-      0%, 100% { transform: translateY(0px)   rotate(var(--r,0deg)); }
-      50%       { transform: translateY(-7px)  rotate(var(--r,0deg)); }
+      0%, 100% { transform: translateY(0px) rotate(var(--targetRot)); }
+      50%       { transform: translateY(-6px) rotate(var(--targetRot)); }
     }
 
     .subtitle {
@@ -107,14 +147,15 @@
       color: rgba(255,255,255,0.7);
       text-align: center;
     }
-
     .home-link {
       position: relative; z-index: 2;
       display: inline-flex; align-items: center; gap: 0.6rem;
-      font-family: 'Major Mono Display', monospace;
-      font-size: 0.76rem; letter-spacing: 0.22em;
+      font-family: 'Outfit', system-ui, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      padding: 0.8rem 1.9rem;
+      padding: 0.8rem 2rem;
       border-radius: 999px;
       background: linear-gradient(135deg, #0e7490, #22d3ee, #0891b2);
       color: #fff; text-decoration: none; cursor: none;
@@ -141,10 +182,9 @@
   <canvas class="particles" id="pCanvas"></canvas>
   <canvas class="ripples"   id="rCanvas"></canvas>
 
-  <p class="kicker">santos &amp; mimi · bead studio · MMXXVI</p>
   <div id="stage"></div>
   <p class="subtitle">cette page s'est perdue en mer 🌊</p>
-  <a class="home-link" href="index.html">← retour au studio</a>
+  <a class="home-link" href="index.html">← retour à l'accueil</a>
 
   <script>
   const IMGS = [
@@ -164,11 +204,13 @@
     'images/image%2085.png','images/image%2086.png','images/image%2087.png',
   ];
 
-  /* ─── Build using SVG clipPath — no canvas font sampling needed ─── */
+  /* ─── Build using SVG path sampling ─── */
+  let activeBeads = [];
   document.fonts.ready.then(build);
 
   function build() {
     const stage = document.getElementById('stage');
+    stage.innerHTML = ''; // Clear stage in case of re-runs
 
     /* Stage dimensions */
     const maxH = window.innerHeight - 170;
@@ -177,89 +219,110 @@
     stage.style.width  = W + 'px';
     stage.style.height = H + 'px';
 
-    /* Grid cell size — images packed at ~H/5.5 so you can see each one
-       but together they clearly fill the letter shapes */
-    const cell = Math.round(Math.min(88, Math.max(60, H / 5.5)));
-    const cols = Math.ceil(W / cell) + 1;
-    const rows = Math.ceil(H / cell) + 1;
+    /* Grid cell size — size of each charm */
+    const cell = Math.round(Math.min(58, Math.max(38, H / 7.8)));
 
-    /* Shuffle image order once */
+    /* Stroke paths of '404' in a 1000x340 coordinate system (aligned symmetrically with 70px gaps) */
+    const pathData = [
+      // First '4' (shifted right by 50px to span 130 to 310)
+      "M 260,50 L 130,230 L 310,230",
+      "M 250,80 L 250,290",
+      // '0' (centered at 500, spanning 380 to 620)
+      "M 500,50 A 120,120 0 1,0 500,290 A 120,120 0 1,0 500,50 Z",
+      // Second '4' (shifted left by 10px to span 690 to 870)
+      "M 820,50 L 690,230 L 870,230",
+      "M 810,80 L 810,290"
+    ];
+
+    const points = [];
+    const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const step = cell * 0.46; // Balanced spacing along path strokes
+
+    pathData.forEach(d => {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d);
+      tempSvg.appendChild(path);
+      
+      const totalLength = path.getTotalLength();
+      const numPoints = Math.max(3, Math.round(totalLength / step));
+      
+      for (let i = 0; i <= numPoints; i++) {
+        const length = (i / numPoints) * totalLength;
+        const pt = path.getPointAtLength(length);
+        
+        // Scale coordinate space (1000x340) to actual stage dimensions W and H
+        const px = (pt.x / 1000) * W;
+        const py = (pt.y / 340) * H;
+        
+        // Place 2 staggered beads at each step to thicken the stroke organically
+        const beadsPerPoint = 2;
+        for (let k = 0; k < beadsPerPoint; k++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * cell * 0.36; // Wide enough to double the stroke thickness
+          const jx = Math.cos(angle) * dist;
+          const jy = Math.sin(angle) * dist;
+          
+          points.push({ x: px + jx, y: py + jy });
+        }
+      }
+    });
+
+    /* Shuffle images to randomly distribute them */
     const deck = [...IMGS];
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
 
-    const NS  = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('width',  W);
-    svg.setAttribute('height', H);
-    svg.style.cssText = 'display:block;overflow:visible';
+    activeBeads = []; // Reset active beads list
 
-    /* ── ClipPath: "404" text shape ── */
-    const defs = document.createElementNS(NS, 'defs');
+    // Append charm image elements directly
+    points.forEach((pt, index) => {
+      const src = deck[index % deck.length];
 
-    const clip = document.createElementNS(NS, 'clipPath');
-    clip.id = 'clip404';
+      // Create container (handles position, layout and floating/gathering animations)
+      const container = document.createElement('div');
+      container.className = 'bead-container';
 
-    const t = document.createElementNS(NS, 'text');
-    t.setAttribute('x', W / 2);
-    t.setAttribute('y', H * 0.535);
-    t.setAttribute('text-anchor',     'middle');
-    t.setAttribute('dominant-baseline','middle');
-    /* "Major Mono Display" — same font as the site; Impact as reliable fallback */
-    t.setAttribute('font-family', '"Major Mono Display", Impact, "Arial Black", monospace');
-    t.setAttribute('font-size',   Math.round(H * 0.90));
-    t.setAttribute('font-weight', '900');
-    t.textContent = '404';
+      // Create inner image (handles smooth hover push transitions in JS)
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = 'bead-image-inner';
 
-    clip.appendChild(t);
-    defs.appendChild(clip);
-    svg.appendChild(defs);
+      // Set random offscreen start coordinates for the gather animation
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.max(window.innerWidth, window.innerHeight) * 0.8 + Math.random() * 200;
+      const startX = Math.cos(angle) * dist;
+      const startY = Math.sin(angle) * dist;
 
-    /* ── Clipped group: grid of bead images ── */
-    const g = document.createElementNS(NS, 'g');
-    g.setAttribute('clip-path', 'url(#clip404)');
+      // Random rotations
+      const startRot = Math.round((Math.random() - 0.5) * 540);
+      const targetRot = Math.round((Math.random() - 0.5) * 40);
 
-    let delay = 0;
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const src = deck[(row * cols + col) % deck.length];
+      // Stagger the gather animation
+      const delay = (Math.random() * 0.6).toFixed(3);
 
-        /* Slight random offset + rotation for a "scattered bead" feel */
-        const jx  = (Math.random() - 0.5) * cell * 0.25;
-        const jy  = (Math.random() - 0.5) * cell * 0.25;
-        const rot = Math.round((Math.random() - 0.5) * 40);
-        const cx  = col * cell + cell / 2 + jx;
-        const cy  = row * cell + cell / 2 + jy;
+      container.style.setProperty('--size', `${cell}px`);
+      container.style.setProperty('--left', `${pt.x - cell / 2}px`);
+      container.style.setProperty('--top', `${pt.y - cell / 2}px`);
+      container.style.setProperty('--startX', `${Math.round(startX)}px`);
+      container.style.setProperty('--startY', `${Math.round(startY)}px`);
+      container.style.setProperty('--startRot', `${startRot}deg`);
+      container.style.setProperty('--targetRot', `${targetRot}deg`);
+      
+      // Delay both gatherBeads and cellFloat on the container
+      container.style.animationDelay = `${delay}s, ${(2.0 + parseFloat(delay)).toFixed(3)}s`;
 
-        const img = document.createElementNS(NS, 'image');
-        img.setAttribute('href',              src);
-        img.setAttribute('x',                 cx - cell / 2);
-        img.setAttribute('y',                 cy - cell / 2);
-        img.setAttribute('width',             cell);
-        img.setAttribute('height',            cell);
-        img.setAttribute('preserveAspectRatio','xMidYMid meet');
-        img.setAttribute('transform',
-          `rotate(${rot} ${cx} ${cy})`
-        );
+      container.appendChild(img);
+      stage.appendChild(container);
 
-        /* Staggered fade-in → then continuous float */
-        const floatDur   = (3.8 + Math.random() * 3.5).toFixed(2);
-        const floatDelay = (delay + 0.55 - Math.random() * 2).toFixed(3);
-        img.style.cssText = [
-          '--r:' + rot + 'deg',
-          `animation: cellIn 0.5s cubic-bezier(0.22,1,0.36,1) both ${delay.toFixed(3)}s,`
-          + ` cellFloat ${floatDur}s ease-in-out infinite ${floatDelay}s`,
-        ].join(';');
-
-        g.appendChild(img);
-        delay += 0.016; /* 16ms stagger per cell */
-      }
-    }
-
-    svg.appendChild(g);
-    stage.appendChild(svg);
+      // Save metadata for hover proximity tracking
+      activeBeads.push({
+        el: img,
+        px: pt.x,
+        py: pt.y
+      });
+    });
   }
 
   /* ─── Cursor (scale handled in JS — no CSS !important conflict) ─── */
@@ -279,6 +342,42 @@
   (function tick() {
     rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
     cRing.style.transform = `translate(${rx - 19}px,${ry - 19}px) scale(${rScale})`;
+
+    // Proximity hover effect on charms (desktop / pointer interactions)
+    const stage = document.getElementById('stage');
+    if (stage && activeBeads.length > 0) {
+      const rect = stage.getBoundingClientRect();
+      const stageX = rect.left;
+      const stageY = rect.top;
+      const mouseStageX = mx - stageX;
+      const mouseStageY = my - stageY;
+
+      const threshold = 95; // Radius of proximity in pixels
+
+      activeBeads.forEach(bead => {
+        const dx = bead.px - mouseStageX;
+        const dy = bead.py - mouseStageY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < threshold) {
+          const force = (threshold - dist) / threshold; // 0 (far) to 1 (on top)
+          const angle = Math.atan2(dy, dx);
+          
+          // Push bead away slightly (up to 20px)
+          const pushDist = force * 20; 
+          const pushX = Math.cos(angle) * pushDist;
+          const pushY = Math.sin(angle) * pushDist;
+
+          // Rotate slightly based on push force
+          const pushRot = pushX * 0.5;
+
+          bead.el.style.transform = `translate(${pushX.toFixed(1)}px, ${pushY.toFixed(1)}px) rotate(${pushRot.toFixed(1)}deg) scale(1.12)`;
+        } else {
+          bead.el.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)';
+        }
+      });
+    }
+
     requestAnimationFrame(tick);
   })();
 

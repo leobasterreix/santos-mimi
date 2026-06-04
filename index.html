@@ -1133,11 +1133,9 @@
     .patch-inner {
       position: relative;
       transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
       transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
       border-radius: inherit;
-      /* Fix Safari blurriness */
-      filter: blur(0);
-      -webkit-filter: blur(0);
       will-change: transform;
     }
     .patch-card.flipped .patch-inner { transform: rotateY(180deg); }
@@ -1156,6 +1154,8 @@
       visibility: visible;
       transition: opacity 0.25s ease, visibility 0.25s ease;
       transition-delay: 0.25s;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .patch-back {
       position: absolute; inset: 0;
@@ -1169,6 +1169,8 @@
       visibility: hidden;
       transition: opacity 0.25s ease, visibility 0.25s ease;
       transition-delay: 0s;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .patch-card.flipped .patch-front {
       opacity: 0;
@@ -1750,10 +1752,8 @@
     .memory-card .m-inner {
       position: absolute; inset: 0;
       transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
       transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      /* Fix Safari blurriness during scale and rotation */
-      filter: blur(0);
-      -webkit-filter: blur(0);
       will-change: transform;
     }
     .memory-card:hover .m-inner {
@@ -1771,6 +1771,8 @@
       display: grid; place-items: center;
       overflow: hidden;
       box-shadow: 0 4px 16px rgba(107, 45, 122, 0.08);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .m-front {
       background: transparent;

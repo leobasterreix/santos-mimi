@@ -3124,6 +3124,19 @@
       const resetBtn = document.getElementById('memReset');
       let first, second, lock, moves, pairs;
 
+      // Cache pour stocker le XML brut des SVGs pré-chargés
+      const svgCache = {};
+
+      // Pré-chargement asynchrone en arrière-plan
+      ALL_SVGS.forEach(fileName => {
+        fetch('images/' + fileName)
+          .then(res => res.text())
+          .then(text => {
+            svgCache[fileName] = text;
+          })
+          .catch(e => console.error('Erreur prefetch SVG:', e));
+      });
+
       async function build() {
         first = null; second = null; lock = false; moves = 0; pairs = 0;
         movesEl.textContent = '0';
@@ -3160,9 +3173,22 @@
           card.dataset.img = frontImg;
           card.innerHTML =
             '<span class="m-inner">' +
-              '<span class="m-face m-front"><img loading="lazy" src="images/' + backSvg + '" alt="" style="filter: hue-rotate(' + hueRotation + 'deg)"></span>' +
+              '<span class="m-face m-front"></span>' +
               '<span class="m-face m-back"><img loading="lazy" src="images/' + frontImg + '" alt=""></span>' +
             '</span>';
+
+          const frontFace = card.querySelector('.m-front');
+          const cachedSvgText = svgCache[backSvg];
+
+          if (cachedSvgText) {
+            let svgText = cachedSvgText.replace(/fill="#9a2fa5"/ig, `fill="${pastel1}"`);
+            svgText = svgText.replace(/fill="#ff98c3"/ig, `fill="${pastel2}"`);
+            svgText = svgText.replace(/(<svg[^>]*)\swidth="[0-9]+"/i, '$1');
+            svgText = svgText.replace(/(<svg[^>]*)\sheight="[0-9]+"/i, '$1');
+            frontFace.innerHTML = svgText;
+          } else {
+            frontFace.innerHTML = '<img loading="lazy" src="images/' + backSvg + '" alt="" style="filter: hue-rotate(' + hueRotation + 'deg)">';
+          }
 
           card.addEventListener('click', () => flip(card));
           grid.appendChild(card);

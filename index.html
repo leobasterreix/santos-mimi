@@ -90,9 +90,9 @@
     .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     .loader-inner { text-align: center; padding: 2rem; }
     .loader-kicker {
-      font-family: 'Parisienne', cursive;
-      font-size: 0.78rem;
-      letter-spacing: 0.55em;
+      font-family: 'Italiana', serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.6em;
       text-transform: uppercase;
       opacity: 0.88; color: #7dd3fc;
       margin-bottom: 1.4rem;
@@ -144,7 +144,7 @@
     }
     .loader-percent {
       margin-top: 0.8rem;
-      font-family: 'Londrina Solid', sans-serif;
+      font-family: 'Outfit', sans-serif;
       font-size: 0.72rem; letter-spacing: 0.3em;
       text-transform: uppercase;
       color: #7dd3fc; opacity: 0.85;
@@ -1489,15 +1489,32 @@
     }
     .loader-curtain {
       position: absolute; left: 0; right: 0; height: 51%;
-      background:
-        radial-gradient(ellipse 140% 60% at 15% 20%, #22d3ee 0%, transparent 45%),
-        radial-gradient(ellipse 110% 80% at 85% 80%, #0e4f64 0%, transparent 55%),
-        radial-gradient(ellipse 90% 55% at 50% 5%, #0891b2 0%, transparent 50%),
-        radial-gradient(ellipse 70% 70% at 30% 65%, #164e63 0%, transparent 60%),
-        linear-gradient(158deg, #042f3e 0%, #0e4f64 28%, #0e7490 58%, #065f74 100%);
-      background-attachment: fixed;
+      background: #020c12;
+      overflow: hidden;
       transition: transform 1.1s cubic-bezier(0.76, 0, 0.24, 1);
       z-index: -1;
+    }
+    .loader-curtain::before {
+      content: '';
+      position: absolute; inset: -15px;
+      background-image: linear-gradient(rgba(2, 12, 18, 0.62), rgba(2, 12, 18, 0.62)), url('images/404_fond.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      filter: blur(8px);
+      z-index: -2;
+      pointer-events: none;
+    }
+    .loader-curtain::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 65% 45% at 8%  18%, rgba(14,116,144,0.20) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 92% 82%, rgba(34,211,238,0.12) 0%, transparent 65%);
+      background-attachment: fixed;
+      z-index: -1;
+      pointer-events: none;
     }
     .loader-curtain.top { top: 0; }
     .loader-curtain.bot { bottom: 0; }
@@ -2387,41 +2404,57 @@
     const loaderBar = document.getElementById('loaderBar');
     const loaderPercent = document.getElementById('loaderPercent');
     const startTime = Date.now();
-    const MIN_LOADER_MS = 900;
 
     const allImages = [...loader.querySelectorAll('img')];
     const total = allImages.length;
     let loaded = 0;
+    let isDoneLoading = false;
+    let currentPct = 0;
 
-    function updatePct() {
-      const pct = total === 0 ? 100 : Math.round((loaded / total) * 100);
-      loaderBar.style.width = pct + '%';
-      loaderPercent.textContent = pct + '% · couture en cours';
-      if (loaded >= total) finishLoader();
-    }
-    function finishLoader() {
-      const elapsed = Date.now() - startTime;
-      const wait = Math.max(0, MIN_LOADER_MS - elapsed);
-      setTimeout(() => {
-        loaderPercent.textContent = '100% · prêt';
-        setTimeout(() => {
-          loader.classList.add('opening');
-          document.body.classList.remove('is-loading');
-          setTimeout(() => loader.classList.add('hidden'), 1150);
-        }, 320);
-      }, wait);
+    function checkRealImages() {
+      if (loaded >= total) {
+        isDoneLoading = true;
+      }
     }
 
     allImages.forEach(img => {
       if (img.complete && img.naturalWidth > 0) {
         loaded++;
       } else {
-        const done = () => { loaded++; updatePct(); };
+        const done = () => { loaded++; checkRealImages(); };
         img.addEventListener('load', done, { once: true });
         img.addEventListener('error', done, { once: true });
       }
     });
-    updatePct();
+    checkRealImages();
+
+    function finishLoader() {
+      loaderPercent.textContent = '100% · prêt';
+      setTimeout(() => {
+        loader.classList.add('opening');
+        document.body.classList.remove('is-loading');
+        setTimeout(() => loader.classList.add('hidden'), 1150);
+      }, 320);
+    }
+
+    // Smooth incremental animation (reaches 90% in ~1.8-2.2s, then waits for real assets to finish to reach 100%)
+    const loaderInterval = setInterval(() => {
+      if (currentPct < 90) {
+        // Increment smoothly by random small steps
+        currentPct += Math.floor(Math.random() * 3) + 1; // 1% to 3%
+        if (currentPct > 90) currentPct = 90;
+      } else if (isDoneLoading) {
+        // Complete the loader smoothly to 100% once assets are fully ready
+        currentPct += Math.floor(Math.random() * 5) + 3; // 3% to 7%
+        if (currentPct >= 100) {
+          currentPct = 100;
+          clearInterval(loaderInterval);
+          finishLoader();
+        }
+      }
+      loaderBar.style.width = currentPct + '%';
+      loaderPercent.textContent = currentPct + '% · couture en cours';
+    }, 40);
 
     /* ───────── Playlist Santos & Mimi (vinyles) ─────────────────────
        Pour ajouter un son : dépose le fichier .mp3 à la racine du projet

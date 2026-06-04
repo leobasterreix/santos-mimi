@@ -2334,6 +2334,37 @@
       }
     }
 
+    /* ── Clic brut : pose d'aiguille sur le vinyle (Web Audio, sans fichier) ── */
+    let clickCtx = null;
+    function vinylClick() {
+      try {
+        clickCtx = clickCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (clickCtx.state === 'suspended') clickCtx.resume();
+        const ctx = clickCtx, now = ctx.currentTime;
+        // 1) le « tic » sec : court souffle de bruit filtré
+        const dur = 0.07;
+        const buf = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * dur), ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 2.2);
+        }
+        const noise = ctx.createBufferSource(); noise.buffer = buf;
+        const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 900;
+        const ng = ctx.createGain(); ng.gain.value = 0.4;
+        noise.connect(hp); hp.connect(ng); ng.connect(ctx.destination);
+        noise.start(now);
+        // 2) le « toc » grave : petit thump de pose d'aiguille
+        const osc = ctx.createOscillator(); osc.type = 'sine';
+        osc.frequency.setValueAtTime(130, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 0.1);
+        const og = ctx.createGain();
+        og.gain.setValueAtTime(0.28, now);
+        og.gain.exponentialRampToValueAtTime(0.0008, now + 0.12);
+        osc.connect(og); og.connect(ctx.destination);
+        osc.start(now); osc.stop(now + 0.13);
+      } catch (_) {}
+    }
+
     // Construit la playlist depuis TRACKS
     TRACKS.forEach((t, i) => {
       const li = document.createElement('li');
@@ -2348,6 +2379,7 @@
           `<span class="track-artist">${t.artist}</span>` +
         `</span>`;
       li.addEventListener('click', () => {
+        vinylClick();
         if (i === currentTrack) { togglePlay(); }
         else { selectTrack(i, true); }
       });

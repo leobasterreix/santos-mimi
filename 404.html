@@ -94,15 +94,39 @@
       flex-shrink: 0;
     }
 
-    /* Individual cell fade-in */
-    @keyframes cellIn {
-      from { opacity: 0; transform: scale(0.6); }
-      to   { opacity: 1; transform: scale(1); }
+    .bead-image {
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      left: var(--left);
+      top: var(--top);
+      transform-origin: center center;
+      pointer-events: none;
+      /* Gather first, then float */
+      animation: 
+        gatherBeads 2.0s cubic-bezier(0.19, 1, 0.22, 1) both,
+        cellFloat 4.0s ease-in-out infinite 2.0s;
     }
-    /* Gentle individual float */
+
+    /* Bead gathering from all directions */
+    @keyframes gatherBeads {
+      0% {
+        transform: translate(var(--startX), var(--startY)) rotate(var(--startRot)) scale(0.2);
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate(0, 0) rotate(var(--targetRot)) scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Gentle individual float once gathered */
     @keyframes cellFloat {
-      0%, 100% { transform: translateY(0px)   rotate(var(--r,0deg)); }
-      50%       { transform: translateY(-7px)  rotate(var(--r,0deg)); }
+      0%, 100% { transform: translateY(0px) rotate(var(--targetRot)); }
+      50%       { transform: translateY(-6px) rotate(var(--targetRot)); }
     }
 
     .subtitle {
@@ -170,11 +194,12 @@
     'images/image%2085.png','images/image%2086.png','images/image%2087.png',
   ];
 
-  /* ─── Build using SVG clipPath — no canvas font sampling needed ─── */
+  /* ─── Build using Canvas pixel-sampling ─── */
   document.fonts.ready.then(build);
 
   function build() {
     const stage = document.getElementById('stage');
+    stage.innerHTML = ''; // Clear stage in case of re-runs
 
     /* Stage dimensions */
     const maxH = window.innerHeight - 170;
@@ -183,89 +208,95 @@
     stage.style.width  = W + 'px';
     stage.style.height = H + 'px';
 
-    /* Grid cell size — images packed at ~H/5.5 so you can see each one
-       but together they clearly fill the letter shapes */
+    /* Grid cell size — size of each charm */
     const cell = Math.round(Math.min(88, Math.max(60, H / 5.5)));
-    const cols = Math.ceil(W / cell) + 1;
-    const rows = Math.ceil(H / cell) + 1;
 
-    /* Shuffle image order once */
+    /* Canvas sampling to find points inside the '404' text */
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // Fill background with black
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw '404' in white. Use a bold Outfit font
+    ctx.fillStyle = '#fff';
+    ctx.font = `900 ${Math.round(H * 0.88)}px "Outfit", Impact, "Arial Black", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('404', W / 2, H * 0.52);
+
+    // Get pixel data
+    const imgData = ctx.getImageData(0, 0, W, H);
+    const pixels = imgData.data;
+
+    function isInsideText(x, y) {
+      x = Math.max(0, Math.min(W - 1, Math.round(x)));
+      y = Math.max(0, Math.min(H - 1, Math.round(y)));
+      const idx = (y * W + x) * 4;
+      return pixels[idx] > 128; // check red channel of the white text
+    }
+
+    /* Grid spacing of charms. They overlap slightly for a beautiful clustered text texture */
+    const spacing = cell * 0.55; 
+    const points = [];
+
+    for (let y = spacing / 2; y < H; y += spacing) {
+      for (let x = spacing / 2; x < W; x += spacing) {
+        // Add subtle organic jitter
+        const jx = (Math.random() - 0.5) * spacing * 0.15;
+        const jy = (Math.random() - 0.5) * spacing * 0.15;
+        const px = x + jx;
+        const py = y + jy;
+
+        if (isInsideText(px, py)) {
+          points.push({ x: px, y: py });
+        }
+      }
+    }
+
+    /* Shuffle images to randomly distribute them */
     const deck = [...IMGS];
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
 
-    const NS  = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('width',  W);
-    svg.setAttribute('height', H);
-    svg.style.cssText = 'display:block;overflow:visible';
+    // Append charm image elements directly
+    points.forEach((pt, index) => {
+      const src = deck[index % deck.length];
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = 'bead-image';
 
-    /* ── ClipPath: "404" text shape ── */
-    const defs = document.createElementNS(NS, 'defs');
+      // Set random offscreen start coordinates for the gather animation
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.max(window.innerWidth, window.innerHeight) * 0.8 + Math.random() * 200;
+      const startX = Math.cos(angle) * dist;
+      const startY = Math.sin(angle) * dist;
 
-    const clip = document.createElementNS(NS, 'clipPath');
-    clip.id = 'clip404';
+      // Random rotations
+      const startRot = Math.round((Math.random() - 0.5) * 540);
+      const targetRot = Math.round((Math.random() - 0.5) * 40);
 
-    const t = document.createElementNS(NS, 'text');
-    t.setAttribute('x', W / 2);
-    t.setAttribute('y', H * 0.535);
-    t.setAttribute('text-anchor',     'middle');
-    t.setAttribute('dominant-baseline','middle');
-    /* "Major Mono Display" — same font as the site; Impact as reliable fallback */
-    t.setAttribute('font-family', '"Major Mono Display", Impact, "Arial Black", monospace');
-    t.setAttribute('font-size',   Math.round(H * 0.90));
-    t.setAttribute('font-weight', '900');
-    t.textContent = '404';
+      // Stagger the gather animation
+      const delay = (Math.random() * 0.6).toFixed(3);
 
-    clip.appendChild(t);
-    defs.appendChild(clip);
-    svg.appendChild(defs);
+      img.style.setProperty('--size', `${cell}px`);
+      img.style.setProperty('--left', `${pt.x - cell / 2}px`);
+      img.style.setProperty('--top', `${pt.y - cell / 2}px`);
+      img.style.setProperty('--startX', `${Math.round(startX)}px`);
+      img.style.setProperty('--startY', `${Math.round(startY)}px`);
+      img.style.setProperty('--startRot', `${startRot}deg`);
+      img.style.setProperty('--targetRot', `${targetRot}deg`);
+      
+      // Delay both gatherBeads and cellFloat
+      img.style.animationDelay = `${delay}s, ${(2.0 + parseFloat(delay)).toFixed(3)}s`;
 
-    /* ── Clipped group: grid of bead images ── */
-    const g = document.createElementNS(NS, 'g');
-    g.setAttribute('clip-path', 'url(#clip404)');
-
-    let delay = 0;
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const src = deck[(row * cols + col) % deck.length];
-
-        /* Slight random offset + rotation for a "scattered bead" feel */
-        const jx  = (Math.random() - 0.5) * cell * 0.25;
-        const jy  = (Math.random() - 0.5) * cell * 0.25;
-        const rot = Math.round((Math.random() - 0.5) * 40);
-        const cx  = col * cell + cell / 2 + jx;
-        const cy  = row * cell + cell / 2 + jy;
-
-        const img = document.createElementNS(NS, 'image');
-        img.setAttribute('href',              src);
-        img.setAttribute('x',                 cx - cell / 2);
-        img.setAttribute('y',                 cy - cell / 2);
-        img.setAttribute('width',             cell);
-        img.setAttribute('height',            cell);
-        img.setAttribute('preserveAspectRatio','xMidYMid meet');
-        img.setAttribute('transform',
-          `rotate(${rot} ${cx} ${cy})`
-        );
-
-        /* Staggered fade-in → then continuous float */
-        const floatDur   = (3.8 + Math.random() * 3.5).toFixed(2);
-        const floatDelay = (delay + 0.55 - Math.random() * 2).toFixed(3);
-        img.style.cssText = [
-          '--r:' + rot + 'deg',
-          `animation: cellIn 0.5s cubic-bezier(0.22,1,0.36,1) both ${delay.toFixed(3)}s,`
-          + ` cellFloat ${floatDur}s ease-in-out infinite ${floatDelay}s`,
-        ].join(';');
-
-        g.appendChild(img);
-        delay += 0.016; /* 16ms stagger per cell */
-      }
-    }
-
-    svg.appendChild(g);
-    stage.appendChild(svg);
+      stage.appendChild(img);
+    });
   }
 
   /* ─── Cursor (scale handled in JS — no CSS !important conflict) ─── */

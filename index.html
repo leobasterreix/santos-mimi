@@ -2568,8 +2568,12 @@
           [deckFronts[i], deckFronts[j]] = [deckFronts[j], deckFronts[i]];
         }
 
-        // 2. Shuffled backs (12 unique custom SVGs)
-        const deckBacks = [...ALL_SVGS];
+        // 2. Shuffled backs (12 unique custom SVGs — fill from pool, duplicate randomly if < 12)
+        let deckBacks = [...ALL_SVGS];
+        while (deckBacks.length < 12) {
+          deckBacks.push(ALL_SVGS[Math.floor(Math.random() * ALL_SVGS.length)]);
+        }
+        deckBacks = deckBacks.slice(0, 12);
         for (let i = deckBacks.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [deckBacks[i], deckBacks[j]] = [deckBacks[j], deckBacks[i]];

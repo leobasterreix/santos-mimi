@@ -107,13 +107,7 @@
     .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     .loader.exploding { opacity: 0; visibility: hidden; pointer-events: none; }
     .loader-inner {
-      text-align: center; padding: 2rem;
-      position: relative; z-index: 2;
-      transition: opacity 0.4s ease-out;
-    }
-    .loader.swirling .loader-inner {
-      opacity: 0;
-      pointer-events: none;
+      display: none;
     }
     .loader-kicker {
       font-family: 'Italiana', serif;
@@ -1510,30 +1504,32 @@
     }
 
     /* ─── Loader deco stickers ───────────────────────── */
-    .loader-deco {
+    .loader-deco-wrap {
       position: absolute; pointer-events: none;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.52)) drop-shadow(0 2px 5px rgba(0,0,0,0.28));
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.48)) drop-shadow(0 2px 6px rgba(0,0,0,0.32));
       will-change: left, top, transform, opacity;
       z-index: 1;
-      animation: loaderFloat var(--ld-dur, 5s) ease-in-out infinite;
-      animation-delay: var(--ld-delay, 0s);
       transition: left 0.9s cubic-bezier(0.76, 0, 0.24, 1),
                   top 0.9s cubic-bezier(0.76, 0, 0.24, 1),
                   transform 0.9s cubic-bezier(0.76, 0, 0.24, 1),
                   opacity 0.6s ease;
     }
-    @keyframes loaderFloat {
-      0%, 100% { transform: translateY(0) rotate(var(--ld-rot, 0deg)); }
-      50%       { transform: translateY(-16px) rotate(var(--ld-rot, 0deg)); }
+    .loader-deco-float {
+      width: 100%; height: 100%;
+      will-change: transform;
+      animation: loaderFloat var(--ld-dur, 5s) ease-in-out infinite;
+      animation-delay: var(--ld-delay, 0s);
     }
-    .loader.swirling .loader-deco {
-      animation: none !important;
+    @keyframes loaderFloat {
+      0%, 100% { transform: translate(0, 0) rotate(var(--ld-rot, 0deg)); }
+      50%       { transform: translate(var(--ld-float-x, 0px), var(--ld-float-y, -12px)) rotate(calc(var(--ld-rot, 0deg) + var(--ld-float-r, 3deg))); }
+    }
+    .loader.swirling .loader-deco-wrap {
       left: 50% !important;
       top: 50% !important;
-      transform: translate(-50%, -50%) scale(0.18) rotate(360deg) !important;
+      transform: translate(calc(-50% + var(--swirl-x, 0px)), calc(-50% + var(--swirl-y, 0px))) scale(var(--swirl-scale, 0.15)) rotate(var(--swirl-rot, 360deg)) !important;
     }
-    .loader.exploding .loader-deco {
-      animation: none !important;
+    .loader.exploding .loader-deco-wrap {
       left: 50% !important;
       top: 50% !important;
       transform: translate(calc(-50% + var(--exp-x, 0px)), calc(-50% + var(--exp-y, 0px))) scale(1.6) rotate(var(--exp-rot, 360deg)) !important;
@@ -1868,23 +1864,8 @@
 </head>
 <body class="is-loading">
   <div class="loader" id="loader">
-    <!-- Bead art stickers décoratifs -->
-    <img class="loader-deco" src="images/image%2037.png" alt="" style="width:138px;top:4%;left:2%;--ld-rot:-15deg;--ld-dur:5.5s;--ld-delay:0s" />
-    <img class="loader-deco" src="images/image%2038.png" alt="" style="width:92px;top:11%;left:22%;--ld-rot:22deg;--ld-dur:4.8s;--ld-delay:-1.2s" />
-    <img class="loader-deco" src="images/image%2039.png" alt="" style="width:128px;top:4%;right:4%;--ld-rot:12deg;--ld-dur:6s;--ld-delay:-2.4s" />
-    <img class="loader-deco" src="images/image%2040.png" alt="" style="width:106px;top:14%;right:18%;--ld-rot:-10deg;--ld-dur:5.2s;--ld-delay:-0.6s" />
-    <img class="loader-deco" src="images/image%2041.png" alt="" style="width:116px;top:38%;left:1%;--ld-rot:8deg;--ld-dur:4.6s;--ld-delay:-1.8s" />
-    <img class="loader-deco" src="images/image%2042.png" alt="" style="width:86px;top:52%;left:13%;--ld-rot:-20deg;--ld-dur:5.8s;--ld-delay:-3s" />
-    <img class="loader-deco" src="images/image%2043.png" alt="" style="width:120px;top:42%;right:2%;--ld-rot:-6deg;--ld-dur:5s;--ld-delay:-0.4s" />
-    <img class="loader-deco" src="images/image%2044.png" alt="" style="width:98px;top:57%;right:15%;--ld-rot:16deg;--ld-dur:4.4s;--ld-delay:-2s" />
-    <img class="loader-deco" src="images/image%2045.png" alt="" style="width:126px;bottom:14%;left:4%;--ld-rot:14deg;--ld-dur:6.2s;--ld-delay:-1s" />
-    <img class="loader-deco" src="images/image%2046.png" alt="" style="width:102px;bottom:6%;left:21%;--ld-rot:-22deg;--ld-dur:4.8s;--ld-delay:-2.8s" />
-    <img class="loader-deco" src="images/image%2047.png" alt="" style="width:118px;bottom:10%;right:5%;--ld-rot:-12deg;--ld-dur:5.4s;--ld-delay:-0.8s" />
-    <img class="loader-deco" src="images/image%2048.png" alt="" style="width:94px;bottom:5%;right:21%;--ld-rot:20deg;--ld-dur:5s;--ld-delay:-1.6s" />
-    <img class="loader-deco" src="images/image%2049.png" alt="" style="width:98px;top:24%;left:6%;--ld-rot:-8deg;--ld-dur:4.6s;--ld-delay:-2.2s" />
-    <img class="loader-deco" src="images/image%2050.png" alt="" style="width:110px;top:32%;right:7%;--ld-rot:18deg;--ld-dur:5.2s;--ld-delay:-0.2s" />
-    <img class="loader-deco" src="images/image%2051.png" alt="" style="width:90px;bottom:28%;left:10%;--ld-rot:-24deg;--ld-dur:5.8s;--ld-delay:-3.4s" />
-    <img class="loader-deco" src="images/image%2052.png" alt="" style="width:113px;bottom:22%;right:10%;--ld-rot:6deg;--ld-dur:4.4s;--ld-delay:-1.4s" />
+    <!-- Bead art stickers décoratifs (générés dynamiquement) -->
+
 
     <div class="loader-inner">
       <p class="loader-kicker">bead studio · MMXXVI</p>
@@ -2419,6 +2400,84 @@
     const loaderPercent = document.getElementById('loaderPercent');
     const startTime = Date.now();
 
+    // Dynamic generation of Y2K bead deco stickers (denser coverage, randomly scattered)
+    const DECO_IMAGES = [
+      'image%2031.png', 'image%2032.png', 'image%2033.png', 'image%2035.png', 'image%2036.png',
+      'image%2037.png', 'image%2038.png', 'image%2039.png', 'image%2040.png', 'image%2041.png',
+      'image%2042.png', 'image%2043.png', 'image%2044.png', 'image%2045.png', 'image%2046.png',
+      'image%2047.png', 'image%2048.png', 'image%2049.png', 'image%2050.png', 'image%2051.png',
+      'image%2052.png', 'image%2053.png', 'image%2054.png', 'image%2055.png', 'image%2057.png',
+      'image%2058.png', 'image%2059.png', 'image%2060.png', 'image%2062.png', 'image%2063.png',
+      'image%2064.png', 'image%2065.png', 'image%2066.png', 'image%2067.png', 'image%2068.png',
+      'image%2069.png', 'image%2072.png', 'image%2073.png', 'image%2075.png', 'image%2076.png',
+      'image%2078.png', 'image%2081.png', 'image%2082.png', 'image%2084.png', 'image%2085.png',
+      'image%2086.png', 'image%2087.png'
+    ];
+
+    const numStickers = 240; // Dense wall of Y2K stickers covering the screen
+    for (let i = 0; i < numStickers; i++) {
+      const imgName = DECO_IMAGES[Math.floor(Math.random() * DECO_IMAGES.length)];
+      
+      const wrap = document.createElement('div');
+      wrap.className = 'loader-deco-wrap';
+      
+      const floatDiv = document.createElement('div');
+      floatDiv.className = 'loader-deco-float';
+      
+      const img = document.createElement('img');
+      img.src = 'images/' + imgName;
+      img.alt = '';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'contain';
+      
+      floatDiv.appendChild(img);
+      wrap.appendChild(floatDiv);
+      
+      // Random coordinates bleeding off-screen (-10% to 110%) for edge-to-edge coverage
+      const top = Math.random() * 120 - 10;
+      const left = Math.random() * 120 - 10;
+      const rot = (Math.random() - 0.5) * 70; // rotation up to +-35deg
+      const dur = Math.random() * 2.5 + 3.5; // duration 3.5s to 6s
+      const delay = Math.random() * -5;
+      
+      // Sizes ranging from 60px to 150px
+      const size = Math.floor(Math.random() * 90) + 60; 
+      
+      // Floating wobble values
+      const floatX = (Math.random() - 0.5) * 20; // -10px to 10px
+      const floatY = -(Math.random() * 10 + 10); // -10px to -20px
+      const floatR = (Math.random() - 0.5) * 12; // -6deg to 6deg
+      
+      wrap.style.width = size + 'px';
+      wrap.style.height = size + 'px';
+      wrap.style.top = top.toFixed(1) + '%';
+      wrap.style.left = left.toFixed(1) + '%';
+      
+      wrap.style.setProperty('--ld-rot', rot.toFixed(1) + 'deg');
+      wrap.style.setProperty('--ld-dur', dur.toFixed(2) + 's');
+      wrap.style.setProperty('--ld-delay', delay.toFixed(2) + 's');
+      
+      wrap.style.setProperty('--ld-float-x', floatX.toFixed(1) + 'px');
+      wrap.style.setProperty('--ld-float-y', floatY.toFixed(1) + 'px');
+      wrap.style.setProperty('--ld-float-r', floatR.toFixed(1) + 'deg');
+      
+      // Swirl targets around the center
+      const swirlAngle = Math.random() * Math.PI * 2;
+      const swirlRadius = Math.random() * 60; // 0px to 60px cluster
+      const swirlX = Math.cos(swirlAngle) * swirlRadius;
+      const swirlY = Math.sin(swirlAngle) * swirlRadius;
+      const swirlScale = Math.random() * 0.08 + 0.12; // scale 0.12 to 0.20
+      const swirlRot = 720 + (Math.random() - 0.5) * 360; // 540deg to 900deg
+      
+      wrap.style.setProperty('--swirl-x', swirlX.toFixed(1) + 'px');
+      wrap.style.setProperty('--swirl-y', swirlY.toFixed(1) + 'px');
+      wrap.style.setProperty('--swirl-scale', swirlScale.toFixed(2));
+      wrap.style.setProperty('--swirl-rot', swirlRot.toFixed(1) + 'deg');
+      
+      loader.insertBefore(wrap, loader.querySelector('.loader-inner'));
+    }
+
     const allImages = [...loader.querySelectorAll('img')];
     const total = allImages.length;
     let loaded = 0;
@@ -2450,19 +2509,19 @@
         loader.classList.add('swirling');
         
         // Stagger the swirl transition delays for each charm
-        const decos = loader.querySelectorAll('.loader-deco');
+        const decos = loader.querySelectorAll('.loader-deco-wrap');
         decos.forEach((deco, index) => {
-          deco.style.transitionDelay = (index * 22) + 'ms';
+          deco.style.transitionDelay = (index * 4) + 'ms';
         });
         
         // Start Explosion Phase after swirl is complete (takes ~0.9s + stagger time)
-        const swirlDuration = 900 + (decos.length * 22);
+        const swirlDuration = 900 + (decos.length * 4);
         
         setTimeout(() => {
           // Prepare explosion parameters on each charm
           decos.forEach((deco) => {
             const angle = Math.random() * Math.PI * 2;
-            const dist = Math.max(window.innerWidth, window.innerHeight) * 0.75 + Math.random() * 200;
+            const dist = Math.max(window.innerWidth, window.innerHeight) * 0.9 + Math.random() * 300;
             const x = Math.round(Math.cos(angle) * dist);
             const y = Math.round(Math.sin(angle) * dist);
             const rot = Math.round((Math.random() - 0.5) * 720);

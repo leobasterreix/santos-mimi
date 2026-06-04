@@ -1949,37 +1949,43 @@
       return x > 28 && x < 72 && y > 26 && y < 65;
     }
 
-    // Grille souple : on divise le hero en cellules et on place 1 breloque par cellule
-    // avec décalage aléatoire → distribution uniforme garantie
-    const COLS = 7, ROWS = 6;
+    // Grille 6×5 : chaque cellule a 70% de chance d'avoir une breloque
+    // → espaces aléatoires naturels sans vide trop grand
+    const COLS = 6, ROWS = 5;
     const placed = [];
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
-        // Position de base : centre de la cellule
-        const bx = (col + 0.5) / COLS * 100;
-        const by = (row + 0.5) / ROWS * 100;
-        // Décalage aléatoire dans la cellule (±40% de la taille de cellule)
-        const jx = (Math.random() - 0.5) * (100 / COLS) * 0.8;
-        const jy = (Math.random() - 0.5) * (100 / ROWS) * 0.8;
-        const x  = Math.min(Math.max(bx + jx, 2), 98);
-        const y  = Math.min(Math.max(by + jy, 2), 98);
+        if (Math.random() < 0.28) continue; // 28% de chance de skip = espaces propres
+        const cellW = 100 / COLS;
+        const cellH = 100 / ROWS;
+        // Position de base au centre de la cellule
+        const bx = (col + 0.5) * cellW;
+        const by = (row + 0.5) * cellH;
+        // Décalage aléatoire dans la cellule (±30% max) → propre mais vivant
+        const jx = (Math.random() - 0.5) * cellW * 0.6;
+        const jy = (Math.random() - 0.5) * cellH * 0.6;
+        const x  = Math.min(Math.max(bx + jx, 3), 97);
+        const y  = Math.min(Math.max(by + jy, 3), 97);
         placed.push({ x, y });
       }
     }
-    // Quelques breloques bonus sur les bords pour densifier les extrêmes
+    // Quelques extras sur les bords pour les remplir
     const EDGE_EXTRAS = [
-      {x: 1,  y: Math.random()*90+5},  {x: 99, y: Math.random()*90+5},
-      {x: Math.random()*90+5, y: 1},   {x: Math.random()*90+5, y: 99},
-      {x: 3,  y: Math.random()*60+20}, {x: 97, y: Math.random()*60+20},
+      { x: 2,  y: 10 + Math.random() * 80 },
+      { x: 98, y: 10 + Math.random() * 80 },
+      { x: 10 + Math.random() * 30, y: 2  },
+      { x: 60 + Math.random() * 30, y: 2  },
+      { x: 10 + Math.random() * 30, y: 98 },
+      { x: 60 + Math.random() * 30, y: 98 },
     ];
     placed.push(...EDGE_EXTRAS);
 
     placed.forEach((p, i) => {
       const isSub  = underTitle(p.x, p.y);
       const size   = isSub
-        ? Math.round(44 + Math.random() * 28)    // sous le titre : 44–72 px
-        : Math.round(85 + Math.random() * 75);   // ailleurs      : 85–160 px
-      const opacity = isSub ? (0.05 + Math.random() * 0.07) : (0.82 + Math.random() * 0.18);
+        ? Math.round(48 + Math.random() * 32)    // sous le titre : 48–80 px
+        : Math.round(90 + Math.random() * 70);   // ailleurs      : 90–160 px
+      const opacity = 1;
       const rot   = Math.round((Math.random() - 0.5) * 56);
       const shape = PATCH_SHAPES[Math.floor(Math.random() * PATCH_SHAPES.length)];
       const z     = isSub ? 1 : (Math.floor(Math.random() * 4) + 2);

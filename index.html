@@ -1392,21 +1392,27 @@
       box-shadow: 0 8px 20px rgba(107, 45, 122, 0.16);
     }
     .m-front {
+      background: none;
+      box-shadow: none;
+    }
+    .m-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .m-back {
+      transform: rotateY(180deg);
       background:
         radial-gradient(circle at 30% 28%, #ffd9ec 0%, transparent 55%),
         linear-gradient(135deg, var(--pink-hot), var(--purple) 60%, var(--teal-deep));
     }
-    .m-front::after {
-      content: '&';
-      font-family: 'Parisienne', cursive; font-style: italic;
-      font-size: 2rem; color: rgba(255, 255, 255, 0.9);
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    .m-back img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 15%;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
     }
-    .m-back {
-      transform: rotateY(180deg);
-      background: rgba(255, 247, 237, 0.96);
-    }
-    .m-back img { width: 100%; height: 100%; object-fit: contain; padding: 10%; }
     .memory-card.matched .m-face {
       box-shadow: 0 0 0 2px var(--turquoise), 0 8px 22px rgba(45, 212, 191, 0.5);
     }
@@ -2383,7 +2389,7 @@
       const winEl = document.getElementById('memWin');
       const winMovesEl = document.getElementById('memWinMoves');
       const resetBtn = document.getElementById('memReset');
-      let first, second, lock, moves, pairs, currentRoundSVGs;
+      let first, second, lock, moves, pairs;
 
       function build() {
         first = null; second = null; lock = false; moves = 0; pairs = 0;
@@ -2391,33 +2397,38 @@
         pairsEl.textContent = '0';
         winEl.hidden = true;
         
-        // Randomly pick 6 unique SVGs from the pool of 12
-        const pool = [...ALL_SVGS];
-        for (let i = pool.length - 1; i > 0; i--) {
+        // 1. Shuffled fronts (6 pairs of bead embroidery PNGs)
+        const PERLES = ['image%2042.png', 'image%2048.png', 'image%2055.png', 'image%2066.png', 'image%2073.png', 'image%2084.png'];
+        const deckFronts = [...PERLES, ...PERLES];
+        for (let i = deckFronts.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [pool[i], pool[j]] = [pool[j], pool[i]];
+          [deckFronts[i], deckFronts[j]] = [deckFronts[j], deckFronts[i]];
         }
-        currentRoundSVGs = pool.slice(0, 6);
 
-        const deck = [...currentRoundSVGs, ...currentRoundSVGs];
-        for (let i = deck.length - 1; i > 0; i--) {
+        // 2. Shuffled backs (12 unique custom SVGs)
+        const deckBacks = [...ALL_SVGS];
+        for (let i = deckBacks.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [deck[i], deck[j]] = [deck[j], deck[i]];
+          [deckBacks[i], deckBacks[j]] = [deckBacks[j], deckBacks[i]];
         }
+
         grid.innerHTML = '';
-        deck.forEach(src => {
+        for (let i = 0; i < 12; i++) {
+          const frontImg = deckFronts[i];
+          const backSvg = deckBacks[i];
+
           const card = document.createElement('button');
           card.type = 'button';
           card.className = 'memory-card';
-          card.dataset.img = src;
+          card.dataset.img = frontImg;
           card.innerHTML =
             '<span class="m-inner">' +
-              '<span class="m-face m-front"></span>' +
-              '<span class="m-face m-back"><img src="images/' + src + '" alt=""></span>' +
+              '<span class="m-face m-front"><img src="images/' + backSvg + '" alt=""></span>' +
+              '<span class="m-face m-back"><img src="images/' + frontImg + '" alt=""></span>' +
             '</span>';
           card.addEventListener('click', () => flip(card));
           grid.appendChild(card);
-        });
+        }
       }
 
       function flip(card) {
@@ -2435,7 +2446,7 @@
             a.classList.add('matched'); b.classList.add('matched');
             a.classList.remove('flipped'); b.classList.remove('flipped');
             pairs++; pairsEl.textContent = pairs;
-            if (pairs === currentRoundSVGs.length) { winMovesEl.textContent = moves; winEl.hidden = false; }
+            if (pairs === 6) { winMovesEl.textContent = moves; winEl.hidden = false; }
           }, 450);
         } else {
           lock = true;

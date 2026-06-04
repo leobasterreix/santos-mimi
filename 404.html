@@ -110,28 +110,6 @@
       z-index: 2;
     }
 
-    .stage-backdrop {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Outfit', Impact, "Arial Black", sans-serif;
-      font-weight: 900;
-      font-size: var(--font-size);
-      color: rgba(2, 12, 18, 0.72);
-      text-shadow: 
-        0 0 15px rgba(34, 211, 238, 0.15),
-        0 0 35px rgba(14, 116, 144, 0.35);
-      pointer-events: none;
-      user-select: none;
-      z-index: 1;
-      line-height: 1;
-      text-align: center;
-      opacity: 0;
-      animation: fadeInBackdrop 2.0s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-    }
-
     /* Bead gathering from all directions */
     @keyframes gatherBeads {
       0% {
@@ -151,11 +129,6 @@
     @keyframes cellFloat {
       0%, 100% { transform: translateY(0px) rotate(var(--targetRot)); }
       50%       { transform: translateY(-6px) rotate(var(--targetRot)); }
-    }
-
-    @keyframes fadeInBackdrop {
-      from { opacity: 0; transform: scale(0.96); }
-      to   { opacity: 1; transform: scale(1); }
     }
 
     .subtitle {
@@ -228,7 +201,7 @@
 
   function build() {
     const stage = document.getElementById('stage');
-    stage.innerHTML = '<div class="stage-backdrop" id="stageBackdrop">404</div>';
+    stage.innerHTML = ''; // Clear stage in case of re-runs
 
     /* Stage dimensions */
     const maxH = window.innerHeight - 170;
@@ -236,10 +209,9 @@
     const H = Math.round(W * 0.34);
     stage.style.width  = W + 'px';
     stage.style.height = H + 'px';
-    stage.style.setProperty('--font-size', `${Math.round(H * 0.88)}px`);
 
-    /* Grid cell size — size of each charm (made slightly smaller for higher resolution) */
-    const cell = Math.round(Math.min(80, Math.max(50, H / 6.0)));
+    /* Grid cell size — size of each charm (made smaller for much higher definition shape) */
+    const cell = Math.round(Math.min(50, Math.max(28, H / 9.0)));
 
     /* Canvas sampling to find points inside the '404' text */
     const canvas = document.createElement('canvas');
@@ -269,8 +241,8 @@
       return pixels[idx] > 128; // check red channel of the white text
     }
 
-    /* Grid spacing of charms. Slightly looser for better definition */
-    const spacing = cell * 0.62; 
+    /* Grid spacing of charms. Denser grid for precise letter contours */
+    const spacing = cell * 0.50; 
     const points = [];
 
     for (let y = spacing / 2; y < H; y += spacing) {

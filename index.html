@@ -788,62 +788,108 @@
       text-transform: uppercase; opacity: 0.6; color: var(--ruby);
     }
 
-    /* ─── Playlist (sélection des vinyles) ───────────────── */
+    /* ─── Playlist : plein de petits vinyles à cliquer ───── */
     .playlist {
       list-style: none;
-      margin: 1.4rem 0 0;
+      margin: 1.5rem 0 0;
       padding: 0;
-      display: flex; flex-direction: column;
-      gap: 0.35rem;
-      max-width: 460px;
+      display: flex; flex-wrap: wrap;
+      gap: 1.1rem 1rem;
+      max-width: 480px;
     }
     .track {
-      display: flex; align-items: center; gap: 0.85rem;
-      padding: 0.55rem 0.9rem;
-      border-radius: 14px;
-      background: rgba(139, 30, 43, 0.04);
-      border: 1px solid transparent;
+      width: 84px;
+      display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
       cursor: none;
-      transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+      background: none; border: none; padding: 0;
     }
-    .track:hover { background: rgba(196, 30, 58, 0.10); transform: translateX(4px); }
-    .track.active {
-      background: linear-gradient(100deg, rgba(196, 30, 58, 0.16), rgba(214, 51, 132, 0.08));
-      border-color: rgba(196, 30, 58, 0.32);
+    .track-vinyl {
+      position: relative;
+      width: 72px; height: 72px;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .track-num {
-      font-family: 'Londrina Solid', sans-serif;
-      font-size: 0.9rem; letter-spacing: 0.08em;
-      color: var(--ruby); opacity: 0.45;
-      width: 1.6rem; text-align: center; flex-shrink: 0;
+    .track:hover .track-vinyl { transform: translateY(-4px) scale(1.06); }
+    .track-disc {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      background-color: #0a050e;
+      background-image:
+        radial-gradient(ellipse 75% 52% at 30% 26%,
+          rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 28%, transparent 58%),
+        repeating-radial-gradient(circle at 50% 50%,
+          transparent 0, transparent 3.5px,
+          rgba(0,0,0,0.55) 3.5px, rgba(0,0,0,0.55) 4.5px),
+        radial-gradient(circle, #1c1428 0%, #0a050e 78%, #020004 100%);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.6),
+        0 8px 18px rgba(0,0,0,0.45),
+        inset 0 0 18px rgba(0,0,0,0.5);
     }
-    .track.active .track-num { opacity: 1; color: var(--ruby-bright); }
+    /* pastille centrale du vinyle */
+    .track-disc::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      width: 38%; height: 38%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--magenta) 0%, var(--ruby) 70%, var(--ruby) 100%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+      transition: background 0.3s ease;
+    }
+    .track-disc::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      width: 5px; height: 5px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: var(--cream);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+      z-index: 2;
+    }
+    .track.active .track-vinyl {
+      box-shadow: 0 0 0 3px var(--cream), 0 0 0 5px rgba(217, 119, 6, 0.7);
+      border-radius: 50%;
+    }
+    .track.active .track-disc::before {
+      background: radial-gradient(circle, var(--gold) 0%, var(--ruby-bright) 75%);
+    }
+    .track.active.playing .track-disc { animation: spin 2.4s linear infinite; }
+    /* mini égaliseur posé sur le vinyle quand ça joue */
     .track-eq {
-      width: 16px; height: 14px; flex-shrink: 0;
-      display: none; align-items: flex-end; gap: 2px;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px; height: 16px;
+      display: none; align-items: flex-end; justify-content: center; gap: 2px;
+      z-index: 3; pointer-events: none;
     }
     .track.active.playing .track-eq { display: flex; }
-    .track.active.playing .track-num { display: none; }
+    .track.active.playing .track-disc::before { opacity: 0.35; }
     .track-eq span {
       width: 3px; height: 30%;
-      background: var(--ruby-bright); border-radius: 2px;
+      background: var(--cream); border-radius: 2px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.5);
       animation: eq 0.85s ease-in-out infinite;
     }
     .track-eq span:nth-child(2) { animation-delay: 0.22s; }
     .track-eq span:nth-child(3) { animation-delay: 0.44s; }
     @keyframes eq { 0%,100% { height: 25%; } 50% { height: 100%; } }
-    .track-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .track-info {
+      display: flex; flex-direction: column; align-items: center; gap: 1px;
+      width: 100%; text-align: center;
+    }
     .track-title {
       font-family: 'Parisienne', cursive;
-      font-size: 1.3rem; line-height: 1; color: var(--ink);
+      font-size: 1.05rem; line-height: 1.05; color: var(--ink);
+      max-width: 100%;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       transition: color 0.25s ease;
     }
     .track.active .track-title { color: var(--ruby-bright); }
     .track-artist {
       font-family: 'Londrina Solid', sans-serif;
-      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--ruby); opacity: 0.7;
+      font-size: 0.52rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ruby); opacity: 0.65;
+      max-width: 100%;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
@@ -1291,6 +1337,19 @@
     .mini-player.entering {
       transform: translateY(40px); opacity: 0;
     }
+    /* Bulle réduite quand rien ne joue : il ne reste que le bouton play */
+    .mini-player.collapsed {
+      padding: 0.4rem;
+      gap: 0;
+    }
+    .mini-player.collapsed .mini-btn,
+    .mini-player.collapsed .mini-info {
+      width: 0; max-width: 0; min-width: 0;
+      margin-left: 0; margin-right: 0;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
     .mini-notes {
       position: absolute;
       left: 14px; right: 0; top: 0; bottom: 0;
@@ -1307,8 +1366,12 @@
       font-size: 0.78rem;
       display: flex; align-items: center; justify-content: center;
       cursor: none;
-      transition: background 0.2s ease, transform 0.2s ease;
+      transition: background 0.2s ease, transform 0.2s ease,
+                  width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                  max-width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity 0.3s ease, margin 0.4s ease;
       padding: 0; line-height: 1;
+      flex-shrink: 0;
     }
     .mini-btn:hover { background: rgba(196, 30, 58, 0.22); transform: scale(1.12); }
     .mini-play {
@@ -1342,6 +1405,8 @@
       min-width: 130px; max-width: 200px;
       margin-left: 0.3rem;
       overflow: visible;
+      transition: max-width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                  opacity 0.3s ease, margin 0.4s ease;
     }
     .mini-track {
       font-family: 'Parisienne', cursive;
@@ -1589,7 +1654,7 @@
   <canvas class="ripples"></canvas>
   <canvas class="particles"></canvas>
 
-  <div class="mini-player entering" id="miniPlayer" aria-label="Player musique">
+  <div class="mini-player entering collapsed" id="miniPlayer" aria-label="Player musique">
     <div class="mini-notes" id="miniNotes" aria-hidden="true"></div>
     <button class="mini-btn" id="miniBack" type="button" aria-label="Piste précédente">«</button>
     <button class="mini-play" id="miniPlayBtn" type="button" aria-label="Lecture/Pause">
@@ -2151,6 +2216,7 @@
     const noteField = document.getElementById('noteField');
     const miniNotes = document.getElementById('miniNotes');
     const miniTrack = document.getElementById('miniTrack');
+    const miniPlayer = document.getElementById('miniPlayer');
     let currentTrack = 0;
 
     let rotation = 0;
@@ -2237,6 +2303,7 @@
     function setUIPlaying(playing) {
       isPlaying = playing;
       miniPlayBtn.classList.toggle('playing', playing);
+      miniPlayer.classList.toggle('collapsed', !playing); // bulle ouverte si ça joue, réduite sinon
       if (playing) startNotes(); else stopNotes();
       highlightActive();
     }
@@ -2270,8 +2337,10 @@
       const li = document.createElement('li');
       li.className = 'track';
       li.innerHTML =
-        `<span class="track-num">${String(i + 1).padStart(2, '0')}</span>` +
-        `<span class="track-eq"><span></span><span></span><span></span></span>` +
+        `<span class="track-vinyl">` +
+          `<span class="track-disc"></span>` +
+          `<span class="track-eq"><span></span><span></span><span></span></span>` +
+        `</span>` +
         `<span class="track-info">` +
           `<span class="track-title">${t.title}</span>` +
           `<span class="track-artist">${t.artist}</span>` +

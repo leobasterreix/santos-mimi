@@ -1140,7 +1140,7 @@
       -webkit-filter: blur(0);
       will-change: transform;
     }
-    .patch-card.flipped .patch-inner { transform: rotateY(180deg) translate3d(0, 0, 0); }
+    .patch-card.flipped .patch-inner { transform: rotateY(180deg); }
     .patch-front, .patch-back {
       border-radius: inherit;
       -webkit-backface-visibility: hidden;
@@ -1153,13 +1153,11 @@
       backdrop-filter: blur(14px) saturate(160%);
       -webkit-backdrop-filter: blur(14px) saturate(160%);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
     }
     .patch-back {
       position: absolute; inset: 0;
-      transform: rotateY(180deg) translate3d(0, 0, 0);
-      -webkit-transform: rotateY(180deg) translate3d(0, 0, 0);
+      transform: rotateY(180deg);
+      -webkit-transform: rotateY(180deg);
       overflow: hidden;
       background: #120b05;
       display: flex;
@@ -1167,10 +1165,6 @@
     .patch-back img {
       width: 100%; height: 100%;
       object-fit: cover; display: block;
-      /* Fix pixelation/blur in WebKit 3D rotations */
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
     }
 
     @media (max-width: 768px) {
@@ -1745,13 +1739,13 @@
       will-change: transform;
     }
     .memory-card:hover .m-inner {
-      transform: scale(1.06) translate3d(0, 0, 0);
+      transform: scale(1.06);
     }
     .memory-card.flipped .m-inner {
-      transform: rotateY(180deg) scale(1.06) translate3d(0, 0, 0);
+      transform: rotateY(180deg) scale(1.06);
     }
     .memory-card.matched .m-inner {
-      transform: rotateY(180deg) scale(1) translate3d(0, 0, 0);
+      transform: rotateY(180deg) scale(1);
     }
     .m-face {
       position: absolute; inset: 0;
@@ -1762,36 +1756,21 @@
       box-shadow: 0 4px 16px rgba(107, 45, 122, 0.08);
     }
     .m-front {
-      background: rgba(255, 247, 237, 0.85);
-      border: 1.5px solid rgba(255, 255, 255, 0.45);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
+      background: #ffffff;
+      border: 3.5px solid var(--purple);
+      box-sizing: border-box;
+      box-shadow: 0 6px 18px rgba(107, 45, 122, 0.15);
       overflow: visible !important;
     }
-    @media (min-width: 769px) {
-      .m-front {
-        background: rgba(255, 255, 255, 0.35);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-      }
-    }
     .memory-card:hover .m-front {
-      border-color: rgba(255, 255, 255, 0.8);
-      background: rgba(255, 247, 237, 0.95);
-    }
-    @media (min-width: 769px) {
-      .memory-card:hover .m-front {
-        background: rgba(255, 255, 255, 0.5);
-      }
+      border-color: var(--pink-hot);
+      background: #ffffff;
+      box-shadow: 0 10px 24px rgba(255, 0, 127, 0.22);
     }
     .m-front img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
     }
     .m-front svg {
       width: 90% !important;
@@ -1804,16 +1783,13 @@
       /* Keep vectors sharp during animation */
       image-rendering: -webkit-optimize-contrast;
       image-rendering: crisp-edges;
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
     }
     .memory-card:hover .m-front svg {
-      transform: scale(1.08) translate3d(0, 0, 0);
+      transform: scale(1.08);
     }
     .m-back {
-      transform: rotateY(180deg) translate3d(0, 0, 0);
-      -webkit-transform: rotateY(180deg) translate3d(0, 0, 0);
+      transform: rotateY(180deg);
+      -webkit-transform: rotateY(180deg);
       background:
         radial-gradient(circle at 30% 28%, var(--pastel-light, #ffd9ec) 0%, transparent 55%),
         linear-gradient(135deg, var(--pastel-1, var(--pink-hot)), var(--pastel-2, var(--purple)) 60%, var(--teal-deep));
@@ -1829,10 +1805,6 @@
       height: auto;
       object-fit: contain;
       filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
-      /* Fix resolution loss on Mobile WebKit */
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
     }
     .memory-card.matched .m-face {
       box-shadow: 0 0 0 2px var(--turquoise), 0 6px 18px rgba(45, 212, 191, 0.3);

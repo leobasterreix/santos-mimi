@@ -2416,6 +2416,9 @@
           // Remplacement des couleurs par regex insensible à la casse
           text = text.replace(/fill="#9a2fa5"/ig, `fill="${pastel1}"`);
           text = text.replace(/fill="#ff98c3"/ig, `fill="${pastel2}"`);
+          // Enlever la largeur et hauteur absolues pour que le SVG s'adapte à la boîte flex/grid
+          text = text.replace(/(<svg[^>]*)\swidth="[0-9]+"/i, '$1');
+          text = text.replace(/(<svg[^>]*)\sheight="[0-9]+"/i, '$1');
           svgCache[fileName] = text;
           return text;
         } catch (e) {

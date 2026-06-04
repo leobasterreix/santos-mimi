@@ -68,19 +68,6 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
-    /* ─── Scroll-snap par section ────────────────────────────
-       proximity (pas mandatory) : on accroche au début de chaque
-       section quand on s'en approche, sans bloquer la lecture des
-       sections plus hautes que l'écran. scroll-padding réserve la
-       place de la pastille de nav flottante. */
-    @media (min-width: 821px) and (prefers-reduced-motion: no-preference) {
-      html {
-        scroll-snap-type: y proximity;
-        scroll-padding-top: 5rem;
-      }
-      .hero, section, footer { scroll-snap-align: start; }
-    }
-
     /* Images non sélectionnables / non déplaçables */
     img {
       -webkit-user-select: none;

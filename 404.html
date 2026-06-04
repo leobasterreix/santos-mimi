@@ -102,7 +102,6 @@
       top: var(--top);
       transform-origin: center center;
       pointer-events: none;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
       /* Gather first, then float */
       animation: 
         gatherBeads 2.0s cubic-bezier(0.19, 1, 0.22, 1) both,
@@ -210,54 +209,48 @@
     stage.style.width  = W + 'px';
     stage.style.height = H + 'px';
 
-    /* Grid cell size — size of each charm (made smaller for much higher definition shape) */
-    const cell = Math.round(Math.min(50, Math.max(28, H / 9.0)));
+    /* Grid cell size — size of each charm */
+    const cell = Math.round(Math.min(58, Math.max(38, H / 7.8)));
 
-    /* Canvas sampling to find points inside the '404' text */
-    const canvas = document.createElement('canvas');
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
+    /* Stroke paths of '404' in a 1000x340 coordinate system */
+    const pathData = [
+      // First '4'
+      "M 210,50 L 80,230 L 260,230",
+      "M 200,80 L 200,290",
+      // '0'
+      "M 500,50 A 120,120 0 1,0 500,290 A 120,120 0 1,0 500,50 Z",
+      // Second '4'
+      "M 830,50 L 700,230 L 880,230",
+      "M 820,80 L 820,290"
+    ];
 
-    // Fill background with black
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, W, H);
-
-    // Draw '404' in white. Use a bold Outfit font
-    ctx.fillStyle = '#fff';
-    ctx.font = `900 ${Math.round(H * 0.88)}px "Outfit", Impact, "Arial Black", sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('404', W / 2, H * 0.52);
-
-    // Get pixel data
-    const imgData = ctx.getImageData(0, 0, W, H);
-    const pixels = imgData.data;
-
-    function isInsideText(x, y) {
-      x = Math.max(0, Math.min(W - 1, Math.round(x)));
-      y = Math.max(0, Math.min(H - 1, Math.round(y)));
-      const idx = (y * W + x) * 4;
-      return pixels[idx] > 128; // check red channel of the white text
-    }
-
-    /* Grid spacing of charms. Denser grid for precise letter contours */
-    const spacing = cell * 0.50; 
     const points = [];
+    const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const step = cell * 0.55; // Distance between bead centers along the strokes
 
-    for (let y = spacing / 2; y < H; y += spacing) {
-      for (let x = spacing / 2; x < W; x += spacing) {
-        // Add subtle organic jitter
-        const jx = (Math.random() - 0.5) * spacing * 0.15;
-        const jy = (Math.random() - 0.5) * spacing * 0.15;
-        const px = x + jx;
-        const py = y + jy;
-
-        if (isInsideText(px, py)) {
-          points.push({ x: px, y: py });
-        }
+    pathData.forEach(d => {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d);
+      tempSvg.appendChild(path);
+      
+      const totalLength = path.getTotalLength();
+      const numPoints = Math.max(3, Math.round(totalLength / step));
+      
+      for (let i = 0; i <= numPoints; i++) {
+        const length = (i / numPoints) * totalLength;
+        const pt = path.getPointAtLength(length);
+        
+        // Scale coordinate space (1000x340) to actual stage dimensions W and H
+        const px = (pt.x / 1000) * W;
+        const py = (pt.y / 340) * H;
+        
+        // Add subtle organic jitter for a handmade embroidery feel
+        const jx = (Math.random() - 0.5) * cell * 0.08;
+        const jy = (Math.random() - 0.5) * cell * 0.08;
+        
+        points.push({ x: px + jx, y: py + jy });
       }
-    }
+    });
 
     /* Shuffle images to randomly distribute them */
     const deck = [...IMGS];

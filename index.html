@@ -782,34 +782,90 @@
       pointer-events: none;
     }
 
-    .play-btn {
-      margin-top: 1.4rem;
-      display: inline-flex; align-items: center; gap: 0.7rem;
-      padding: 0.75rem 1.4rem;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--ruby-bright), var(--magenta), var(--purple));
-      color: white; border: none;
-      font-family: 'Londrina Solid', sans-serif;
-      font-size: 0.78rem; letter-spacing: 0.22em;
-      text-transform: uppercase;
-      cursor: none;
-      box-shadow: 0 10px 24px rgba(196, 30, 58, 0.36);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .play-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(196, 30, 58, 0.45); }
-    .play-btn .pic { width: 0; height: 0;
-      border-top: 6px solid transparent; border-bottom: 6px solid transparent;
-      border-left: 9px solid #fff;
-    }
-    .play-btn.playing .pic {
-      width: 8px; height: 12px;
-      border: 0;
-      background: linear-gradient(90deg, #fff 0 35%, transparent 35% 65%, #fff 65% 100%);
-    }
     .music-meta {
       margin-top: 0.6rem;
       font-size: 0.72rem; letter-spacing: 0.25em;
       text-transform: uppercase; opacity: 0.6; color: var(--ruby);
+    }
+
+    /* ─── Playlist (sélection des vinyles) ───────────────── */
+    .playlist {
+      list-style: none;
+      margin: 1.4rem 0 0;
+      padding: 0;
+      display: flex; flex-direction: column;
+      gap: 0.35rem;
+      max-width: 460px;
+    }
+    .track {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 0.55rem 0.9rem;
+      border-radius: 14px;
+      background: rgba(139, 30, 43, 0.04);
+      border: 1px solid transparent;
+      cursor: none;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    }
+    .track:hover { background: rgba(196, 30, 58, 0.10); transform: translateX(4px); }
+    .track.active {
+      background: linear-gradient(100deg, rgba(196, 30, 58, 0.16), rgba(214, 51, 132, 0.08));
+      border-color: rgba(196, 30, 58, 0.32);
+    }
+    .track-num {
+      font-family: 'Londrina Solid', sans-serif;
+      font-size: 0.9rem; letter-spacing: 0.08em;
+      color: var(--ruby); opacity: 0.45;
+      width: 1.6rem; text-align: center; flex-shrink: 0;
+    }
+    .track.active .track-num { opacity: 1; color: var(--ruby-bright); }
+    .track-eq {
+      width: 16px; height: 14px; flex-shrink: 0;
+      display: none; align-items: flex-end; gap: 2px;
+    }
+    .track.active.playing .track-eq { display: flex; }
+    .track.active.playing .track-num { display: none; }
+    .track-eq span {
+      width: 3px; height: 30%;
+      background: var(--ruby-bright); border-radius: 2px;
+      animation: eq 0.85s ease-in-out infinite;
+    }
+    .track-eq span:nth-child(2) { animation-delay: 0.22s; }
+    .track-eq span:nth-child(3) { animation-delay: 0.44s; }
+    @keyframes eq { 0%,100% { height: 25%; } 50% { height: 100%; } }
+    .track-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .track-title {
+      font-family: 'Parisienne', cursive;
+      font-size: 1.3rem; line-height: 1; color: var(--ink);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: color 0.25s ease;
+    }
+    .track.active .track-title { color: var(--ruby-bright); }
+    .track-artist {
+      font-family: 'Londrina Solid', sans-serif;
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ruby); opacity: 0.7;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ─── Notes de musique qui s'envolent ────────────────── */
+    .note-field {
+      position: absolute; inset: 0;
+      pointer-events: none; overflow: visible;
+      z-index: 6;
+    }
+    .music-note {
+      position: absolute;
+      opacity: 0;
+      will-change: transform, opacity;
+      text-shadow: 0 2px 10px rgba(196, 30, 58, 0.35);
+      animation-name: note-fly;
+      animation-timing-function: ease-out;
+      animation-fill-mode: forwards;
+    }
+    @keyframes note-fly {
+      0%   { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(0.5); }
+      18%  { opacity: 0.95; }
+      100% { opacity: 0; transform: translate(var(--dx, 0), -160px) rotate(var(--rot, 0deg)) scale(1.2); }
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -1235,6 +1291,12 @@
     .mini-player.entering {
       transform: translateY(40px); opacity: 0;
     }
+    .mini-notes {
+      position: absolute;
+      left: 14px; right: 0; top: 0; bottom: 0;
+      pointer-events: none; overflow: visible;
+      z-index: 2;
+    }
     .mini-btn {
       width: 30px; height: 30px;
       border-radius: 50%;
@@ -1277,15 +1339,25 @@
     .mini-info {
       display: flex; flex-direction: column;
       gap: 4px;
-      min-width: 120px; max-width: 170px;
+      min-width: 130px; max-width: 200px;
       margin-left: 0.3rem;
+      overflow: visible;
     }
     .mini-track {
       font-family: 'Parisienne', cursive;
-      font-size: 1rem; font-weight: 700;
+      font-size: 1.05rem; font-weight: 700;
       color: var(--ruby);
-      line-height: 1;
+      line-height: 1.05;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transform-origin: left center;
+    }
+    /* le nom se glisse et tourne pour bien se lire à chaque changement de piste */
+    .mini-track.swap { animation: track-swap 0.75s cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes track-swap {
+      0%   { opacity: 0; transform: translateY(16px) rotate(-9deg); }
+      55%  { opacity: 1; transform: translateY(0) rotate(4deg); }
+      80%  { transform: translateY(0) rotate(-1.5deg); }
+      100% { opacity: 1; transform: translateY(0) rotate(0deg); }
     }
     .mini-bar-wrap {
       height: 3px;
@@ -1518,13 +1590,14 @@
   <canvas class="particles"></canvas>
 
   <div class="mini-player entering" id="miniPlayer" aria-label="Player musique">
-    <button class="mini-btn" id="miniBack" type="button" aria-label="Recule 10s">«</button>
+    <div class="mini-notes" id="miniNotes" aria-hidden="true"></div>
+    <button class="mini-btn" id="miniBack" type="button" aria-label="Piste précédente">«</button>
     <button class="mini-play" id="miniPlayBtn" type="button" aria-label="Lecture/Pause">
       <span class="pic" aria-hidden="true"></span>
     </button>
-    <button class="mini-btn" id="miniFwd" type="button" aria-label="Avance 10s">»</button>
+    <button class="mini-btn" id="miniFwd" type="button" aria-label="Piste suivante">»</button>
     <div class="mini-info">
-      <div class="mini-track">Iko Iko · Justin Wellington</div>
+      <div class="mini-track" id="miniTrack">Iko Iko · Justin Wellington</div>
       <div class="mini-bar-wrap" id="miniBarWrap"><div class="mini-bar" id="miniBar"></div></div>
     </div>
   </div>
@@ -1854,17 +1927,14 @@
     </div>
 
     <div class="container about">
-      <div>
+      <div class="bo-left">
         <h2>Un duo, deux <em>regards</em> · une bande son.</h2>
         <p>
           On a toujours travaillé en musique. Une playlist commencée en 2018,
-          jamais refermée depuis. Aujourd'hui c'est le tube qui tournait en
-          boucle l'été où on s'est rencontrés — clique sur le vinyle.
+          jamais refermée depuis. Choisis un vinyle, pose-le sur la platine —
+          et laisse-le tourner.
         </p>
-        <button class="play-btn" id="playBtn" type="button">
-          <span class="pic" aria-hidden="true"></span>
-          <span class="play-text">play our song</span>
-        </button>
+        <ul class="playlist" id="playlist" aria-label="Playlist Santos &amp; Mimi"></ul>
         <p class="music-meta">side a · santos &amp; mimi mix</p>
       </div>
       <div class="vinyl-stage" id="vinylStage">
@@ -1872,13 +1942,12 @@
         <div class="vinyl-shell" aria-hidden="true">
           <img src="images/image%2066.png" alt="" />
         </div>
-        <div class="vinyl-hint">clique pour lancer · drag pour scratcher</div>
+        <div class="note-field" id="noteField" aria-hidden="true"></div>
+        <div class="vinyl-hint">choisis un vinyle · clique pour lancer</div>
       </div>
     </div>
 
-    <audio id="audio" loop preload="metadata">
-      <source src="Iko%20Iko%20Justin%20Wellington.mp3" type="audio/mpeg" />
-    </audio>
+    <audio id="audio" preload="metadata"></audio>
 
     <div class="container">
       <div class="contact-row" id="contact">
@@ -2066,11 +2135,23 @@
     });
     updatePct();
 
+    /* ───────── Playlist Santos & Mimi (vinyles) ─────────────────────
+       Pour ajouter un son : dépose le fichier .mp3 à la racine du projet
+       puis ajoute une ligne ici — un objet { titre, artiste, fichier }.
+       Le nom du fichier s'écrit normalement (espaces autorisés).        */
+    const TRACKS = [
+      { title: 'Iko Iko', artist: 'Justin Wellington', src: 'Iko Iko Justin Wellington.mp3' },
+      // { title: 'Nom du son', artist: 'Artiste', src: 'mon-fichier.mp3' },
+    ];
+
     /* ───────── Vinyl player (rotation RAF + drag-to-scratch) ───────── */
     const audio = document.getElementById('audio');
     const vinyl = document.getElementById('vinyl');
-    const playBtn = document.getElementById('playBtn');
-    const playText = playBtn.querySelector('.play-text');
+    const playlistEl = document.getElementById('playlist');
+    const noteField = document.getElementById('noteField');
+    const miniNotes = document.getElementById('miniNotes');
+    const miniTrack = document.getElementById('miniTrack');
+    let currentTrack = 0;
 
     let rotation = 0;
     let isPlaying = false;
@@ -2108,23 +2189,102 @@
     const miniBar = document.getElementById('miniBar');
     const miniBarWrap = document.getElementById('miniBarWrap');
 
+    /* ── Notes de musique qui s'envolent et s'effacent ── */
+    const NOTE_GLYPHS = ['♪', '♫', '♩', '♬', '♭'];
+    const NOTE_COLORS = ['var(--ruby-bright)', 'var(--magenta)', 'var(--gold)', 'var(--purple)'];
+    let noteTimer = null;
+
+    function spawnNote(field, opts) {
+      const n = document.createElement('span');
+      n.className = 'music-note';
+      n.textContent = NOTE_GLYPHS[(Math.random() * NOTE_GLYPHS.length) | 0];
+      n.style.color = NOTE_COLORS[(Math.random() * NOTE_COLORS.length) | 0];
+      n.style.left = opts.left + '%';
+      n.style.bottom = opts.bottom + '%';
+      n.style.fontSize = (opts.minSize + Math.random() * opts.varSize) + 'rem';
+      n.style.setProperty('--dx', ((Math.random() * 2 - 1) * opts.drift) + 'px');
+      n.style.setProperty('--rot', ((Math.random() * 2 - 1) * 40) + 'deg');
+      const dur = opts.minDur + Math.random() * opts.varDur;
+      n.style.animationDuration = dur + 's';
+      field.appendChild(n);
+      setTimeout(() => n.remove(), dur * 1000 + 60);
+    }
+
+    function startNotes() {
+      if (noteTimer) return;
+      noteTimer = setInterval(() => {
+        // notes autour du vinyle qui tourne
+        spawnNote(noteField, { left: 28 + Math.random() * 44, bottom: 30 + Math.random() * 30,
+          minSize: 1, varSize: 1.1, drift: 90, minDur: 2.6, varDur: 1.6 });
+        // notes sur la pop-up du player
+        spawnNote(miniNotes, { left: 6 + Math.random() * 26, bottom: 40,
+          minSize: 0.7, varSize: 0.5, drift: 28, minDur: 1.8, varDur: 1 });
+      }, 460);
+    }
+    function stopNotes() {
+      clearInterval(noteTimer);
+      noteTimer = null;
+    }
+
+    function highlightActive() {
+      playlistEl.querySelectorAll('.track').forEach((el, i) => {
+        el.classList.toggle('active', i === currentTrack);
+        el.classList.toggle('playing', i === currentTrack && isPlaying);
+      });
+    }
+
     function setUIPlaying(playing) {
       isPlaying = playing;
-      if (playing) {
-        playBtn.classList.add('playing');
-        miniPlayBtn.classList.add('playing');
-        playText.textContent = 'pause';
-      } else {
-        playBtn.classList.remove('playing');
-        miniPlayBtn.classList.remove('playing');
-        playText.textContent = 'play our song';
+      miniPlayBtn.classList.toggle('playing', playing);
+      if (playing) startNotes(); else stopNotes();
+      highlightActive();
+    }
+
+    function updateMiniInfo() {
+      const t = TRACKS[currentTrack];
+      miniTrack.textContent = `${t.title} · ${t.artist}`;
+      // re-déclenche l'animation « se glisse et tourne »
+      miniTrack.classList.remove('swap');
+      void miniTrack.offsetWidth;
+      miniTrack.classList.add('swap');
+    }
+
+    function loadTrack(i) {
+      currentTrack = (i + TRACKS.length) % TRACKS.length;
+      audio.src = encodeURI(TRACKS[currentTrack].src);
+      audio.load();
+      updateMiniInfo();
+      highlightActive();
+    }
+
+    function selectTrack(i, autoplay) {
+      loadTrack(i);
+      if (autoplay) {
+        audio.play().then(() => setUIPlaying(true)).catch(() => {});
       }
     }
 
+    // Construit la playlist depuis TRACKS
+    TRACKS.forEach((t, i) => {
+      const li = document.createElement('li');
+      li.className = 'track';
+      li.innerHTML =
+        `<span class="track-num">${String(i + 1).padStart(2, '0')}</span>` +
+        `<span class="track-eq"><span></span><span></span><span></span></span>` +
+        `<span class="track-info">` +
+          `<span class="track-title">${t.title}</span>` +
+          `<span class="track-artist">${t.artist}</span>` +
+        `</span>`;
+      li.addEventListener('click', () => {
+        if (i === currentTrack) { togglePlay(); }
+        else { selectTrack(i, true); }
+      });
+      playlistEl.appendChild(li);
+    });
+
     function togglePlay() {
       if (audio.paused) {
-        audio.play().then(() => setUIPlaying(true))
-          .catch(() => { playText.textContent = 'drop music.mp3'; });
+        audio.play().then(() => setUIPlaying(true)).catch(() => {});
       } else {
         audio.pause();
         setUIPlaying(false);
@@ -2180,16 +2340,9 @@
     document.addEventListener('pointerup', endDrag);
     document.addEventListener('pointercancel', endDrag);
 
-    playBtn.addEventListener('click', togglePlay);
     miniPlayBtn.addEventListener('click', togglePlay);
-    miniBack.addEventListener('click', () => {
-      audio.currentTime = Math.max(0, audio.currentTime - 10);
-    });
-    miniFwd.addEventListener('click', () => {
-      if (audio.duration) {
-        audio.currentTime = Math.min(audio.duration - 0.05, audio.currentTime + 10);
-      }
-    });
+    miniBack.addEventListener('click', () => selectTrack(currentTrack - 1, !audio.paused));
+    miniFwd.addEventListener('click',  () => selectTrack(currentTrack + 1, !audio.paused));
     miniBarWrap.addEventListener('click', (e) => {
       if (!audio.duration) return;
       const r = miniBarWrap.getBoundingClientRect();
@@ -2203,6 +2356,11 @@
     });
     audio.addEventListener('play',  () => setUIPlaying(true));
     audio.addEventListener('pause', () => setUIPlaying(false));
+    // Enchaîne automatiquement sur le vinyle suivant
+    audio.addEventListener('ended', () => selectTrack(currentTrack + 1, true));
+
+    // Charge le premier vinyle au démarrage
+    loadTrack(0);
 
     // Reveal mini-player after loader
     setTimeout(() => {
@@ -2226,7 +2384,7 @@
     }
     followRing();
 
-    document.querySelectorAll('a, .cta, .patch, .play-btn, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top').forEach(el => {
+    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top').forEach(el => {
       el.addEventListener('mouseenter', () => ring.classList.add('hover'));
       el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
     });

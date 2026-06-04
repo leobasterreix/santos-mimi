@@ -2864,19 +2864,21 @@
       }, { passive: true });
     }
 
-    document.addEventListener('click', e => {
-      for (let i = 0; i < 24; i++) {
-        const a = (Math.PI * 2 * i) / 24;
-        particles.push(new Particle(e.clientX, e.clientY, {
-          vx: Math.cos(a) * (Math.random() * 4 + 1.5),
-          vy: Math.sin(a) * (Math.random() * 4 + 1.5) - 1,
-          gravity: 0.06, decay: 0.012,
-          size: Math.random() * 7 + 4,
-        }));
-      }
-      spawnRipple(e.clientX, e.clientY, 1.4);
-      startLoop();
-    });
+    if (window.matchMedia('(hover: hover)').matches) {
+      document.addEventListener('click', e => {
+        for (let i = 0; i < 24; i++) {
+          const a = (Math.PI * 2 * i) / 24;
+          particles.push(new Particle(e.clientX, e.clientY, {
+            vx: Math.cos(a) * (Math.random() * 4 + 1.5),
+            vy: Math.sin(a) * (Math.random() * 4 + 1.5) - 1,
+            gravity: 0.06, decay: 0.012,
+            size: Math.random() * 7 + 4,
+          }));
+        }
+        spawnRipple(e.clientX, e.clientY, 1.4);
+        startLoop();
+      });
+    }
 
     function ambient() {
       particles.push(new Particle(Math.random() * innerWidth, -10, {

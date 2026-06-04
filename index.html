@@ -2163,7 +2163,8 @@
     let wasPlayingBeforeDrag = false;
     let downX = 0, downY = 0, dragDistance = 0;
 
-    const MS_PER_ROT = 1800; // 33⅓ RPM ≈ 1.8s/tour
+    const MS_PER_ROT = 1800; // 33⅓ RPM ≈ 1.8s/tour (vitesse de rotation visuelle)
+    const SCRUB_SEC_PER_ROT = 18; // sensibilité du scratch : 1 tour ≈ 18 s d'avance / recul
 
     function rotateLoop(now) {
       const dt = now - lastFrameTime;
@@ -2320,7 +2321,7 @@
       vinyl.style.transform = `rotate(${rotation}deg)`;
 
       if (audio.duration) {
-        const newTime = scrubStartAudio + (scrubAccumDeg / 360) * (MS_PER_ROT / 1000);
+        const newTime = scrubStartAudio + (scrubAccumDeg / 360) * SCRUB_SEC_PER_ROT;
         audio.currentTime = Math.max(0, Math.min(audio.duration - 0.05, newTime));
       }
     }

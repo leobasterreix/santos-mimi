@@ -946,21 +946,45 @@
     @media (max-width: 560px) { .patch-board { grid-template-columns: 1fr; } }
     .patch-card {
       position: relative;
-      background: rgba(255, 247, 237, 0.62);
-      backdrop-filter: blur(14px) saturate(160%);
-      padding: 1.2rem 1.2rem 1.4rem;
+      perspective: 1400px;
       cursor: none;
       transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
                   box-shadow 0.5s ease;
-      box-shadow:
-        0 12px 28px rgba(107, 45, 122, 0.14),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      box-shadow: 0 12px 28px rgba(107, 45, 122, 0.14);
+    }
+    .patch-inner {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      border-radius: inherit;
+    }
+    .patch-card.flipped .patch-inner { transform: rotateY(180deg); }
+    .patch-front, .patch-back {
+      border-radius: inherit;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+    .patch-front {
+      position: relative;
+      padding: 1.2rem 1.2rem 1.4rem;
+      background: rgba(255, 247, 237, 0.62);
+      backdrop-filter: blur(14px) saturate(160%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    .patch-back {
+      position: absolute; inset: 0;
+      transform: rotateY(180deg);
+      overflow: hidden;
+      background: #120b05;
+      display: flex;
+    }
+    .patch-back img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
     }
     .patch-card:hover {
       transform: translateY(-8px) rotate(0deg) !important;
-      box-shadow:
-        0 22px 44px rgba(107, 45, 122, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+      box-shadow: 0 22px 44px rgba(107, 45, 122, 0.22);
     }
     .patch-card:nth-child(1) { border-radius: 38% 62% 52% 48% / 45% 55% 45% 55%; rotate: -1.5deg; }
     .patch-card:nth-child(2) { border-radius: 52% 48% 38% 62% / 55% 45% 55% 45%; rotate: 1.2deg; margin-top: 2rem; }
@@ -968,12 +992,20 @@
     .patch-card:nth-child(4) { border-radius: 60% 40% 45% 55% / 40% 60% 50% 50%; rotate: 1.5deg; margin-top: 2.5rem; }
     .patch-card:nth-child(5) { border-radius: 42% 58% 55% 45% / 48% 52% 48% 52%; rotate: -0.7deg; }
     .patch-card:nth-child(6) { border-radius: 55% 45% 50% 50% / 52% 48% 52% 48%; rotate: 1deg; margin-top: 1.8rem; }
-    .patch-card::before {
+    .patch-front::before, .patch-back::before {
       content: '';
       position: absolute; inset: 9px;
       border-radius: inherit;
       border: 1.8px dashed rgba(196, 30, 58, 0.38);
       pointer-events: none;
+      z-index: 2;
+    }
+    /* petit indice « retourne-moi » sur le recto */
+    .patch-front::after {
+      content: '↺';
+      position: absolute; top: 0.5rem; right: 0.9rem;
+      font-size: 1rem; color: var(--ruby); opacity: 0.5;
+      pointer-events: none; z-index: 3;
     }
     .patch-card .thumb {
       aspect-ratio: 4 / 3;
@@ -1308,6 +1340,83 @@
     }
     .to-top.show { opacity: 0.95; transform: translateY(0) scale(1); pointer-events: auto; }
     .to-top:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 16px 36px rgba(214, 51, 132, 0.62); opacity: 1; }
+
+    /* ─── Jeu de mémoire ─────────────────────────────────── */
+    .memory-intro {
+      font-size: 1.05rem; line-height: 1.6; opacity: 0.85;
+      max-width: 560px; margin-bottom: 1.4rem;
+    }
+    .memory-hud {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem;
+      font-family: 'Parisienne', cursive; font-size: 1.2rem;
+      color: var(--ink); margin-bottom: 1.6rem;
+    }
+    .memory-hud strong { color: var(--ruby); }
+    .memory-reset {
+      font-family: 'Major Mono Display', monospace;
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.55rem 1.2rem; border: none; border-radius: 999px;
+      background: linear-gradient(135deg, var(--ch2), var(--teal-deep));
+      color: #fff; cursor: none;
+      box-shadow: 0 8px 20px rgba(20, 184, 166, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .memory-reset:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 12px 26px rgba(20, 184, 166, 0.55); }
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.9rem;
+      max-width: 560px;
+    }
+    @media (max-width: 560px) { .memory-grid { gap: 0.6rem; } }
+    .memory-card {
+      position: relative;
+      aspect-ratio: 1;
+      perspective: 800px;
+      border: none; padding: 0; background: none;
+      cursor: none;
+    }
+    .memory-card .m-inner {
+      position: absolute; inset: 0;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .memory-card.flipped .m-inner,
+    .memory-card.matched .m-inner { transform: rotateY(180deg); }
+    .m-face {
+      position: absolute; inset: 0;
+      border-radius: 16px;
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      display: grid; place-items: center;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(107, 45, 122, 0.16);
+    }
+    .m-front {
+      background:
+        radial-gradient(circle at 30% 28%, #ffd9ec 0%, transparent 55%),
+        linear-gradient(135deg, var(--pink-hot), var(--purple) 60%, var(--teal-deep));
+    }
+    .m-front::after {
+      content: '&';
+      font-family: 'Parisienne', cursive; font-style: italic;
+      font-size: 2rem; color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+    .m-back {
+      transform: rotateY(180deg);
+      background: rgba(255, 247, 237, 0.96);
+    }
+    .m-back img { width: 100%; height: 100%; object-fit: contain; padding: 10%; }
+    .memory-card.matched .m-face {
+      box-shadow: 0 0 0 2px var(--turquoise), 0 8px 22px rgba(45, 212, 191, 0.5);
+    }
+    .memory-card.matched { animation: memPop 0.4s ease; }
+    @keyframes memPop { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.08); } }
+    .memory-win {
+      margin-top: 1.6rem;
+      font-family: 'Parisienne', cursive; font-size: 1.5rem;
+      color: var(--ruby);
+    }
   </style>
 </head>
 <body class="is-loading">
@@ -1562,42 +1671,90 @@
       <h2>Patchs brodés, polis par les <em>vagues</em>.</h2>
       <div class="patch-board">
         <article class="patch-card">
-          <div class="pin"></div>
-          <div class="thumb"><img src="images/image%2054.png" alt="" /></div>
-          <h3>Bubble Cola</h3>
-          <p class="meta">branding · 2026</p>
+          <div class="patch-inner">
+            <div class="patch-front">
+              <div class="pin"></div>
+              <div class="thumb"><img src="images/image%2054.png" alt="" /></div>
+              <h3>Bubble Cola</h3>
+              <p class="meta">branding · 2026</p>
+            </div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%203.png" alt="Santos &amp; Mimi" /></div>
+          </div>
         </article>
         <article class="patch-card">
-          <div class="pin"></div>
-          <div class="thumb"><img src="images/image%2063.png" alt="" /></div>
-          <h3>Aqua Editions</h3>
-          <p class="meta">art direction</p>
+          <div class="patch-inner">
+            <div class="patch-front">
+              <div class="pin"></div>
+              <div class="thumb"><img src="images/image%2063.png" alt="" /></div>
+              <h3>Aqua Editions</h3>
+              <p class="meta">art direction</p>
+            </div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%204.png" alt="Santos &amp; Mimi" /></div>
+          </div>
         </article>
         <article class="patch-card">
-          <div class="pin"></div>
-          <div class="thumb"><img src="images/image%2078.png" alt="" /></div>
-          <h3>Mimi Beach Club</h3>
-          <p class="meta">identité · signalétique</p>
+          <div class="patch-inner">
+            <div class="patch-front">
+              <div class="pin"></div>
+              <div class="thumb"><img src="images/image%2078.png" alt="" /></div>
+              <h3>Mimi Beach Club</h3>
+              <p class="meta">identité · signalétique</p>
+            </div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%205.png" alt="Santos &amp; Mimi" /></div>
+          </div>
         </article>
         <article class="patch-card">
-          <div class="pin"></div>
-          <div class="thumb"><img src="images/image%2068.png" alt="" /></div>
-          <h3>Holo Records</h3>
-          <p class="meta">label · covers y2k</p>
+          <div class="patch-inner">
+            <div class="patch-front">
+              <div class="pin"></div>
+              <div class="thumb"><img src="images/image%2068.png" alt="" /></div>
+              <h3>Holo Records</h3>
+              <p class="meta">label · covers y2k</p>
+            </div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%206.png" alt="Santos &amp; Mimi" /></div>
+          </div>
         </article>
         <article class="patch-card">
-          <div class="pin"></div>
-          <div class="thumb"><img src="images/image%2076.png" alt="" /></div>
-          <h3>Shellz Mag</h3>
-          <p class="meta">magazine · 4 numéros</p>
+          <div class="patch-inner">
+            <div class="patch-front">
+              <div class="pin"></div>
+              <div class="thumb"><img src="images/image%2076.png" alt="" /></div>
+              <h3>Shellz Mag</h3>
+              <p class="meta">magazine · 4 numéros</p>
+            </div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%202%203.png" alt="Santos &amp; Mimi" /></div>
+          </div>
         </article>
         <article class="patch-card">
-          <div class="pin"></div>
-          <div class="thumb"><img src="images/image%2087.png" alt="" /></div>
-          <h3>Glitter Tour</h3>
-          <p class="meta">tournée · zara l.</p>
+          <div class="patch-inner">
+            <div class="patch-front">
+              <div class="pin"></div>
+              <div class="thumb"><img src="images/image%2087.png" alt="" /></div>
+              <h3>Glitter Tour</h3>
+              <p class="meta">tournée · zara l.</p>
+            </div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%202%204.png" alt="Santos &amp; Mimi" /></div>
+          </div>
         </article>
       </div>
+    </div>
+  </section>
+
+  <section class="block chapter ch-2 memory-section" id="memory">
+    <div class="container">
+      <div class="ch-tag">
+        <span class="num">02½</span>
+        <span class="label">le jeu de la mémoire</span>
+      </div>
+      <h2>Retrouve les paires de <em>perles</em>.</h2>
+      <p class="memory-intro">Retourne les breloques deux par deux et reconstitue toutes les paires.</p>
+      <div class="memory-hud">
+        <span class="memory-stat">coups · <strong id="memMoves">0</strong></span>
+        <span class="memory-stat">paires · <strong id="memPairs">0</strong>/6</span>
+        <button class="memory-reset" id="memReset" type="button">rejouer ↺</button>
+      </div>
+      <div class="memory-grid" id="memoryGrid"></div>
+      <p class="memory-win" id="memWin" hidden>bravo ! toutes les paires en <strong id="memWinMoves">0</strong> coups 🎉</p>
     </div>
   </section>
 
@@ -2200,6 +2357,79 @@
     document.addEventListener('dragstart', e => {
       if (e.target.tagName === 'IMG') e.preventDefault();
     });
+
+    /* ─── Breloques (section 02) : retournement au clic ─── */
+    document.querySelectorAll('.patch-card').forEach(card => {
+      card.addEventListener('click', () => card.classList.toggle('flipped'));
+    });
+
+    /* ─── Jeu de mémoire (paires de perles) ─── */
+    (function memoryGame() {
+      const grid = document.getElementById('memoryGrid');
+      if (!grid) return;
+      const PERLES = ['image%2042.png','image%2048.png','image%2055.png','image%2066.png','image%2073.png','image%2084.png'];
+      const movesEl = document.getElementById('memMoves');
+      const pairsEl = document.getElementById('memPairs');
+      const winEl = document.getElementById('memWin');
+      const winMovesEl = document.getElementById('memWinMoves');
+      const resetBtn = document.getElementById('memReset');
+      let first, second, lock, moves, pairs;
+
+      function build() {
+        first = null; second = null; lock = false; moves = 0; pairs = 0;
+        movesEl.textContent = '0';
+        pairsEl.textContent = '0';
+        winEl.hidden = true;
+        const deck = [...PERLES, ...PERLES];
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        grid.innerHTML = '';
+        deck.forEach(src => {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'memory-card';
+          card.dataset.img = src;
+          card.innerHTML =
+            '<span class="m-inner">' +
+              '<span class="m-face m-front"></span>' +
+              '<span class="m-face m-back"><img src="images/' + src + '" alt=""></span>' +
+            '</span>';
+          card.addEventListener('click', () => flip(card));
+          grid.appendChild(card);
+        });
+      }
+
+      function flip(card) {
+        if (lock || card === first ||
+            card.classList.contains('flipped') ||
+            card.classList.contains('matched')) return;
+        card.classList.add('flipped');
+        if (!first) { first = card; return; }
+        second = card;
+        moves++; movesEl.textContent = moves;
+        const a = first, b = second;
+        first = null; second = null;
+        if (a.dataset.img === b.dataset.img) {
+          setTimeout(() => {
+            a.classList.add('matched'); b.classList.add('matched');
+            a.classList.remove('flipped'); b.classList.remove('flipped');
+            pairs++; pairsEl.textContent = pairs;
+            if (pairs === PERLES.length) { winMovesEl.textContent = moves; winEl.hidden = false; }
+          }, 450);
+        } else {
+          lock = true;
+          setTimeout(() => {
+            a.classList.remove('flipped'); b.classList.remove('flipped');
+            lock = false;
+          }, 850);
+        }
+      }
+
+      resetBtn.addEventListener('click', build);
+      build();
+    })();
 
     /* ─── Sélection de texte : dégradé pastel animé ───────── */
     (function () {

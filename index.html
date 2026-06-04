@@ -2323,6 +2323,7 @@
       currentTrack = (i + TRACKS.length) % TRACKS.length;
       audio.src = encodeURI(TRACKS[currentTrack].src);
       audio.load();
+      ensureBuffer();        // décode le morceau pour le scrub (en tâche de fond)
       updateMiniInfo();
       highlightActive();
     }
@@ -2370,52 +2371,69 @@
       } catch (_) {}
     }
 
-    /* Bruit de mixage / scratch DJ : bruit de vinyle bouclé dont le volume
-       et le pitch suivent la vitesse de rotation pendant qu'on tourne. */
-    let scratchBuf = null, scratchSrc = null, scratchGain = null, scratchFilter = null, scratchIdle = null;
-    function scratchBuffer(ctx) {
-      if (scratchBuf) return scratchBuf;
-      const len = Math.ceil(ctx.sampleRate * 1.5);
-      const b = ctx.createBuffer(1, len, ctx.sampleRate);
-      const d = b.getChannelData(0);
-      let last = 0; // bruit « brun » → grain chaud de vinyle
-      for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + 0.025 * w) / 1.025; d[i] = last * 3.2; }
-      scratchBuf = b; return b;
-    }
-    function scratchStart() {
+    /* ── Scrub « comme un vrai vinyle » : on entend LA MUSIQUE elle-même,
+       rejouée en grains dont le sens et la vitesse suivent le geste.
+       Le morceau est décodé en mémoire (+ une version inversée pour
+       le scratch arrière). ── */
+    let trackBuf = null, trackBufRev = null, decodingSrc = null;
+    async function ensureBuffer() {
+      const src = encodeURI(TRACKS[currentTrack].src);
+      if (decodingSrc === src) return;          // déjà (en cours de) décodage pour cette piste
+      decodingSrc = src; trackBuf = null; trackBufRev = null;
       try {
         const ctx = getCtx();
-        if (scratchSrc) return;
-        scratchSrc = ctx.createBufferSource();
-        scratchSrc.buffer = scratchBuffer(ctx);
-        scratchSrc.loop = true;
-        scratchFilter = ctx.createBiquadFilter();
-        scratchFilter.type = 'bandpass'; scratchFilter.frequency.value = 700; scratchFilter.Q.value = 0.8;
-        scratchGain = ctx.createGain(); scratchGain.gain.value = 0;
-        scratchSrc.connect(scratchFilter); scratchFilter.connect(scratchGain); scratchGain.connect(ctx.destination);
-        scratchSrc.start();
-      } catch (_) {}
+        const arr = await (await fetch(src)).arrayBuffer();
+        const buf = await ctx.decodeAudioData(arr);
+        if (decodingSrc !== src) return;        // la piste a changé entre-temps
+        trackBuf = buf;
+        const rev = ctx.createBuffer(buf.numberOfChannels, buf.length, buf.sampleRate);
+        for (let ch = 0; ch < buf.numberOfChannels; ch++) {
+          const s = buf.getChannelData(ch), d = rev.getChannelData(ch), n = s.length;
+          for (let i = 0; i < n; i++) d[i] = s[n - 1 - i];
+        }
+        trackBufRev = rev;
+      } catch (_) { decodingSrc = null; }
     }
-    function scratchMove(delta) {
-      if (!scratchSrc || !actx) return;
-      const now = actx.currentTime;
-      const speed = Math.min(Math.abs(delta), 45);   // deg parcourus depuis le dernier move
-      const g = Math.min(0.5, speed * 0.022);          // + on tourne vite, + c'est fort
-      scratchGain.gain.setTargetAtTime(g, now, 0.02);
-      try { scratchSrc.playbackRate.setTargetAtTime(0.5 + speed * 0.08, now, 0.02); } catch (_) {}
-      // sens du geste → couleur du frottement (avant plus aigu, arrière plus grave)
-      scratchFilter.frequency.setTargetAtTime(450 + speed * 55 + (delta > 0 ? 220 : 0), now, 0.02);
-      // si le doigt s'arrête (disque immobile), le bruit s'efface
-      clearTimeout(scratchIdle);
-      scratchIdle = setTimeout(() => { if (scratchGain) scratchGain.gain.setTargetAtTime(0, actx.currentTime, 0.05); }, 70);
+
+    let scrubPos = 0, scrubLastT = 0, scrubVoices = [];
+    function scrubStart() {
+      getCtx();                                 // reprend le contexte (geste utilisateur)
+      scrubPos = audio.currentTime;
+      scrubLastT = performance.now();
+      scrubVoices = [];
     }
-    function scratchStop() {
-      if (!scratchSrc || !actx) return;
-      clearTimeout(scratchIdle);
-      const now = actx.currentTime, src = scratchSrc;
-      scratchGain.gain.setTargetAtTime(0, now, 0.04);
-      setTimeout(() => { try { src.stop(); } catch (_) {} }, 200);
-      scratchSrc = null; scratchGain = null; scratchFilter = null;
+    function scrubMove(delta, now) {
+      if (!trackBuf || !actx) return;           // pas encore décodé → scrub muet (comme avant)
+      const dt = Math.max(0.006, Math.min((now - scrubLastT) / 1000, 0.12));
+      scrubLastT = now;
+      const dur = trackBuf.duration;
+      const deltaSec = (delta / 360) * SCRUB_SEC_PER_ROT;   // déplacement dans le morceau
+      scrubPos = Math.max(0, Math.min(dur - 0.06, scrubPos + deltaSec));
+      const reverse = delta < 0;
+      const buf = reverse ? trackBufRev : trackBuf;
+      if (!buf) return;
+      // pitch = vitesse de rotation réelle (≈ platine), pas la sensibilité de navigation
+      const degPerSec = Math.abs(delta) / dt;        // 33⅓ tr/min ≈ 200°/s → rate 1.0
+      const rate = Math.max(0.06, Math.min(degPerSec / 200, 2.5));
+      let offset = reverse ? (dur - scrubPos) : scrubPos;
+      offset = Math.max(0, Math.min(dur - 0.06, offset));
+      const len = Math.max(0.05, Math.min(dt * 2.2, 0.22));
+      const ctx = actx, t = ctx.currentTime;
+      const s = ctx.createBufferSource(); s.buffer = buf; s.playbackRate.value = rate;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(0.6, t + 0.012);       // fondu d'entrée (anti-clic)
+      g.gain.setValueAtTime(0.6, t + len);
+      g.gain.linearRampToValueAtTime(0.0001, t + len + 0.045); // fondu de sortie
+      s.connect(g); g.connect(ctx.destination);
+      try { s.start(t, offset, (len + 0.06) * rate); } catch (_) { try { s.start(t, offset); } catch (__) {} }
+      try { s.stop(t + len + 0.06); } catch (_) {}
+      scrubVoices.push(s);
+      if (scrubVoices.length > 5) { const old = scrubVoices.shift(); try { old.stop(); } catch (_) {} }
+    }
+    function scrubStop() {
+      scrubVoices.forEach(s => { try { s.stop(); } catch (_) {} });
+      scrubVoices = [];
     }
 
     // Construit la playlist depuis TRACKS
@@ -2458,7 +2476,7 @@
       dragLastAngle = getAngle(e);
       scrubStartAudio = audio.currentTime;
       scrubAccumDeg = 0;
-      scratchStart(); // bruit de mixage DJ
+      scrubStart(); // prépare le scrub de la musique
       try { vinyl.setPointerCapture(e.pointerId); } catch (_) {}
     });
 
@@ -2476,7 +2494,7 @@
       scrubAccumDeg += delta;
       dragLastAngle = a;
       vinyl.style.transform = `rotate(${rotation}deg)`;
-      scratchMove(delta); // module le bruit de scratch selon la vitesse/sens
+      scrubMove(delta, e.timeStamp || performance.now()); // joue la musique selon la vitesse/sens
 
       if (audio.duration) {
         const newTime = scrubStartAudio + (scrubAccumDeg / 360) * SCRUB_SEC_PER_ROT;
@@ -2487,7 +2505,7 @@
     function endDrag(e) {
       if (!isDragging) return;
       isDragging = false;
-      scratchStop(); // coupe le bruit de mixage
+      scrubStop(); // coupe les grains de scrub
       try { vinyl.releasePointerCapture(e.pointerId); } catch (_) {}
 
       if (dragDistance < 6) {

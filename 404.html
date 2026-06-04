@@ -226,7 +226,7 @@
 
     const points = [];
     const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    const step = cell * 0.35; // Tighter spacing for a richer, overlapping look
+    const step = cell * 0.46; // Balanced spacing along path strokes
 
     pathData.forEach(d => {
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -244,13 +244,16 @@
         const px = (pt.x / 1000) * W;
         const py = (pt.y / 340) * H;
         
-        // Circular random offset for a rich, organic, hand-threaded look
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * cell * 0.22;
-        const jx = Math.cos(angle) * dist;
-        const jy = Math.sin(angle) * dist;
-        
-        points.push({ x: px + jx, y: py + jy });
+        // Place 2 staggered beads at each step to thicken the stroke organically
+        const beadsPerPoint = 2;
+        for (let k = 0; k < beadsPerPoint; k++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * cell * 0.36; // Wide enough to double the stroke thickness
+          const jx = Math.cos(angle) * dist;
+          const jy = Math.sin(angle) * dist;
+          
+          points.push({ x: px + jx, y: py + jy });
+        }
       }
     });
 

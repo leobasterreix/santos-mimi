@@ -2371,20 +2371,35 @@
     (function memoryGame() {
       const grid = document.getElementById('memoryGrid');
       if (!grid) return;
-      const PERLES = ['image%2042.png','image%2048.png','image%2055.png','image%2066.png','image%2073.png','image%2084.png'];
+      
+      const ALL_SVGS = [
+        'Group%201.svg', 'Group%202.svg', 'Group%204.svg', 'Group%207.svg',
+        'Group%208.svg', 'Group%209.svg', 'Group%2010.svg', 'Group%2011.svg',
+        'Group%2016.svg', 'Group%2017.svg', 'Group%2019.svg', 'Group%2020.svg'
+      ];
+      
       const movesEl = document.getElementById('memMoves');
       const pairsEl = document.getElementById('memPairs');
       const winEl = document.getElementById('memWin');
       const winMovesEl = document.getElementById('memWinMoves');
       const resetBtn = document.getElementById('memReset');
-      let first, second, lock, moves, pairs;
+      let first, second, lock, moves, pairs, currentRoundSVGs;
 
       function build() {
         first = null; second = null; lock = false; moves = 0; pairs = 0;
         movesEl.textContent = '0';
         pairsEl.textContent = '0';
         winEl.hidden = true;
-        const deck = [...PERLES, ...PERLES];
+        
+        // Randomly pick 6 unique SVGs from the pool of 12
+        const pool = [...ALL_SVGS];
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        currentRoundSVGs = pool.slice(0, 6);
+
+        const deck = [...currentRoundSVGs, ...currentRoundSVGs];
         for (let i = deck.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -2420,7 +2435,7 @@
             a.classList.add('matched'); b.classList.add('matched');
             a.classList.remove('flipped'); b.classList.remove('flipped');
             pairs++; pairsEl.textContent = pairs;
-            if (pairs === PERLES.length) { winMovesEl.textContent = moves; winEl.hidden = false; }
+            if (pairs === currentRoundSVGs.length) { winMovesEl.textContent = moves; winEl.hidden = false; }
           }, 450);
         } else {
           lock = true;

@@ -2484,9 +2484,10 @@
         h1.style.opacity = String(clamp01(1 - t * 1.6));
         nav.classList.remove('island-visible');
 
-        /* morph : monte de 0→1 sur t:0..0.4, redescend 1→0 sur t:0.7..1
-           → strictement 0 quand t≥1 (nav prend le relais sans chevauchement) */
-        const morphOpacity = clamp01(t / 0.4) * clamp01((1 - t) / 0.3);
+        /* morph : monte 0→1 sur t:0..0.35, reste à 1 jusqu'à raw=1
+           → à ce moment il est déjà à la bonne taille/position,
+             la nav prend le relais sans écart visible */
+        const morphOpacity = clamp01(t / 0.35);
         morph.style.opacity = String(morphOpacity);
 
         /* Y centre du h1 dans le viewport → Y centre de la pilule */

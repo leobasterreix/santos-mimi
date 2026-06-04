@@ -216,26 +216,38 @@
     .filters { position: absolute; width: 0; height: 0; }
 
     /* ─── Nav ────────────────────────────────────────────── */
+    /* ─── Nav pilule (Dynamic Island) ───────────────────── */
     nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 50;
+      position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+      z-index: 9000;
       display: flex; justify-content: center; align-items: center;
-      padding: 0.7rem 2rem;
-      background: rgba(204, 223, 255, 0.80);
-      backdrop-filter: blur(12px) saturate(140%);
-      -webkit-backdrop-filter: blur(12px) saturate(140%);
-      border-bottom: 1px solid rgba(204, 223, 255, 0.45);
+      padding: 0.55rem 1.6rem;
+      background: #1a2fff;
+      border-radius: 999px;
+      box-shadow: 0 8px 28px rgba(26, 47, 255, 0.45),
+                  0 2px 8px rgba(0,0,0,0.18);
+      pointer-events: none;
+      /* Caché au départ, apparaît au scroll */
+      opacity: 0;
+      transform: translateX(-50%) translateY(-12px) scale(0.9);
+      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    nav.island-visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
     }
     nav .logo {
       font-family: 'Londrina Solid', sans-serif;
       font-weight: 900;
-      font-size: clamp(1.1rem, 2.6vw, 1.55rem);
-      letter-spacing: 0.07em;
+      font-size: clamp(0.95rem, 2vw, 1.2rem);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #1a1230;
+      color: #fff;
       background: none;
-      -webkit-text-fill-color: #1a1230;
+      -webkit-text-fill-color: #fff;
       line-height: 1;
+      white-space: nowrap;
     }
     nav .logo .amp {
       font-family: 'Parisienne', cursive;
@@ -244,6 +256,7 @@
       letter-spacing: 0.02em;
       vertical-align: baseline;
       margin: 0 0.15em;
+      opacity: 0.9;
     }
     nav ul { display: none; }
 
@@ -1877,10 +1890,6 @@
     /* ── Mosaïque : génération aléatoire à chaque refresh ── */
     const mosaic = document.getElementById('mosaic');
     const PATCH_SHAPES = ['s-round','s-soft','s-blob','s-rect'];
-    const TOTAL  = 38; // nombre de breloques
-
-    // Zone centrale protégée (en % du hero) — petites tailles seulement
-    const CX = [30, 70], CY = [25, 75]; // zone centrale X et Y
 
     // Mélanger les images
     const deck = [...IMAGES];
@@ -1889,62 +1898,56 @@
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
 
-    function inCenter(x, y) {
-      return x > CX[0] && x < CX[1] && y > CY[0] && y < CY[1];
+    // Zone sous le titre hero : ±20% autour du centre
+    // (centre approx à x:30–70%, y:28–62%)
+    function underTitle(x, y) {
+      return x > 28 && x < 72 && y > 26 && y < 65;
     }
 
-    // Générer des positions sans trop se chevaucher
+    // Grille souple : on divise le hero en cellules et on place 1 breloque par cellule
+    // avec décalage aléatoire → distribution uniforme garantie
+    const COLS = 7, ROWS = 6;
     const placed = [];
-    let attempts = 0;
-    while (placed.length < TOTAL && attempts < 600) {
-      attempts++;
-      // Favoriser les bords (distribution biaisée vers les extrêmes)
-      const rx = Math.random();
-      const ry = Math.random();
-      // Biais vers les bords : transformation en U (0→bord, 0.5→centre)
-      const x = rx < 0.5 ? rx * 30 : 70 + (rx - 0.5) * 60;
-      const y = ry < 0.5 ? ry * 30 : 70 + (ry - 0.5) * 60;
-      const cx = Math.min(Math.max(x, 1), 99);
-      const cy = Math.min(Math.max(y, -5), 100);
-
-      // Taille selon position : petite au centre, grande sur les bords
-      const distToCenter = Math.sqrt(Math.pow(cx - 50, 2) + Math.pow(cy - 50, 2));
-      const sizeFactor = 0.5 + (distToCenter / 70) * 0.5; // 0.5..1.0
-      const baseSize = inCenter(cx, cy)
-        ? Math.round(55 + Math.random() * 30)   // centre : 55–85 px
-        : Math.round(90 + Math.random() * 70 * sizeFactor); // bords : 90–160 px
-
-      // Éviter les chevauchements trop serrés
-      const minDist = baseSize * 0.55;
-      const tooClose = placed.some(p => {
-        const dx = (cx - p.x) * 10;
-        const dy = (cy - p.y) * 10;
-        return Math.sqrt(dx * dx + dy * dy) < minDist;
-      });
-      if (tooClose) continue;
-
-      placed.push({ x: cx, y: cy, size: baseSize });
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 0; col < COLS; col++) {
+        // Position de base : centre de la cellule
+        const bx = (col + 0.5) / COLS * 100;
+        const by = (row + 0.5) / ROWS * 100;
+        // Décalage aléatoire dans la cellule (±40% de la taille de cellule)
+        const jx = (Math.random() - 0.5) * (100 / COLS) * 0.8;
+        const jy = (Math.random() - 0.5) * (100 / ROWS) * 0.8;
+        const x  = Math.min(Math.max(bx + jx, 2), 98);
+        const y  = Math.min(Math.max(by + jy, 2), 98);
+        placed.push({ x, y });
+      }
     }
+    // Quelques breloques bonus sur les bords pour densifier les extrêmes
+    const EDGE_EXTRAS = [
+      {x: 1,  y: Math.random()*90+5},  {x: 99, y: Math.random()*90+5},
+      {x: Math.random()*90+5, y: 1},   {x: Math.random()*90+5, y: 99},
+      {x: 3,  y: Math.random()*60+20}, {x: 97, y: Math.random()*60+20},
+    ];
+    placed.push(...EDGE_EXTRAS);
 
     placed.forEach((p, i) => {
-      const rot   = Math.round((Math.random() - 0.5) * 52);
+      const isSub  = underTitle(p.x, p.y);
+      const size   = isSub
+        ? Math.round(44 + Math.random() * 28)    // sous le titre : 44–72 px
+        : Math.round(85 + Math.random() * 75);   // ailleurs      : 85–160 px
+      const opacity = isSub ? (0.18 + Math.random() * 0.22) : (0.75 + Math.random() * 0.25);
+      const rot   = Math.round((Math.random() - 0.5) * 56);
       const shape = PATCH_SHAPES[Math.floor(Math.random() * PATCH_SHAPES.length)];
-      const z     = Math.floor(Math.random() * 5) + 2;
-      const opacity = inCenter(p.x, p.y) ? (0.22 + Math.random() * 0.2) : 1;
+      const z     = isSub ? 1 : (Math.floor(Math.random() * 4) + 2);
       const src   = deck[i % deck.length];
       const el    = document.createElement('div');
       el.className = `patch ${shape}`;
       el.style.cssText = `
-        left: ${p.x}%;
-        top: ${p.y}%;
-        width: ${p.size}px;
-        height: ${p.size}px;
-        margin-left: ${-p.size / 2}px;
-        margin-top: ${-p.size / 2}px;
-        transform: rotate(${rot}deg);
-        z-index: ${z};
-        opacity: ${opacity};
-        --t-base: rotate(${rot}deg);
+        left:${p.x}%;top:${p.y}%;
+        width:${size}px;height:${size}px;
+        margin-left:${-size/2}px;margin-top:${-size/2}px;
+        transform:rotate(${rot}deg);
+        z-index:${z};opacity:${opacity};
+        --t-base:rotate(${rot}deg);
       `;
       el.innerHTML = `<img src="${src}" alt="" />`;
       mosaic.appendChild(el);
@@ -2369,6 +2372,18 @@
     loop();
 
     addEventListener('resize', () => { fit(pCanvas); fit(rCanvas); });
+
+    /* ─── Nav pilule : apparaît quand le H1 hero sort du viewport ─── */
+    (function () {
+      const nav  = document.querySelector('nav');
+      const h1   = document.querySelector('.hero h1');
+      if (!nav || !h1) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => nav.classList.toggle('island-visible', !entry.isIntersecting),
+        { threshold: 0, rootMargin: '-10px 0px 0px 0px' }
+      );
+      obs.observe(h1);
+    })();
 
     /* ─── Bouton retour en haut ─── */
     const toTop = document.getElementById('toTop');

@@ -1932,73 +1932,54 @@
       'images/image%2087.png',
     ];
 
-    /* ── Mosaïque : génération aléatoire à chaque refresh ── */
-    const mosaic = document.getElementById('mosaic');
-    const PATCH_SHAPES = ['s-round','s-soft','s-blob','s-rect'];
-
-    // Mélanger les images
-    const deck = [...IMAGES];
-    for (let i = deck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-
-    // Zone sous le titre hero : ±20% autour du centre
-    // (centre approx à x:30–70%, y:28–62%)
-    function underTitle(x, y) {
-      return x > 28 && x < 72 && y > 26 && y < 65;
-    }
-
-    // Grille 6×5 : chaque cellule a 70% de chance d'avoir une breloque
-    // → espaces aléatoires naturels sans vide trop grand
-    const COLS = 6, ROWS = 5;
-    const placed = [];
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
-        if (Math.random() < 0.28) continue; // 28% de chance de skip = espaces propres
-        const cellW = 100 / COLS;
-        const cellH = 100 / ROWS;
-        // Position de base au centre de la cellule
-        const bx = (col + 0.5) * cellW;
-        const by = (row + 0.5) * cellH;
-        // Décalage aléatoire dans la cellule (±30% max) → propre mais vivant
-        const jx = (Math.random() - 0.5) * cellW * 0.6;
-        const jy = (Math.random() - 0.5) * cellH * 0.6;
-        const x  = Math.min(Math.max(bx + jx, 3), 97);
-        const y  = Math.min(Math.max(by + jy, 3), 97);
-        placed.push({ x, y });
-      }
-    }
-    // Quelques extras sur les bords pour les remplir
-    const EDGE_EXTRAS = [
-      { x: 2,  y: 10 + Math.random() * 80 },
-      { x: 98, y: 10 + Math.random() * 80 },
-      { x: 10 + Math.random() * 30, y: 2  },
-      { x: 60 + Math.random() * 30, y: 2  },
-      { x: 10 + Math.random() * 30, y: 98 },
-      { x: 60 + Math.random() * 30, y: 98 },
+    // [xPercent, yPercent, sizePx, rotationDeg, shapeClass, zIndex]
+    const PATCHES = [
+      [ 6, 18, 140, -14, 's-round', 4],
+      [16,  6, 105,   9, 's-soft',  3],
+      [28, 22, 125,  -6, 's-blob',  5],
+      [40,  8,  95,  14, 's-round', 2],
+      [54, 14, 115, -10, 's-soft',  4],
+      [68,  6, 130,   8, 's-blob',  3],
+      [82, 16, 105, -18, 's-rect',  5],
+      [92,  4,  85,  12, 's-round', 2],
+      [ 2, 34, 115,  10, 's-soft',  4],
+      [88, 34, 125,  -8, 's-round', 3],
+      [ 8, 50, 105, -22, 's-blob',  5],
+      [92, 52,  95,  18, 's-soft',  4],
+      [22, 46,  90,  24, 's-round', 6],
+      [76, 46,  85, -24, 's-rect',  6],
+      [14, 64, 130, -12, 's-blob',  3],
+      [82, 66, 120,  14, 's-round', 4],
+      [ 4, 76, 105, -18, 's-soft',  2],
+      [22, 80, 125,   9, 's-blob',  3],
+      [38, 74,  95,  -8, 's-round', 4],
+      [52, 82, 130,  12, 's-soft',  3],
+      [66, 76, 115, -14, 's-rect',  2],
+      [80, 80, 105,  18, 's-blob',  4],
+      [94, 74,  85,  -8, 's-round', 3],
+      [34, 36,  68,  26, 's-round', 5],
+      [62, 38,  70, -22, 's-blob',  5],
+      [46, 50,  60,  12, 's-round', 7],
+      [50, 30,  58, -28, 's-soft',  6],
+      [12, 12,  64,  20, 's-rect',  4],
     ];
-    placed.push(...EDGE_EXTRAS);
 
-    placed.forEach((p, i) => {
-      const isSub  = underTitle(p.x, p.y);
-      const size   = isSub
-        ? Math.round(48 + Math.random() * 32)    // sous le titre : 48–80 px
-        : Math.round(90 + Math.random() * 70);   // ailleurs      : 90–160 px
-      const opacity = 1;
-      const rot   = Math.round((Math.random() - 0.5) * 56);
-      const shape = PATCH_SHAPES[Math.floor(Math.random() * PATCH_SHAPES.length)];
-      const z     = isSub ? 1 : (Math.floor(Math.random() * 4) + 2);
-      const src   = deck[i % deck.length];
-      const el    = document.createElement('div');
+    const mosaic = document.getElementById('mosaic');
+    PATCHES.forEach((p, i) => {
+      const [x, y, size, rot, shape, z] = p;
+      const src = IMAGES[i % IMAGES.length];
+      const el = document.createElement('div');
       el.className = `patch ${shape}`;
       el.style.cssText = `
-        left:${p.x}%;top:${p.y}%;
-        width:${size}px;height:${size}px;
-        margin-left:${-size/2}px;margin-top:${-size/2}px;
-        transform:rotate(${rot}deg);
-        z-index:${z};opacity:${opacity};
-        --t-base:rotate(${rot}deg);
+        left: ${x}%;
+        top: ${y}%;
+        width: ${size}px;
+        height: ${size}px;
+        margin-left: ${-size / 2}px;
+        margin-top: ${-size / 2}px;
+        transform: rotate(${rot}deg);
+        z-index: ${z};
+        --t-base: rotate(${rot}deg);
       `;
       el.innerHTML = `<img src="${src}" alt="" />`;
       mosaic.appendChild(el);

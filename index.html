@@ -699,6 +699,16 @@
       aspect-ratio: 1;
       margin: 0 auto;
     }
+    /* Ombre projetée fixe : posée derrière le disque, elle ne tourne pas avec lui */
+    .vinyl-stage::before {
+      content: '';
+      position: absolute;
+      inset: 4%;
+      border-radius: 50%;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6);
+      z-index: 0;
+      pointer-events: none;
+    }
     .vinyl-record {
       display: block;
       position: absolute;
@@ -727,7 +737,6 @@
         radial-gradient(circle, #1c1428 0%, #0a050e 78%, #020004 100%);
       box-shadow:
         0 0 0 1px rgba(0,0,0,0.7),
-        0 22px 50px rgba(0,0,0,0.6),
         inset 0 0 60px rgba(0,0,0,0.5),
         inset 0 6px 14px rgba(255,255,255,0.05);
     }

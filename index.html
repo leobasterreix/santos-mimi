@@ -642,6 +642,10 @@
       width: 92%; height: 92%; object-fit: contain; display: block;
       filter: drop-shadow(0 8px 16px rgba(60, 10, 30, 0.22));
       transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      /* Fix Safari scale/transform blurriness */
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
     }
     .project:hover .thumb img { transform: scale(1.08); }
     .project h3 {
@@ -1125,14 +1129,20 @@
       transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
                   box-shadow 0.5s ease;
       box-shadow: 0 12px 28px rgba(107, 45, 122, 0.14);
+      contain: paint;
     }
     .patch-inner {
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
       border-radius: inherit;
+      /* Fix Safari blurriness */
+      filter: blur(0);
+      -webkit-filter: blur(0);
+      will-change: transform;
+      contain: paint;
     }
-    .patch-card.flipped .patch-inner { transform: rotateY(180deg); }
+    .patch-card.flipped .patch-inner { transform: rotateY(180deg) translate3d(0, 0, 0); }
     .patch-front, .patch-back {
       border-radius: inherit;
       -webkit-backface-visibility: hidden;
@@ -1143,11 +1153,15 @@
       padding: 1.2rem 1.2rem 1.4rem;
       background: rgba(255, 247, 237, 0.62);
       backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
     }
     .patch-back {
       position: absolute; inset: 0;
-      transform: rotateY(180deg);
+      transform: rotateY(180deg) translate3d(0, 0, 0);
+      -webkit-transform: rotateY(180deg) translate3d(0, 0, 0);
       overflow: hidden;
       background: #120b05;
       display: flex;
@@ -1155,6 +1169,18 @@
     .patch-back img {
       width: 100%; height: 100%;
       object-fit: cover; display: block;
+      /* Fix pixelation/blur in WebKit 3D rotations */
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
+    }
+
+    @media (max-width: 768px) {
+      .patch-front {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(255, 247, 237, 0.96) !important;
+      }
     }
     .patch-card:hover {
       transform: translateY(-8px) rotate(0deg) !important;
@@ -1290,7 +1316,13 @@
       transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), rotate 0.45s ease;
       cursor: none;
     }
-    .polaroid img { width: 100%; display: block; }
+    .polaroid img {
+      width: 100%; display: block;
+      /* Fix Safari blurriness under transforms */
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
+    }
     .polaroid .caption {
       position: absolute;
       bottom: 6px; left: 0; right: 0;
@@ -1498,9 +1530,11 @@
     /* ─── Filmstrip band ─────────────────────────────── */
     .filmstrip-section {
       position: relative; z-index: 5; overflow: hidden; padding: 4.5rem 0;
+      contain: paint;
     }
     .filmstrip-track {
       overflow: hidden;
+      contain: paint;
       mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
       -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
     }
@@ -1508,7 +1542,7 @@
       display: flex; align-items: center;
       gap: 5rem; width: max-content; padding: 5rem 0;
       animation: filmscroll 55s linear infinite;
-      will-change: transform;
+      /* Remove will-change here to prevent Safari from scaling down the entire 4400px track texture */
     }
     /* Le marquee ne s'arrête jamais, même au survol */
     .filmstrip-section:hover .filmstrip-reel { animation-play-state: running; }
@@ -1516,16 +1550,32 @@
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
     }
-    .film-frame { position: relative; flex-shrink: 0; width: 195px; }
+    .film-frame {
+      position: relative; flex-shrink: 0; width: 195px;
+      /* Force high-resolution layer isolation for individual frames in WebKit */
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
     .film-photo {
       display: block; width: 100%;
       border: 9px solid #110a04;
       box-shadow: 0 20px 44px rgba(0,0,0,0.58), inset 0 0 0 1px rgba(255,255,255,0.06);
+      /* Keep images crisp in transforms */
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
     }
     .film-sticker {
       position: absolute; pointer-events: none;
       filter: drop-shadow(0 4px 10px rgba(0,0,0,0.32));
       transition: filter 0.4s ease;
+      /* Keep stickers crisp */
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
     }
     .film-frame:hover .film-sticker {
       filter: drop-shadow(0 8px 18px rgba(0,0,0,0.45));
@@ -1686,20 +1736,25 @@
       perspective: 1000px;
       border: none; padding: 0; background: none;
       cursor: none;
+      contain: paint;
     }
     .memory-card .m-inner {
       position: absolute; inset: 0;
       transform-style: preserve-3d;
       transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      /* Fix Safari blurriness during scale and rotation */
+      filter: blur(0);
+      -webkit-filter: blur(0);
+      will-change: transform;
     }
     .memory-card:hover .m-inner {
-      transform: scale(1.06);
+      transform: scale(1.06) translate3d(0, 0, 0);
     }
     .memory-card.flipped .m-inner {
-      transform: rotateY(180deg) scale(1.06);
+      transform: rotateY(180deg) scale(1.06) translate3d(0, 0, 0);
     }
     .memory-card.matched .m-inner {
-      transform: rotateY(180deg) scale(1);
+      transform: rotateY(180deg) scale(1) translate3d(0, 0, 0);
     }
     .m-face {
       position: absolute; inset: 0;
@@ -1708,6 +1763,7 @@
       display: grid; place-items: center;
       overflow: hidden;
       box-shadow: 0 4px 16px rgba(107, 45, 122, 0.08);
+      contain: paint;
     }
     .m-front {
       background: transparent;
@@ -1715,6 +1771,8 @@
       border: none;
       box-shadow: none;
       overflow: visible !important;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
     }
     .memory-card:hover .m-front {
       background: transparent;
@@ -1724,6 +1782,9 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
     }
     .m-front svg {
       width: 90% !important;
@@ -1733,12 +1794,19 @@
       display: block;
       transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       filter: drop-shadow(0 3px 8px rgba(107, 45, 122, 0.12));
+      /* Keep vectors sharp during animation */
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
     }
     .memory-card:hover .m-front svg {
-      transform: scale(1.08);
+      transform: scale(1.08) translate3d(0, 0, 0);
     }
     .m-back {
-      transform: rotateY(180deg);
+      transform: rotateY(180deg) translate3d(0, 0, 0);
+      -webkit-transform: rotateY(180deg) translate3d(0, 0, 0);
       background:
         radial-gradient(circle at 30% 28%, var(--pastel-light, #ffd9ec) 0%, transparent 55%),
         linear-gradient(135deg, var(--pastel-1, var(--pink-hot)), var(--pastel-2, var(--purple)) 60%, var(--teal-deep));
@@ -1754,6 +1822,10 @@
       height: auto;
       object-fit: contain;
       filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+      /* Fix resolution loss on Mobile WebKit */
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
     }
     .memory-card.matched .m-face {
       box-shadow: 0 0 0 2px var(--turquoise), 0 6px 18px rgba(45, 212, 191, 0.3);
@@ -1895,132 +1967,132 @@
       <div class="filmstrip-reel">
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%20%281%29%203.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2053.png" alt="" style="width:76px;top:-34px;left:-38px;transform:rotate(-17deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2054.png" alt="" style="width:70px;bottom:-30px;left:-32px;transform:rotate(14deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2055.png" alt="" style="width:74px;top:-28px;right:-34px;transform:rotate(11deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2057.png" alt="" style="width:68px;bottom:-32px;right:-36px;transform:rotate(-10deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%20%281%29%203.png" alt="" />
+          <img class="film-sticker" src="images/image%2053.png" alt="" style="width:76px;top:-34px;left:-38px;transform:rotate(-17deg)" />
+          <img class="film-sticker" src="images/image%2054.png" alt="" style="width:70px;bottom:-30px;left:-32px;transform:rotate(14deg)" />
+          <img class="film-sticker" src="images/image%2055.png" alt="" style="width:74px;top:-28px;right:-34px;transform:rotate(11deg)" />
+          <img class="film-sticker" src="images/image%2057.png" alt="" style="width:68px;bottom:-32px;right:-36px;transform:rotate(-10deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%20%281%29%204.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2058.png" alt="" style="width:78px;top:-36px;left:-36px;transform:rotate(8deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2059.png" alt="" style="width:72px;bottom:-28px;left:-30px;transform:rotate(-12deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2060.png" alt="" style="width:70px;top:-30px;right:-32px;transform:rotate(-15deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2062.png" alt="" style="width:74px;bottom:-34px;right:-34px;transform:rotate(18deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%20%281%29%204.png" alt="" />
+          <img class="film-sticker" src="images/image%2058.png" alt="" style="width:78px;top:-36px;left:-36px;transform:rotate(8deg)" />
+          <img class="film-sticker" src="images/image%2059.png" alt="" style="width:72px;bottom:-28px;left:-30px;transform:rotate(-12deg)" />
+          <img class="film-sticker" src="images/image%2060.png" alt="" style="width:70px;top:-30px;right:-32px;transform:rotate(-15deg)" />
+          <img class="film-sticker" src="images/image%2062.png" alt="" style="width:74px;bottom:-34px;right:-34px;transform:rotate(18deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%20%281%29%205.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2064.png" alt="" style="width:80px;top:-38px;left:-40px;transform:rotate(-13deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2065.png" alt="" style="width:72px;bottom:-26px;left:-34px;transform:rotate(9deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2067.png" alt="" style="width:68px;top:-26px;right:-36px;transform:rotate(16deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2068.png" alt="" style="width:76px;bottom:-32px;right:-32px;transform:rotate(-7deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%20%281%29%205.png" alt="" />
+          <img class="film-sticker" src="images/image%2064.png" alt="" style="width:80px;top:-38px;left:-40px;transform:rotate(-13deg)" />
+          <img class="film-sticker" src="images/image%2065.png" alt="" style="width:72px;bottom:-26px;left:-34px;transform:rotate(9deg)" />
+          <img class="film-sticker" src="images/image%2067.png" alt="" style="width:68px;top:-26px;right:-36px;transform:rotate(16deg)" />
+          <img class="film-sticker" src="images/image%2068.png" alt="" style="width:76px;bottom:-32px;right:-32px;transform:rotate(-7deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%20%281%29%206.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2069.png" alt="" style="width:82px;top:-40px;left:-42px;transform:rotate(-8deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2072.png" alt="" style="width:74px;bottom:-30px;left:-36px;transform:rotate(13deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2075.png" alt="" style="width:76px;top:-24px;right:-38px;transform:rotate(-19deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2076.png" alt="" style="width:70px;bottom:-36px;right:-34px;transform:rotate(10deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%20%281%29%206.png" alt="" />
+          <img class="film-sticker" src="images/image%2069.png" alt="" style="width:82px;top:-40px;left:-42px;transform:rotate(-8deg)" />
+          <img class="film-sticker" src="images/image%2072.png" alt="" style="width:74px;bottom:-30px;left:-36px;transform:rotate(13deg)" />
+          <img class="film-sticker" src="images/image%2075.png" alt="" style="width:76px;top:-24px;right:-38px;transform:rotate(-19deg)" />
+          <img class="film-sticker" src="images/image%2076.png" alt="" style="width:70px;bottom:-36px;right:-34px;transform:rotate(10deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%202%203.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2078.png" alt="" style="width:78px;top:-32px;left:-38px;transform:rotate(15deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2081.png" alt="" style="width:72px;bottom:-34px;left:-30px;transform:rotate(-9deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2082.png" alt="" style="width:74px;top:-36px;right:-32px;transform:rotate(-13deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2084.png" alt="" style="width:68px;bottom:-28px;right:-28px;transform:rotate(16deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%202%203.png" alt="" />
+          <img class="film-sticker" src="images/image%2078.png" alt="" style="width:78px;top:-32px;left:-38px;transform:rotate(15deg)" />
+          <img class="film-sticker" src="images/image%2081.png" alt="" style="width:72px;bottom:-34px;left:-30px;transform:rotate(-9deg)" />
+          <img class="film-sticker" src="images/image%2082.png" alt="" style="width:74px;top:-36px;right:-32px;transform:rotate(-13deg)" />
+          <img class="film-sticker" src="images/image%2084.png" alt="" style="width:68px;bottom:-28px;right:-28px;transform:rotate(16deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%202%204.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2085.png" alt="" style="width:76px;top:-38px;left:-36px;transform:rotate(-14deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2086.png" alt="" style="width:72px;bottom:-32px;left:-32px;transform:rotate(11deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2087.png" alt="" style="width:78px;top:-28px;right:-34px;transform:rotate(8deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2067.png" alt="" style="width:70px;bottom:-30px;right:-36px;transform:rotate(-17deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%202%204.png" alt="" />
+          <img class="film-sticker" src="images/image%2085.png" alt="" style="width:76px;top:-38px;left:-36px;transform:rotate(-14deg)" />
+          <img class="film-sticker" src="images/image%2086.png" alt="" style="width:72px;bottom:-32px;left:-32px;transform:rotate(11deg)" />
+          <img class="film-sticker" src="images/image%2087.png" alt="" style="width:78px;top:-28px;right:-34px;transform:rotate(8deg)" />
+          <img class="film-sticker" src="images/image%2067.png" alt="" style="width:70px;bottom:-30px;right:-36px;transform:rotate(-17deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%202%205.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2053.png" alt="" style="width:74px;top:-34px;left:-40px;transform:rotate(6deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2060.png" alt="" style="width:70px;bottom:-28px;left:-30px;transform:rotate(-11deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2072.png" alt="" style="width:76px;top:-30px;right:-32px;transform:rotate(14deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2084.png" alt="" style="width:72px;bottom:-34px;right:-38px;transform:rotate(-8deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%202%205.png" alt="" />
+          <img class="film-sticker" src="images/image%2053.png" alt="" style="width:74px;top:-34px;left:-40px;transform:rotate(6deg)" />
+          <img class="film-sticker" src="images/image%2060.png" alt="" style="width:70px;bottom:-28px;left:-30px;transform:rotate(-11deg)" />
+          <img class="film-sticker" src="images/image%2072.png" alt="" style="width:76px;top:-30px;right:-32px;transform:rotate(14deg)" />
+          <img class="film-sticker" src="images/image%2084.png" alt="" style="width:72px;bottom:-34px;right:-38px;transform:rotate(-8deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%202%206.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2055.png" alt="" style="width:78px;top:-36px;left:-36px;transform:rotate(-10deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2062.png" alt="" style="width:74px;bottom:-30px;left:-28px;transform:rotate(17deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2076.png" alt="" style="width:76px;top:-26px;right:-32px;transform:rotate(-14deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2087.png" alt="" style="width:70px;bottom:-32px;right:-36px;transform:rotate(9deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%202%206.png" alt="" />
+          <img class="film-sticker" src="images/image%2055.png" alt="" style="width:78px;top:-36px;left:-36px;transform:rotate(-10deg)" />
+          <img class="film-sticker" src="images/image%2062.png" alt="" style="width:74px;bottom:-30px;left:-28px;transform:rotate(17deg)" />
+          <img class="film-sticker" src="images/image%2076.png" alt="" style="width:76px;top:-26px;right:-32px;transform:rotate(-14deg)" />
+          <img class="film-sticker" src="images/image%2087.png" alt="" style="width:70px;bottom:-32px;right:-36px;transform:rotate(9deg)" />
         </div>
 
         <!-- Duplicate pour boucle seamless -->
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%20%281%29%203.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2053.png" alt="" style="width:76px;top:-34px;left:-38px;transform:rotate(-17deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2054.png" alt="" style="width:70px;bottom:-30px;left:-32px;transform:rotate(14deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2055.png" alt="" style="width:74px;top:-28px;right:-34px;transform:rotate(11deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2057.png" alt="" style="width:68px;bottom:-32px;right:-36px;transform:rotate(-10deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%20%281%29%203.png" alt="" />
+          <img class="film-sticker" src="images/image%2053.png" alt="" style="width:76px;top:-34px;left:-38px;transform:rotate(-17deg)" />
+          <img class="film-sticker" src="images/image%2054.png" alt="" style="width:70px;bottom:-30px;left:-32px;transform:rotate(14deg)" />
+          <img class="film-sticker" src="images/image%2055.png" alt="" style="width:74px;top:-28px;right:-34px;transform:rotate(11deg)" />
+          <img class="film-sticker" src="images/image%2057.png" alt="" style="width:68px;bottom:-32px;right:-36px;transform:rotate(-10deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%20%281%29%204.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2058.png" alt="" style="width:78px;top:-36px;left:-36px;transform:rotate(8deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2059.png" alt="" style="width:72px;bottom:-28px;left:-30px;transform:rotate(-12deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2060.png" alt="" style="width:70px;top:-30px;right:-32px;transform:rotate(-15deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2062.png" alt="" style="width:74px;bottom:-34px;right:-34px;transform:rotate(18deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%20%281%29%204.png" alt="" />
+          <img class="film-sticker" src="images/image%2058.png" alt="" style="width:78px;top:-36px;left:-36px;transform:rotate(8deg)" />
+          <img class="film-sticker" src="images/image%2059.png" alt="" style="width:72px;bottom:-28px;left:-30px;transform:rotate(-12deg)" />
+          <img class="film-sticker" src="images/image%2060.png" alt="" style="width:70px;top:-30px;right:-32px;transform:rotate(-15deg)" />
+          <img class="film-sticker" src="images/image%2062.png" alt="" style="width:74px;bottom:-34px;right:-34px;transform:rotate(18deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%20%281%29%205.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2064.png" alt="" style="width:80px;top:-38px;left:-40px;transform:rotate(-13deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2065.png" alt="" style="width:72px;bottom:-26px;left:-34px;transform:rotate(9deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2067.png" alt="" style="width:68px;top:-26px;right:-36px;transform:rotate(16deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2068.png" alt="" style="width:76px;bottom:-32px;right:-32px;transform:rotate(-7deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%20%281%29%205.png" alt="" />
+          <img class="film-sticker" src="images/image%2064.png" alt="" style="width:80px;top:-38px;left:-40px;transform:rotate(-13deg)" />
+          <img class="film-sticker" src="images/image%2065.png" alt="" style="width:72px;bottom:-26px;left:-34px;transform:rotate(9deg)" />
+          <img class="film-sticker" src="images/image%2067.png" alt="" style="width:68px;top:-26px;right:-36px;transform:rotate(16deg)" />
+          <img class="film-sticker" src="images/image%2068.png" alt="" style="width:76px;bottom:-32px;right:-32px;transform:rotate(-7deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%20%281%29%206.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2069.png" alt="" style="width:82px;top:-40px;left:-42px;transform:rotate(-8deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2072.png" alt="" style="width:74px;bottom:-30px;left:-36px;transform:rotate(13deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2075.png" alt="" style="width:76px;top:-24px;right:-38px;transform:rotate(-19deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2076.png" alt="" style="width:70px;bottom:-36px;right:-34px;transform:rotate(10deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%20%281%29%206.png" alt="" />
+          <img class="film-sticker" src="images/image%2069.png" alt="" style="width:82px;top:-40px;left:-42px;transform:rotate(-8deg)" />
+          <img class="film-sticker" src="images/image%2072.png" alt="" style="width:74px;bottom:-30px;left:-36px;transform:rotate(13deg)" />
+          <img class="film-sticker" src="images/image%2075.png" alt="" style="width:76px;top:-24px;right:-38px;transform:rotate(-19deg)" />
+          <img class="film-sticker" src="images/image%2076.png" alt="" style="width:70px;bottom:-36px;right:-34px;transform:rotate(10deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%202%203.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2078.png" alt="" style="width:78px;top:-32px;left:-38px;transform:rotate(15deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2081.png" alt="" style="width:72px;bottom:-34px;left:-30px;transform:rotate(-9deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2082.png" alt="" style="width:74px;top:-36px;right:-32px;transform:rotate(-13deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2084.png" alt="" style="width:68px;bottom:-28px;right:-28px;transform:rotate(16deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%202%203.png" alt="" />
+          <img class="film-sticker" src="images/image%2078.png" alt="" style="width:78px;top:-32px;left:-38px;transform:rotate(15deg)" />
+          <img class="film-sticker" src="images/image%2081.png" alt="" style="width:72px;bottom:-34px;left:-30px;transform:rotate(-9deg)" />
+          <img class="film-sticker" src="images/image%2082.png" alt="" style="width:74px;top:-36px;right:-32px;transform:rotate(-13deg)" />
+          <img class="film-sticker" src="images/image%2084.png" alt="" style="width:68px;bottom:-28px;right:-28px;transform:rotate(16deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%202%204.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2085.png" alt="" style="width:76px;top:-38px;left:-36px;transform:rotate(-14deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2086.png" alt="" style="width:72px;bottom:-32px;left:-32px;transform:rotate(11deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2087.png" alt="" style="width:78px;top:-28px;right:-34px;transform:rotate(8deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2067.png" alt="" style="width:70px;bottom:-30px;right:-36px;transform:rotate(-17deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%202%204.png" alt="" />
+          <img class="film-sticker" src="images/image%2085.png" alt="" style="width:76px;top:-38px;left:-36px;transform:rotate(-14deg)" />
+          <img class="film-sticker" src="images/image%2086.png" alt="" style="width:72px;bottom:-32px;left:-32px;transform:rotate(11deg)" />
+          <img class="film-sticker" src="images/image%2087.png" alt="" style="width:78px;top:-28px;right:-34px;transform:rotate(8deg)" />
+          <img class="film-sticker" src="images/image%2067.png" alt="" style="width:70px;bottom:-30px;right:-36px;transform:rotate(-17deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%202%205.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2053.png" alt="" style="width:74px;top:-34px;left:-40px;transform:rotate(6deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2060.png" alt="" style="width:70px;bottom:-28px;left:-30px;transform:rotate(-11deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2072.png" alt="" style="width:76px;top:-30px;right:-32px;transform:rotate(14deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2084.png" alt="" style="width:72px;bottom:-34px;right:-38px;transform:rotate(-8deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%202%205.png" alt="" />
+          <img class="film-sticker" src="images/image%2053.png" alt="" style="width:74px;top:-34px;left:-40px;transform:rotate(6deg)" />
+          <img class="film-sticker" src="images/image%2060.png" alt="" style="width:70px;bottom:-28px;left:-30px;transform:rotate(-11deg)" />
+          <img class="film-sticker" src="images/image%2072.png" alt="" style="width:76px;top:-30px;right:-32px;transform:rotate(14deg)" />
+          <img class="film-sticker" src="images/image%2084.png" alt="" style="width:72px;bottom:-34px;right:-38px;transform:rotate(-8deg)" />
         </div>
 
         <div class="film-frame">
-          <img class="film-photo" loading="lazy" src="images/TaPhotoTabobine%202%206.png" alt="" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2055.png" alt="" style="width:78px;top:-36px;left:-36px;transform:rotate(-10deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2062.png" alt="" style="width:74px;bottom:-30px;left:-28px;transform:rotate(17deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2076.png" alt="" style="width:76px;top:-26px;right:-32px;transform:rotate(-14deg)" />
-          <img class="film-sticker" loading="lazy" fetchpriority="low" src="images/image%2087.png" alt="" style="width:70px;bottom:-32px;right:-36px;transform:rotate(9deg)" />
+          <img class="film-photo" src="images/TaPhotoTabobine%202%206.png" alt="" />
+          <img class="film-sticker" src="images/image%2055.png" alt="" style="width:78px;top:-36px;left:-36px;transform:rotate(-10deg)" />
+          <img class="film-sticker" src="images/image%2062.png" alt="" style="width:74px;bottom:-30px;left:-28px;transform:rotate(17deg)" />
+          <img class="film-sticker" src="images/image%2076.png" alt="" style="width:76px;top:-26px;right:-32px;transform:rotate(-14deg)" />
+          <img class="film-sticker" src="images/image%2087.png" alt="" style="width:70px;bottom:-32px;right:-36px;transform:rotate(9deg)" />
         </div>
 
       </div>
@@ -2039,66 +2111,66 @@
           <div class="patch-inner">
             <div class="patch-front">
               <div class="pin"></div>
-              <div class="thumb"><img loading="lazy" src="images/image%2054.png" alt="" /></div>
+              <div class="thumb"><img src="images/image%2054.png" alt="" /></div>
               <h3>Bubble Cola</h3>
               <p class="meta">branding · 2026</p>
             </div>
-            <div class="patch-back"><img loading="lazy" src="images/TaPhotoTabobine%20%281%29%203.png" alt="Santos &amp; Mimi" /></div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%203.png" alt="Santos &amp; Mimi" /></div>
           </div>
         </article>
         <article class="patch-card">
           <div class="patch-inner">
             <div class="patch-front">
               <div class="pin"></div>
-              <div class="thumb"><img loading="lazy" src="images/image%2063.png" alt="" /></div>
+              <div class="thumb"><img src="images/image%2063.png" alt="" /></div>
               <h3>Aqua Editions</h3>
               <p class="meta">art direction</p>
             </div>
-            <div class="patch-back"><img loading="lazy" src="images/TaPhotoTabobine%20%281%29%204.png" alt="Santos &amp; Mimi" /></div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%204.png" alt="Santos &amp; Mimi" /></div>
           </div>
         </article>
         <article class="patch-card">
           <div class="patch-inner">
             <div class="patch-front">
               <div class="pin"></div>
-              <div class="thumb"><img loading="lazy" src="images/image%2078.png" alt="" /></div>
+              <div class="thumb"><img src="images/image%2078.png" alt="" /></div>
               <h3>Mimi Beach Club</h3>
               <p class="meta">identité · signalétique</p>
             </div>
-            <div class="patch-back"><img loading="lazy" src="images/TaPhotoTabobine%20%281%29%205.png" alt="Santos &amp; Mimi" /></div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%205.png" alt="Santos &amp; Mimi" /></div>
           </div>
         </article>
         <article class="patch-card">
           <div class="patch-inner">
             <div class="patch-front">
               <div class="pin"></div>
-              <div class="thumb"><img loading="lazy" src="images/image%2068.png" alt="" /></div>
+              <div class="thumb"><img src="images/image%2068.png" alt="" /></div>
               <h3>Holo Records</h3>
               <p class="meta">label · covers y2k</p>
             </div>
-            <div class="patch-back"><img loading="lazy" src="images/TaPhotoTabobine%20%281%29%206.png" alt="Santos &amp; Mimi" /></div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%206.png" alt="Santos &amp; Mimi" /></div>
           </div>
         </article>
         <article class="patch-card">
           <div class="patch-inner">
             <div class="patch-front">
               <div class="pin"></div>
-              <div class="thumb"><img loading="lazy" src="images/image%2076.png" alt="" /></div>
+              <div class="thumb"><img src="images/image%2076.png" alt="" /></div>
               <h3>Shellz Mag</h3>
               <p class="meta">magazine · 4 numéros</p>
             </div>
-            <div class="patch-back"><img loading="lazy" src="images/TaPhotoTabobine%202%203.png" alt="Santos &amp; Mimi" /></div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%202%203.png" alt="Santos &amp; Mimi" /></div>
           </div>
         </article>
         <article class="patch-card">
           <div class="patch-inner">
             <div class="patch-front">
               <div class="pin"></div>
-              <div class="thumb"><img loading="lazy" src="images/image%2087.png" alt="" /></div>
+              <div class="thumb"><img src="images/image%2087.png" alt="" /></div>
               <h3>Glitter Tour</h3>
               <p class="meta">tournée · zara l.</p>
             </div>
-            <div class="patch-back"><img loading="lazy" src="images/TaPhotoTabobine%202%204.png" alt="Santos &amp; Mimi" /></div>
+            <div class="patch-back"><img src="images/TaPhotoTabobine%202%204.png" alt="Santos &amp; Mimi" /></div>
           </div>
         </article>
       </div>
@@ -2145,15 +2217,15 @@
     <div class="container">
       <div class="polaroids-row" aria-hidden="true">
         <div class="polaroid">
-          <img loading="lazy" src="images/TaPhotoTabobine%202%203.png" alt="" />
+          <img src="images/TaPhotoTabobine%202%203.png" alt="" />
           <div class="caption">on a 18 ans</div>
         </div>
         <div class="polaroid">
-          <img loading="lazy" src="images/TaPhotoTabobine%202%204.png" alt="" />
+          <img src="images/TaPhotoTabobine%202%204.png" alt="" />
           <div class="caption">photomaton</div>
         </div>
         <div class="polaroid">
-          <img loading="lazy" src="images/TaPhotoTabobine%202%205.png" alt="" />
+          <img src="images/TaPhotoTabobine%202%205.png" alt="" />
           <div class="caption">peace ✌︎</div>
         </div>
       </div>
@@ -2173,7 +2245,7 @@
       <div class="vinyl-stage" id="vinylStage">
         <div class="vinyl-record" id="vinyl"></div>
         <div class="vinyl-shell" aria-hidden="true">
-          <img loading="lazy" src="images/image%2066.png" alt="" />
+          <img src="images/image%2066.png" alt="" />
         </div>
         <div class="note-field" id="noteField" aria-hidden="true"></div>
         <div class="vinyl-hint">choisis un vinyle · clique pour lancer</div>

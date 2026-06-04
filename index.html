@@ -184,6 +184,12 @@
     }
     .cursor-ring.hover { transform: scale(1.6); border-color: var(--teal-deep); }
 
+    /* Pas de curseur custom sur tactile / mobile */
+    @media (hover: none), (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none !important; }
+      body { cursor: auto; }
+    }
+
     /* ─── Global layers ──────────────────────────────────── */
     .particles, .ripples {
       position: fixed; inset: 0;

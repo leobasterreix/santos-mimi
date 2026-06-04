@@ -47,15 +47,22 @@
     }
     .cursor-dot {
       width: 8px; height: 8px;
-      background: radial-gradient(circle, #fff 0%, #22d3ee 80%);
+      background: radial-gradient(circle, #fff 0%, #d63384 80%);
       border-radius: 50%;
-      box-shadow: 0 0 12px #22d3ee, 0 0 24px #0e7490;
+      box-shadow: 0 0 12px #d63384, 0 0 24px #e8506f;
     }
     .cursor-ring {
       width: 38px; height: 38px;
-      border: 1.5px solid rgba(34,211,238,0.55);
+      border: 1.5px solid rgba(214, 51, 132, 0.55);
       border-radius: 50%;
-      transition: border-color 0.18s ease;
+      transition: transform 0.18s ease, border-color 0.18s ease;
+      mix-blend-mode: screen;
+    }
+
+    /* ── Pas de curseur custom sur tactile / mobile ── */
+    @media (hover: none), (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none !important; }
+      body, .home-link { cursor: auto; }
     }
 
     /* ── Text labels ── */
@@ -252,8 +259,8 @@
     cDot.style.transform = `translate(${mx - 4}px,${my - 4}px)`;
   });
   document.querySelectorAll('a').forEach(el => {
-    el.addEventListener('mouseenter', () => { rScale = 1.6; cRing.style.borderColor = '#fbbf24'; });
-    el.addEventListener('mouseleave', () => { rScale = 1;   cRing.style.borderColor = 'rgba(34,211,238,0.55)'; });
+    el.addEventListener('mouseenter', () => { rScale = 1.6; cRing.style.borderColor = '#0e7490'; });
+    el.addEventListener('mouseleave', () => { rScale = 1;   cRing.style.borderColor = 'rgba(214, 51, 132, 0.55)'; });
   });
   (function tick() {
     rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;

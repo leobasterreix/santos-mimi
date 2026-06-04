@@ -2131,6 +2131,52 @@
     loop();
 
     addEventListener('resize', () => { fit(pCanvas); fit(rCanvas); });
+
+    /* ─── Sélection de texte : dégradé pastel animé ───────── */
+    (function () {
+      // 5 pastels cohérents avec le thème (rose, pêche, jaune, menthe, lavande)
+      const palette = [
+        [255, 184, 212],
+        [255, 209, 184],
+        [255, 240, 184],
+        [184, 240, 219],
+        [214, 199, 255],
+      ];
+      const TEXT  = '#1a1230';              // texte foncé : lisible sur chaque pastel
+      const CYCLE = 16000;                  // durée d'un tour complet de la palette (ms)
+      const seg   = CYCLE / palette.length;
+      const sel   = document.createElement('style');
+      document.head.appendChild(sel);
+
+      const ease = t => t * t * (3 - 2 * t);            // smoothstep : chaque couleur « respire »
+      const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+      let last = '';
+
+      function apply(col) {
+        if (col === last) return;                       // n'écrit que si la couleur change vraiment
+        last = col;
+        sel.textContent =
+          '::selection{background:' + col + ';color:' + TEXT + ';}' +
+          '::-moz-selection{background:' + col + ';color:' + TEXT + ';}';
+      }
+
+      // Accessibilité : mouvement réduit → couleur fixe, pas d'animation
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const c = palette[0];
+        apply('rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')');
+        return;
+      }
+
+      (function frame(now) {
+        const pos = (now % CYCLE) / seg;                // 0 … palette.length
+        const i = Math.floor(pos);
+        const t = ease(pos - i);
+        const a = palette[i];
+        const b = palette[(i + 1) % palette.length];
+        apply('rgb(' + lerp(a[0], b[0], t) + ',' + lerp(a[1], b[1], t) + ',' + lerp(a[2], b[2], t) + ')');
+        requestAnimationFrame(frame);
+      })(0);
+    })();
   </script>
 </body>
 </html>

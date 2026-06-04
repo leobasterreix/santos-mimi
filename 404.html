@@ -119,13 +119,20 @@
       box-shadow: 0 16px 36px rgba(34,211,238,0.56);
     }
 
-    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .particles, .ripples {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    .particles { z-index: 3; }
+    .ripples { z-index: 2; mix-blend-mode: screen; }
   </style>
 </head>
 <body>
   <div class="cursor-ring" id="cRing"></div>
   <div class="cursor-dot"  id="cDot"></div>
   <canvas class="particles" id="pCanvas"></canvas>
+  <canvas class="ripples"   id="rCanvas"></canvas>
 
   <p class="kicker">santos &amp; mimi · bead studio · MMXXVI</p>
   <div id="stage"></div>
@@ -268,32 +275,183 @@
     requestAnimationFrame(tick);
   })();
 
-  /* ─── Ambient particles ─── */
-  const pc   = document.getElementById('pCanvas');
-  const pCtx = pc.getContext('2d');
-  const fit  = () => { pc.width = innerWidth; pc.height = innerHeight; };
-  fit(); addEventListener('resize', fit);
-  const COLS = ['rgba(34,211,238,','rgba(251,191,36,','rgba(167,139,250,','rgba(255,255,255,'];
-  const pts  = [];
-  setInterval(() => pts.push({
-    x: Math.random() * innerWidth, y: -12,
-    vx: (Math.random() - 0.5) * 0.44, vy: Math.random() * 0.5 + 0.18,
-    s: Math.random() * 1.7 + 0.4, life: 1, dc: 0.0022 + Math.random() * 0.002,
-    c: COLS[Math.floor(Math.random() * COLS.length)],
-  }), 110);
-  (function ploop() {
-    pCtx.clearRect(0, 0, pc.width, pc.height);
-    for (let i = pts.length - 1; i >= 0; i--) {
-      const p = pts[i];
-      p.x += p.vx; p.y += p.vy; p.life -= p.dc;
-      if (p.life <= 0 || p.y > innerHeight + 20) { pts.splice(i, 1); continue; }
-      pCtx.beginPath();
-      pCtx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
-      pCtx.fillStyle = p.c + p.life.toFixed(2) + ')';
-      pCtx.fill();
+  /* ─── Particules + ondulations (identiques à la page d'accueil) ─── */
+  const pCanvas = document.querySelector('.particles');
+  const pCtx = pCanvas.getContext('2d');
+  function fit(c) { c.width = innerWidth * devicePixelRatio; c.height = innerHeight * devicePixelRatio; c.getContext('2d').scale(devicePixelRatio, devicePixelRatio); }
+  fit(pCanvas);
+
+  const SHAPES = ['sparkle', 'shell', 'sand', 'star', 'gem'];
+  const COLORS = ['#c41e3a', '#d63384', '#f59e0b', '#10b981', '#2dd4bf', '#8b5cf6', '#fff7ec', '#f4e4c1'];
+
+  class Particle {
+    constructor(x, y, opts = {}) {
+      this.x = x; this.y = y;
+      this.vx = opts.vx ?? (Math.random() - 0.5) * 2.2;
+      this.vy = opts.vy ?? (Math.random() * -2 - 0.5);
+      this.size = opts.size ?? (Math.random() * 6 + 3);
+      this.life = 1;
+      this.decay = opts.decay ?? 0.008;
+      this.gravity = opts.gravity ?? 0.04;
+      this.shape = opts.shape ?? SHAPES[(Math.random() * SHAPES.length) | 0];
+      this.color = opts.color ?? COLORS[(Math.random() * COLORS.length) | 0];
+      this.rot = Math.random() * Math.PI * 2;
+      this.spin = (Math.random() - 0.5) * 0.1;
     }
-    requestAnimationFrame(ploop);
-  })();
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vy += this.gravity;
+      this.vx *= 0.995;
+      this.rot += this.spin;
+      this.life -= this.decay;
+    }
+    draw(ctx) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, this.life);
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rot);
+      ctx.fillStyle = this.color;
+      ctx.strokeStyle = this.color;
+
+      if (this.shape === 'sparkle') {
+        const s = this.size;
+        ctx.beginPath();
+        for (let i = 0; i < 4; i++) { ctx.moveTo(0, 0); ctx.lineTo(0, -s); ctx.rotate(Math.PI / 2); }
+        ctx.rotate(Math.PI / 4);
+        for (let i = 0; i < 4; i++) { ctx.moveTo(0, 0); ctx.lineTo(0, -s * 0.55); ctx.rotate(Math.PI / 2); }
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, s * 0.18, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (this.shape === 'star') {
+        const s = this.size;
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          ctx.lineTo(0, -s);
+          ctx.translate(0, -s);
+          ctx.rotate((Math.PI * 2) / 10);
+          ctx.lineTo(0, -s * 0.4);
+          ctx.translate(0, -s * 0.4);
+          ctx.rotate(-(Math.PI * 6) / 10);
+        }
+        ctx.lineTo(0, -s); ctx.closePath(); ctx.fill();
+      } else if (this.shape === 'gem') {
+        const s = this.size;
+        ctx.beginPath();
+        ctx.moveTo(0, -s); ctx.lineTo(s * 0.7, 0); ctx.lineTo(0, s); ctx.lineTo(-s * 0.7, 0);
+        ctx.closePath(); ctx.fill();
+      } else if (this.shape === 'shell') {
+        ctx.font = `${this.size * 2.4}px sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('🐚', 0, 0);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+
+  const particles = [];
+  let lastEmit = 0;
+
+  document.addEventListener('pointermove', e => {
+    const now = performance.now();
+    if (now - lastEmit < 40) return;
+    lastEmit = now;
+    particles.push(new Particle(e.clientX + (Math.random() - 0.5) * 10, e.clientY + (Math.random() - 0.5) * 10, {
+      vx: (Math.random() - 0.5) * 1.4,
+      vy: (Math.random() - 0.5) * 1.4 - 0.5,
+      gravity: 0.02, decay: 0.022,
+      size: Math.random() * 5 + 3,
+      shape: Math.random() < 0.6 ? 'sparkle' : (Math.random() < 0.5 ? 'star' : 'gem'),
+    }));
+  }, { passive: true });
+
+  document.addEventListener('click', e => {
+    for (let i = 0; i < 24; i++) {
+      const a = (Math.PI * 2 * i) / 24;
+      particles.push(new Particle(e.clientX, e.clientY, {
+        vx: Math.cos(a) * (Math.random() * 4 + 1.5),
+        vy: Math.sin(a) * (Math.random() * 4 + 1.5) - 1,
+        gravity: 0.06, decay: 0.012,
+        size: Math.random() * 7 + 4,
+      }));
+    }
+    spawnRipple(e.clientX, e.clientY, 1.4);
+  });
+
+  function ambient() {
+    particles.push(new Particle(Math.random() * innerWidth, -10, {
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: Math.random() * 0.6 + 0.2,
+      gravity: 0.005, decay: 0.003,
+      size: Math.random() * 2 + 1,
+      shape: 'sand',
+      color: Math.random() < 0.5 ? '#f4e4c1' : '#fff'
+    }));
+  }
+  setInterval(ambient, 90);
+
+  /* Water ripples */
+  const rCanvas = document.querySelector('.ripples');
+  const rCtx = rCanvas.getContext('2d');
+  fit(rCanvas);
+
+  const ripples = [];
+  class Ripple {
+    constructor(x, y, strength = 1) {
+      this.x = x; this.y = y;
+      this.r = 4; this.maxR = 140 * strength;
+      this.life = 1; this.decay = 0.018 / strength;
+    }
+    update() { this.r += 2.4; this.life -= this.decay; }
+    draw(ctx) {
+      const alpha = Math.max(0, this.life);
+      ctx.save();
+      ctx.strokeStyle = `rgba(0, 212, 255, ${alpha * 0.6})`;
+      ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = `rgba(214, 51, 132, ${alpha * 0.4})`;
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r * 0.7, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    }
+  }
+  function spawnRipple(x, y, s = 1) { ripples.push(new Ripple(x, y, s)); }
+
+  let lastRipple = 0;
+  document.addEventListener('pointermove', e => {
+    const now = performance.now();
+    if (now - lastRipple > 140) {
+      lastRipple = now;
+      spawnRipple(e.clientX, e.clientY, 0.6);
+    }
+  }, { passive: true });
+
+  let tabVisible = !document.hidden;
+  document.addEventListener('visibilitychange', () => { tabVisible = !document.hidden; });
+
+  function loop() {
+    if (tabVisible) {
+      pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+      rCtx.clearRect(0, 0, rCanvas.width, rCanvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i]; p.update(); p.draw(pCtx);
+        if (p.life <= 0 || p.y > innerHeight + 50) particles.splice(i, 1);
+      }
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i]; r.update(); r.draw(rCtx);
+        if (r.life <= 0) ripples.splice(i, 1);
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  addEventListener('resize', () => { fit(pCanvas); fit(rCanvas); });
   </script>
 </body>
 </html>

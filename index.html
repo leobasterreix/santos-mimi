@@ -222,10 +222,13 @@
       z-index: 9000;
       display: flex; justify-content: center; align-items: center;
       padding: 0.55rem 1.6rem;
-      background: #1a2fff;
+      background: rgba(205, 238, 255, 0.70);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
       border-radius: 999px;
-      box-shadow: 0 8px 28px rgba(26, 47, 255, 0.45),
-                  0 2px 8px rgba(0,0,0,0.18);
+      border: 1px solid rgba(205, 238, 255, 0.5);
+      box-shadow: 0 8px 28px rgba(125, 211, 252, 0.35),
+                  0 2px 8px rgba(0,0,0,0.08);
       pointer-events: none;
       /* Caché au départ, apparaît au scroll */
       opacity: 0;
@@ -243,9 +246,9 @@
       font-size: clamp(0.95rem, 2vw, 1.2rem);
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #fff;
+      color: var(--ink);
       background: none;
-      -webkit-text-fill-color: #fff;
+      -webkit-text-fill-color: var(--ink);
       line-height: 1;
       white-space: nowrap;
     }
@@ -256,7 +259,7 @@
       letter-spacing: 0.02em;
       vertical-align: baseline;
       margin: 0 0.15em;
-      opacity: 0.9;
+      opacity: 0.8;
     }
     nav ul { display: none; }
 

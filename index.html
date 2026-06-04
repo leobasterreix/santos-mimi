@@ -2134,46 +2134,55 @@
 
     /* ─── Sélection de texte : dégradé pastel animé ───────── */
     (function () {
-      // 5 pastels cohérents avec le thème (rose, pêche, jaune, menthe, lavande)
-      const palette = [
+      // Fond : 5 pastels clairs (rose, pêche, jaune, menthe, lavande)
+      const bg = [
         [255, 184, 212],
         [255, 209, 184],
         [255, 240, 184],
         [184, 240, 219],
         [214, 199, 255],
       ];
-      const TEXT  = '#1a1230';              // texte foncé : lisible sur chaque pastel
-      const CYCLE = 16000;                  // durée d'un tour complet de la palette (ms)
-      const seg   = CYCLE / palette.length;
+      // Texte : même teinte que le fond mais foncée + saturée → reste lisible
+      const fg = [
+        [190,  30,  95],
+        [190,  75,  25],
+        [158, 112,  12],
+        [  9, 110,  88],
+        [ 99,  52, 188],
+      ];
+      const N     = bg.length;
+      const CYCLE = 8000;                   // tour complet de la palette (ms) — accéléré
+      const seg   = CYCLE / N;
       const sel   = document.createElement('style');
       document.head.appendChild(sel);
 
       const ease = t => t * t * (3 - 2 * t);            // smoothstep : chaque couleur « respire »
       const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+      const mix  = (pal, i, j, t) =>
+        'rgb(' + lerp(pal[i][0], pal[j][0], t) + ',' + lerp(pal[i][1], pal[j][1], t) + ',' + lerp(pal[i][2], pal[j][2], t) + ')';
       let last = '';
 
-      function apply(col) {
-        if (col === last) return;                       // n'écrit que si la couleur change vraiment
-        last = col;
+      function apply(bgCol, fgCol) {
+        const key = bgCol + fgCol;
+        if (key === last) return;                       // n'écrit que si la couleur change vraiment
+        last = key;
         sel.textContent =
-          '::selection{background:' + col + ';color:' + TEXT + ';}' +
-          '::-moz-selection{background:' + col + ';color:' + TEXT + ';}';
+          '::selection{background:' + bgCol + ';color:' + fgCol + ';}' +
+          '::-moz-selection{background:' + bgCol + ';color:' + fgCol + ';}';
       }
 
-      // Accessibilité : mouvement réduit → couleur fixe, pas d'animation
+      // Accessibilité : mouvement réduit → couleurs fixes, pas d'animation
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const c = palette[0];
-        apply('rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')');
+        apply(mix(bg, 0, 0, 0), mix(fg, 0, 0, 0));
         return;
       }
 
       (function frame(now) {
-        const pos = (now % CYCLE) / seg;                // 0 … palette.length
+        const pos = (now % CYCLE) / seg;                // 0 … N
         const i = Math.floor(pos);
+        const j = (i + 1) % N;
         const t = ease(pos - i);
-        const a = palette[i];
-        const b = palette[(i + 1) % palette.length];
-        apply('rgb(' + lerp(a[0], b[0], t) + ',' + lerp(a[1], b[1], t) + ',' + lerp(a[2], b[2], t) + ')');
+        apply(mix(bg, i, j, t), mix(fg, i, j, t));
         requestAnimationFrame(frame);
       })(0);
     })();

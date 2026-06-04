@@ -232,12 +232,11 @@
                   0 2px 8px rgba(0,0,0,0.08);
       pointer-events: none;
       opacity: 0;
-      transform: translateX(-50%) scale(0.92);
-      transition: opacity 0.25s ease, transform 0.25s ease;
+      transform: translateX(-50%) scale(1);
+      /* Pas de transition CSS — le JS gère tout pour éviter le double affichage */
     }
     nav.island-visible {
       opacity: 1;
-      transform: translateX(-50%) scale(1);
     }
     nav .logo {
       font-family: 'Londrina Solid', sans-serif;
@@ -311,8 +310,15 @@
     .mosaic::after {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(560px 340px at 50% 45%, rgba(255, 247, 237, 0.78) 0%, rgba(255, 247, 237, 0.5) 35%, transparent 70%);
+      /* Centre bien opaque pour le titre, fondu vers les bords */
+      background:
+        radial-gradient(620px 380px at 50% 42%,
+          rgba(255, 247, 237, 0.96) 0%,
+          rgba(255, 247, 237, 0.82) 28%,
+          rgba(255, 247, 237, 0.40) 55%,
+          transparent 75%);
       pointer-events: none;
+      z-index: 2;
     }
 
     .patch {
@@ -1973,7 +1979,7 @@
       const size   = isSub
         ? Math.round(44 + Math.random() * 28)    // sous le titre : 44–72 px
         : Math.round(85 + Math.random() * 75);   // ailleurs      : 85–160 px
-      const opacity = isSub ? (0.18 + Math.random() * 0.22) : (0.75 + Math.random() * 0.25);
+      const opacity = isSub ? (0.05 + Math.random() * 0.07) : (0.82 + Math.random() * 0.18);
       const rot   = Math.round((Math.random() - 0.5) * 56);
       const shape = PATCH_SHAPES[Math.floor(Math.random() * PATCH_SHAPES.length)];
       const z     = isSub ? 1 : (Math.floor(Math.random() * 4) + 2);
@@ -2478,8 +2484,9 @@
         h1.style.opacity = String(clamp01(1 - t * 1.6));
         nav.classList.remove('island-visible');
 
-        /* morph : apparaît puis se réduit vers la pilule */
-        const morphOpacity = clamp01(t * 3) * clamp01((1 - t) * 5 + 0.1);
+        /* morph : monte de 0→1 sur t:0..0.4, redescend 1→0 sur t:0.7..1
+           → strictement 0 quand t≥1 (nav prend le relais sans chevauchement) */
+        const morphOpacity = clamp01(t / 0.4) * clamp01((1 - t) / 0.3);
         morph.style.opacity = String(morphOpacity);
 
         /* Y centre du h1 dans le viewport → Y centre de la pilule */

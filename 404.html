@@ -226,7 +226,7 @@
 
     const points = [];
     const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    const step = cell * 0.55; // Distance between bead centers along the strokes
+    const step = cell * 0.35; // Tighter spacing for a richer, overlapping look
 
     pathData.forEach(d => {
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -244,9 +244,11 @@
         const px = (pt.x / 1000) * W;
         const py = (pt.y / 340) * H;
         
-        // Add subtle organic jitter for a handmade embroidery feel
-        const jx = (Math.random() - 0.5) * cell * 0.08;
-        const jy = (Math.random() - 0.5) * cell * 0.08;
+        // Circular random offset for a rich, organic, hand-threaded look
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * cell * 0.22;
+        const jx = Math.cos(angle) * dist;
+        const jy = Math.sin(angle) * dist;
         
         points.push({ x: px + jx, y: py + jy });
       }

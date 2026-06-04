@@ -3103,10 +3103,11 @@
       ];
 
       // 1. Génération de couleurs pastels harmonieuses et uniques à chaque rechargement
-      const hue1 = Math.floor(Math.random() * 360);
-      const hue2 = (hue1 + 130 + Math.floor(Math.random() * 60)) % 360; // Hues éloignées pour le contraste
-      const pastel1 = `hsl(${hue1}, 75%, 70%)`;       // Fond principal (remplace le violet #9A2FA5)
-      const pastel2 = `hsl(${hue2}, 85%, 75%)`;       // Détail/texte (remplace le rose #FF98C3)
+      const hueRotation = Math.floor(Math.random() * 360);
+      const hue1 = (295 + hueRotation) % 360;
+      const hue2 = (335 + hueRotation) % 360;
+      const pastel1 = `hsl(${hue1}, 75%, 70%)`;       // Fond principal
+      const pastel2 = `hsl(${hue2}, 85%, 75%)`;       // Détail/texte
       const pastelLight = `hsl(${hue1}, 100%, 92%)`;   // Halo lumineux pour la face arrière
 
       // Injection des variables CSS sur l'élément racine
@@ -3120,30 +3121,6 @@
       const winMovesEl = document.getElementById('memWinMoves');
       const resetBtn = document.getElementById('memReset');
       let first, second, lock, moves, pairs;
-
-      // Cache pour éviter de fetch plusieurs fois le même SVG lors des rejouer ↺
-      const svgCache = {};
-
-      async function fetchAndColorSVG(fileName) {
-        if (svgCache[fileName]) {
-          return svgCache[fileName];
-        }
-        try {
-          const res = await fetch('images/' + fileName);
-          let text = await res.text();
-          // Remplacement des couleurs par regex insensible à la casse
-          text = text.replace(/fill="#9a2fa5"/ig, `fill="${pastel1}"`);
-          text = text.replace(/fill="#ff98c3"/ig, `fill="${pastel2}"`);
-          // Enlever la largeur et hauteur absolues pour que le SVG s'adapte à la boîte flex/grid
-          text = text.replace(/(<svg[^>]*)\swidth="[0-9]+"/i, '$1');
-          text = text.replace(/(<svg[^>]*)\sheight="[0-9]+"/i, '$1');
-          svgCache[fileName] = text;
-          return text;
-        } catch (e) {
-          console.error('Erreur de chargement du SVG:', e);
-          return `<img src="images/${fileName}" alt="">`;
-        }
-      }
 
       async function build() {
         first = null; second = null; lock = false; moves = 0; pairs = 0;
@@ -3181,14 +3158,9 @@
           card.dataset.img = frontImg;
           card.innerHTML =
             '<span class="m-inner">' +
-              '<span class="m-face m-front"></span>' +
-              '<span class="m-face m-back"><img src="images/' + frontImg + '" alt=""></span>' +
+              '<span class="m-face m-front"><img loading="lazy" src="images/' + backSvg + '" alt="" style="filter: hue-rotate(' + hueRotation + 'deg)"></span>' +
+              '<span class="m-face m-back"><img loading="lazy" src="images/' + frontImg + '" alt=""></span>' +
             '</span>';
-          
-          const frontFace = card.querySelector('.m-front');
-          fetchAndColorSVG(backSvg).then(svgHtml => {
-            frontFace.innerHTML = svgHtml;
-          });
 
           card.addEventListener('click', () => flip(card));
           grid.appendChild(card);

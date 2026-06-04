@@ -147,12 +147,14 @@
       filter: drop-shadow(0 14px 28px rgba(34, 211, 238, 0.55));
     }
     .loader-progress {
+      position: absolute; bottom: 3.5rem; left: 50%;
+      transform: translateX(-50%);
       width: clamp(180px, 30vw, 260px);
       height: 4px;
-      margin: 0 auto;
       border-radius: 999px;
-      background: rgba(125, 211, 252, 0.22);
+      background: rgba(157, 23, 77, 0.12);
       overflow: hidden;
+      z-index: 2;
     }
     .loader-bar {
       height: 100%; width: 0%;
@@ -160,11 +162,14 @@
       transition: width 0.25s ease;
     }
     .loader-percent {
-      margin-top: 0.8rem;
+      position: absolute; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
       font-family: 'Outfit', sans-serif;
       font-size: 0.72rem; letter-spacing: 0.3em;
       text-transform: uppercase;
-      color: #7dd3fc; opacity: 0.85;
+      color: #9d174d; opacity: 0.85;
+      white-space: nowrap;
+      z-index: 2;
     }
     body.is-loading { overflow: hidden; }
 
@@ -1862,9 +1867,9 @@
       <div class="loader-spinner">
         <img src="images/image%2063.png" alt="" />
       </div>
-      <div class="loader-progress"><div class="loader-bar" id="loaderBar"></div></div>
-      <div class="loader-percent" id="loaderPercent">0% · couture en cours</div>
     </div>
+    <div class="loader-progress"><div class="loader-bar" id="loaderBar"></div></div>
+    <div class="loader-percent" id="loaderPercent">0% · couture en cours</div>
   </div>
 
   <div class="cursor-ring"></div>

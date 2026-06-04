@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>404 · Santos &amp; Mimi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Major+Mono+Display&family=Outfit:wght@300;500;800&family=Italiana&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: #020c12;
+      height: 100vh;
+      overflow: hidden;
+      cursor: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1.2rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(circle, rgba(34,211,238,0.07) 1px, transparent 1px);
+      background-size: 13px 13px;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 65% 45% at 8%  18%, rgba(14,116,144,0.20) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 92% 82%, rgba(34,211,238,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* ── Cursor ── */
+    .cursor-dot, .cursor-ring {
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999; will-change: transform;
+    }
+    .cursor-dot {
+      width: 8px; height: 8px;
+      background: radial-gradient(circle, #fff 0%, #22d3ee 80%);
+      border-radius: 50%;
+      box-shadow: 0 0 12px #22d3ee, 0 0 24px #0e7490;
+    }
+    .cursor-ring {
+      width: 38px; height: 38px;
+      border: 1.5px solid rgba(34,211,238,0.55);
+      border-radius: 50%;
+      transition: border-color 0.18s ease;
+    }
+
+    /* ── Text labels ── */
+    .kicker {
+      position: relative; z-index: 2;
+      font-family: 'Italiana', serif;
+      font-size: 0.8rem; letter-spacing: 0.6em;
+      text-transform: uppercase;
+      color: #7dd3fc; opacity: 0.6;
+      text-align: center;
+    }
+
+    /* ── SVG stage ── */
+    #stage {
+      position: relative; z-index: 2;
+      flex-shrink: 0;
+    }
+
+    /* Individual cell fade-in */
+    @keyframes cellIn {
+      from { opacity: 0; transform: scale(0.6); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    /* Gentle individual float */
+    @keyframes cellFloat {
+      0%, 100% { transform: translateY(0px)   rotate(var(--r,0deg)); }
+      50%       { transform: translateY(-7px)  rotate(var(--r,0deg)); }
+    }
+
+    .subtitle {
+      position: relative; z-index: 2;
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+    }
+
+    .home-link {
+      position: relative; z-index: 2;
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: 'Major Mono Display', monospace;
+      font-size: 0.76rem; letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0.8rem 1.9rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #0e7490, #22d3ee, #0891b2);
+      color: #fff; text-decoration: none; cursor: none;
+      box-shadow: 0 10px 28px rgba(34,211,238,0.38);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .home-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 36px rgba(34,211,238,0.56);
+    }
+
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  </style>
+</head>
+<body>
+  <div class="cursor-ring" id="cRing"></div>
+  <div class="cursor-dot"  id="cDot"></div>
+  <canvas class="particles" id="pCanvas"></canvas>
+
+  <p class="kicker">santos &amp; mimi · bead studio · MMXXVI</p>
+  <div id="stage"></div>
+  <p class="subtitle">cette page s'est perdue en mer 🌊</p>
+  <a class="home-link" href="index.html">← retour au studio</a>
+
+  <script>
+  const IMGS = [
+    'images/image%2037.png','images/image%2038.png','images/image%2039.png',
+    'images/image%2040.png','images/image%2041.png','images/image%2042.png',
+    'images/image%2043.png','images/image%2044.png','images/image%2045.png',
+    'images/image%2046.png','images/image%2047.png','images/image%2048.png',
+    'images/image%2049.png','images/image%2050.png','images/image%2051.png',
+    'images/image%2052.png','images/image%2053.png','images/image%2054.png',
+    'images/image%2055.png','images/image%2057.png','images/image%2058.png',
+    'images/image%2059.png','images/image%2060.png','images/image%2062.png',
+    'images/image%2063.png','images/image%2064.png','images/image%2065.png',
+    'images/image%2066.png','images/image%2067.png','images/image%2068.png',
+    'images/image%2069.png','images/image%2072.png','images/image%2073.png',
+    'images/image%2075.png','images/image%2076.png','images/image%2078.png',
+    'images/image%2081.png','images/image%2082.png','images/image%2084.png',
+    'images/image%2085.png','images/image%2086.png','images/image%2087.png',
+  ];
+
+  /* ─── Build using SVG clipPath — no canvas font sampling needed ─── */
+  document.fonts.ready.then(build);
+
+  function build() {
+    const stage = document.getElementById('stage');
+
+    /* Stage dimensions */
+    const maxH = window.innerHeight - 170;
+    const W = Math.round(Math.min(window.innerWidth * 0.96, 1100, maxH / 0.34));
+    const H = Math.round(W * 0.34);
+    stage.style.width  = W + 'px';
+    stage.style.height = H + 'px';
+
+    /* Grid cell size — images packed at ~H/5.5 so you can see each one
+       but together they clearly fill the letter shapes */
+    const cell = Math.round(Math.min(88, Math.max(60, H / 5.5)));
+    const cols = Math.ceil(W / cell) + 1;
+    const rows = Math.ceil(H / cell) + 1;
+
+    /* Shuffle image order once */
+    const deck = [...IMGS];
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+
+    const NS  = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width',  W);
+    svg.setAttribute('height', H);
+    svg.style.cssText = 'display:block;overflow:visible';
+
+    /* ── ClipPath: "404" text shape ── */
+    const defs = document.createElementNS(NS, 'defs');
+
+    const clip = document.createElementNS(NS, 'clipPath');
+    clip.id = 'clip404';
+
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', W / 2);
+    t.setAttribute('y', H * 0.535);
+    t.setAttribute('text-anchor',     'middle');
+    t.setAttribute('dominant-baseline','middle');
+    /* "Major Mono Display" — same font as the site; Impact as reliable fallback */
+    t.setAttribute('font-family', '"Major Mono Display", Impact, "Arial Black", monospace');
+    t.setAttribute('font-size',   Math.round(H * 0.90));
+    t.setAttribute('font-weight', '900');
+    t.textContent = '404';
+
+    clip.appendChild(t);
+    defs.appendChild(clip);
+    svg.appendChild(defs);
+
+    /* ── Clipped group: grid of bead images ── */
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('clip-path', 'url(#clip404)');
+
+    let delay = 0;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const src = deck[(row * cols + col) % deck.length];
+
+        /* Slight random offset + rotation for a "scattered bead" feel */
+        const jx  = (Math.random() - 0.5) * cell * 0.25;
+        const jy  = (Math.random() - 0.5) * cell * 0.25;
+        const rot = Math.round((Math.random() - 0.5) * 40);
+        const cx  = col * cell + cell / 2 + jx;
+        const cy  = row * cell + cell / 2 + jy;
+
+        const img = document.createElementNS(NS, 'image');
+        img.setAttribute('href',              src);
+        img.setAttribute('x',                 cx - cell / 2);
+        img.setAttribute('y',                 cy - cell / 2);
+        img.setAttribute('width',             cell);
+        img.setAttribute('height',            cell);
+        img.setAttribute('preserveAspectRatio','xMidYMid meet');
+        img.setAttribute('transform',
+          `rotate(${rot} ${cx} ${cy})`
+        );
+
+        /* Staggered fade-in → then continuous float */
+        const floatDur   = (3.8 + Math.random() * 3.5).toFixed(2);
+        const floatDelay = (delay + 0.55 - Math.random() * 2).toFixed(3);
+        img.style.cssText = [
+          '--r:' + rot + 'deg',
+          `animation: cellIn 0.5s cubic-bezier(0.22,1,0.36,1) both ${delay.toFixed(3)}s,`
+          + ` cellFloat ${floatDur}s ease-in-out infinite ${floatDelay}s`,
+        ].join(';');
+
+        g.appendChild(img);
+        delay += 0.016; /* 16ms stagger per cell */
+      }
+    }
+
+    svg.appendChild(g);
+    stage.appendChild(svg);
+  }
+
+  /* ─── Cursor (scale handled in JS — no CSS !important conflict) ─── */
+  const cDot  = document.getElementById('cDot');
+  const cRing = document.getElementById('cRing');
+  let mx = innerWidth / 2, my = innerHeight / 2;
+  let rx = mx, ry = my, rScale = 1;
+
+  document.addEventListener('pointermove', e => {
+    mx = e.clientX; my = e.clientY;
+    cDot.style.transform = `translate(${mx - 4}px,${my - 4}px)`;
+  });
+  document.querySelectorAll('a').forEach(el => {
+    el.addEventListener('mouseenter', () => { rScale = 1.6; cRing.style.borderColor = '#fbbf24'; });
+    el.addEventListener('mouseleave', () => { rScale = 1;   cRing.style.borderColor = 'rgba(34,211,238,0.55)'; });
+  });
+  (function tick() {
+    rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+    cRing.style.transform = `translate(${rx - 19}px,${ry - 19}px) scale(${rScale})`;
+    requestAnimationFrame(tick);
+  })();
+
+  /* ─── Ambient particles ─── */
+  const pc   = document.getElementById('pCanvas');
+  const pCtx = pc.getContext('2d');
+  const fit  = () => { pc.width = innerWidth; pc.height = innerHeight; };
+  fit(); addEventListener('resize', fit);
+  const COLS = ['rgba(34,211,238,','rgba(251,191,36,','rgba(167,139,250,','rgba(255,255,255,'];
+  const pts  = [];
+  setInterval(() => pts.push({
+    x: Math.random() * innerWidth, y: -12,
+    vx: (Math.random() - 0.5) * 0.44, vy: Math.random() * 0.5 + 0.18,
+    s: Math.random() * 1.7 + 0.4, life: 1, dc: 0.0022 + Math.random() * 0.002,
+    c: COLS[Math.floor(Math.random() * COLS.length)],
+  }), 110);
+  (function ploop() {
+    pCtx.clearRect(0, 0, pc.width, pc.height);
+    for (let i = pts.length - 1; i >= 0; i--) {
+      const p = pts[i];
+      p.x += p.vx; p.y += p.vy; p.life -= p.dc;
+      if (p.life <= 0 || p.y > innerHeight + 20) { pts.splice(i, 1); continue; }
+      pCtx.beginPath();
+      pCtx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+      pCtx.fillStyle = p.c + p.life.toFixed(2) + ')';
+      pCtx.fill();
+    }
+    requestAnimationFrame(ploop);
+  })();
+  </script>
+</body>
+</html>

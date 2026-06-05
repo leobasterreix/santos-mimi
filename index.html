@@ -940,23 +940,22 @@
       align-items: center;
       justify-content: center;
     }
-    .vinyl-shell svg.big-fruit {
-      width: 45%;
-      height: 45%;
-      color: #fff;
-      stroke-width: 2.2px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+    .vinyl-shell img.big-bead {
+      width: 72%;
+      height: 72%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
     }
-    .track-fruit {
+    .track-bead {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 18px;
-      height: 18px;
-      color: #fff;
-      stroke-width: 2.5px;
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
       z-index: 3;
       pointer-events: none;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.25));
     }
     .vinyl-hint {
       position: absolute;
@@ -2710,7 +2709,7 @@
       <div class="vinyl-stage" id="vinylStage">
         <div class="vinyl-record" id="vinyl">
           <div class="vinyl-shell" aria-hidden="true">
-            <i id="bigVinylFruit" data-lucide="cherry" class="big-fruit"></i>
+            <img id="bigVinylBead" src="images/image%2042.png" class="big-bead" alt="" />
           </div>
         </div>
         <div class="note-field" id="noteField" aria-hidden="true"></div>
@@ -2921,10 +2920,10 @@
        puis ajoute une ligne ici — un objet { titre, artiste, fichier }.
        Le nom du fichier s'écrit normalement (espaces autorisés).        */
     const TRACKS = [
-      { title: 'Iko Iko', artist: 'Justin Wellington', src: 'Iko Iko Justin Wellington.mp3', fruit: 'cherry' },
-      { title: 'Pinky Up', artist: 'KATSEYE', src: 'KatsEye Pinky Up MV.mp3', fruit: 'strawberry' },
-      { title: 'Mad Sounds', artist: 'Arctic Monkeys', src: 'Mad Sounds.mp3', fruit: 'banana' },
-      // { title: 'Nom du son', artist: 'Artiste', src: 'mon-fichier.mp3', fruit: 'cherry' },
+      { title: 'Iko Iko', artist: 'Justin Wellington', src: 'Iko Iko Justin Wellington.mp3', bead: 'image%2042.png' },
+      { title: 'Pinky Up', artist: 'KATSEYE', src: 'KatsEye Pinky Up MV.mp3', bead: 'image%2048.png' },
+      { title: 'Mad Sounds', artist: 'Arctic Monkeys', src: 'Mad Sounds.mp3', bead: 'image%2055.png' },
+      // { title: 'Nom du son', artist: 'Artiste', src: 'mon-fichier.mp3', bead: 'image%2042.png' },
     ];
 
     /* ───────── Vinyl player (rotation RAF + drag-to-scratch) ───────── */
@@ -3038,11 +3037,8 @@
     function updateBigVinylFruit() {
       const shell = document.querySelector('.vinyl-shell');
       if (shell) {
-        const fruit = TRACKS[currentTrack].fruit || 'music';
-        shell.innerHTML = `<i id="bigVinylFruit" data-lucide="${fruit}" class="big-fruit"></i>`;
-        if (window.lucide) {
-          lucide.createIcons();
-        }
+        const bead = TRACKS[currentTrack].bead || 'image%2042.png';
+        shell.innerHTML = `<img id="bigVinylBead" src="images/${bead}" class="big-bead" alt="" />`;
       }
     }
 
@@ -3166,12 +3162,12 @@
 
     // Construit la playlist depuis TRACKS
     TRACKS.forEach((t, i) => {
-      const fruit = t.fruit || 'music';
+      const bead = t.bead || 'image%2042.png';
       const li = document.createElement('li');
       li.className = 'track';
       li.innerHTML =
         `<span class="track-vinyl">` +
-          `<span class="track-disc"><i data-lucide="${fruit}" class="track-fruit" aria-hidden="true"></i></span>` +
+          `<span class="track-disc"><img src="images/${bead}" class="track-bead" aria-hidden="true" /></span>` +
           `<span class="track-eq"><span></span><span></span><span></span></span>` +
         `</span>` +
         `<span class="track-info">` +

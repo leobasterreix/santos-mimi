@@ -1274,46 +1274,10 @@
         height: 220px;
       }
     }
-    .chest-lid, .chest-base {
-      position: absolute;
-      left: 0;
+    #chest3DCanvas {
       width: 100%;
       height: 100%;
-      background-image: url('images/chest_closed.png');
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-      mix-blend-mode: multiply;
-      will-change: transform;
-      z-index: 5;
-    }
-    .chest-lid {
-      /* Show only the top lid */
-      clip-path: inset(0 0 54.5% 0);
-      transform-origin: center 22%; /* rotate around the back lid top area */
-      transition: transform 0.08s linear;
-    }
-    .chest-base {
-      /* Show only the bottom base */
-      clip-path: inset(45.5% 0 0 0);
-      z-index: 3;
-    }
-    .chest-inside {
-      position: absolute;
-      top: 44%;
-      left: 10%;
-      width: 80%;
-      height: 34%;
-      background: radial-gradient(circle at center, rgba(253, 224, 71, 0.9) 0%, rgba(202, 138, 4, 0.8) 40%, rgba(30, 27, 75, 0.95) 90%);
-      border-radius: 20px 20px 40px 40px;
-      box-shadow: 
-        inset 0 10px 30px rgba(0,0,0,0.95), 
-        0 0 40px rgba(253, 224, 71, 0.65);
-      z-index: 2;
-      opacity: 0;
-      transform: scale(0.9);
-      will-change: opacity, transform;
-      transition: opacity 0.08s linear, transform 0.08s linear;
+      display: block;
     }
     
     /* Floating circles */
@@ -2526,9 +2490,7 @@
         </h2>
         
         <div class="chest-wrapper">
-          <div class="chest-inside"></div>
-          <div class="chest-lid"></div>
-          <div class="chest-base"></div>
+          <div id="chest3DCanvas" style="width: 100%; height: 100%;"></div>
           
           <!-- Floating circles (simulation elements for future photos/objects) -->
           <div class="floating-circle" data-index="0" style="--circle-grad: linear-gradient(135deg, rgba(236,72,153,0.9), rgba(244,63,94,0.7)); --circle-shadow: rgba(244,63,94,0.35); --circle-glow: rgba(236,72,153,0.5);">
@@ -2626,6 +2588,7 @@
   </div>
   <button class="to-top" id="toTop" aria-label="Remonter en haut de la page">↑</button>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     /* ───────── Local bead-embroidery mosaic ───────── */
     const IMAGES = [
@@ -3380,20 +3343,132 @@
       animateChest();
     })();
 
-    /* ─── Rubrique 2 — Realistic Chest Scroll Animation ─── */
+    /* ─── Rubrique 2 — Realistic WebGL 3D Chest Animation ─── */
     (function initRealisticWorkChest() {
       const section = document.getElementById('work');
       if (!section) return;
 
-      const chestWrapper = section.querySelector('.chest-wrapper');
-      if (!chestWrapper) return;
+      const container = document.getElementById('chest3DCanvas');
+      if (!container) return;
 
-      const lid = chestWrapper.querySelector('.chest-lid');
-      const inside = chestWrapper.querySelector('.chest-inside');
-      const circles = chestWrapper.querySelectorAll('.floating-circle');
+      const circles = section.querySelectorAll('.floating-circle');
 
-      // Define target offsets for the 6 circles
-      // These are translations from the center of the chest
+      // 1. Scene setup
+      const scene = new THREE.Scene();
+
+      // 2. Camera setup
+      const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(0, 0.9, 4.4); // Start positioned slightly above looking down
+      camera.lookAt(0, 0.15, 0);
+
+      // 3. Renderer setup
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.shadowMap.enabled = true;
+      container.appendChild(renderer.domElement);
+
+      // 4. Lights
+      const ambientLight = new THREE.AmbientLight(0xfff5e6, 0.75); // warm base light
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.85); // key light from front-top-right
+      dirLight.position.set(3, 5, 4);
+      scene.add(dirLight);
+
+      const internalGlowLight = new THREE.PointLight(0xfbbbf24, 0, 4.5); // gold internal glow
+      internalGlowLight.position.set(0, 0.2, 0);
+      scene.add(internalGlowLight);
+
+      // 5. Materials & Textures
+      const textureLoader = new THREE.TextureLoader();
+      
+      // Load textures for front face
+      const baseTex = textureLoader.load('images/chest_closed.png', renderOnUpdate);
+      baseTex.repeat.set(1, 0.545);
+      baseTex.offset.set(0, 0);
+
+      const lidTex = textureLoader.load('images/chest_closed.png', renderOnUpdate);
+      lidTex.repeat.set(1, 0.455);
+      lidTex.offset.set(0, 0.545);
+
+      // standard materials
+      const woodMaterial = new THREE.MeshStandardMaterial({
+        color: 0x482613,      // dark rich wood brown
+        roughness: 0.68,
+        metalness: 0.05
+      });
+
+      const insideMaterial = new THREE.MeshStandardMaterial({
+        color: 0x110d0a,      // dark interior
+        roughness: 0.9,
+        metalness: 0.0
+      });
+
+      const glowInsideMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffa800,      // glowing gold backplate
+        transparent: true,
+        opacity: 0.0
+      });
+
+      const baseFrontMaterial = new THREE.MeshStandardMaterial({
+        map: baseTex,
+        roughness: 0.6,
+        metalness: 0.1
+      });
+
+      const lidFrontMaterial = new THREE.MeshStandardMaterial({
+        map: lidTex,
+        roughness: 0.6,
+        metalness: 0.1
+      });
+
+      // Base Materials Array (order: Right, Left, Top, Bottom, Front, Back)
+      const baseMaterials = [
+        woodMaterial,          // Right
+        woodMaterial,          // Left
+        glowInsideMaterial,    // Top (simulates gold glowing interior when open)
+        woodMaterial,          // Bottom
+        baseFrontMaterial,     // Front
+        woodMaterial           // Back
+      ];
+
+      // 6. Geometries
+      const chestWidth = 2.4;
+      const chestHeight = 1.35;
+      const chestDepth = 1.6;
+
+      // Base Box
+      const baseGeo = new THREE.BoxGeometry(chestWidth, chestHeight, chestDepth);
+      const baseMesh = new THREE.Mesh(baseGeo, baseMaterials);
+      baseMesh.position.set(0, chestHeight / 2 - 0.45, 0); // Offset to ground nicely
+      scene.add(baseMesh);
+
+      // Lid Group (hinge is at back-top of base)
+      const lidGroup = new THREE.Group();
+      lidGroup.position.set(0, chestHeight - 0.45, -chestDepth / 2); // pivot point at back-top
+      scene.add(lidGroup);
+      
+      const lidBoxGeo = new THREE.BoxGeometry(chestWidth, 0.8, chestDepth);
+      const lidBoxMaterials = [
+        woodMaterial,      // Right
+        woodMaterial,      // Left
+        woodMaterial,      // Top
+        insideMaterial,    // Bottom (shows dark inside when lid is open)
+        lidFrontMaterial,  // Front (shows straps + latch)
+        woodMaterial       // Back
+      ];
+
+      const lidMesh = new THREE.Mesh(lidBoxGeo, lidBoxMaterials);
+      // Position the lid box relative to the hinge pivot
+      // The hinge is at the bottom-back edge of the lid box.
+      // The box center should be offset by:
+      // - Y = +height / 2 = +0.4
+      // - Z = +depth / 2 = +chestDepth / 2
+      lidMesh.position.set(0, 0.4, chestDepth / 2);
+      lidGroup.add(lidMesh);
+
+      // 7. Scroll positions config
       const desktopPositions = [
         { x: -280, y: -160, scale: 1.0 }, // top-left
         { x: -320, y: 30,  scale: 1.0 }, // middle-left
@@ -3414,45 +3489,60 @@
 
       let lastProgress = -1;
 
+      function renderOnUpdate() {
+        renderer.render(scene, camera);
+      }
+
       function updateChestAnimation() {
         const sectionRect = section.getBoundingClientRect();
         const windowHeight = window.innerHeight;
         
-        // Scroll track height
         const totalDuration = sectionRect.height - windowHeight;
         if (totalDuration <= 0) return;
 
         let progress = -sectionRect.top / totalDuration;
         progress = Math.max(0, Math.min(1, progress));
 
-        if (Math.abs(progress - lastProgress) < 0.001) return;
+        if (Math.abs(progress - lastProgress) < 0.001) {
+          if (progress > 0.25) {
+            animateCirclesOnly(progress);
+          }
+          return;
+        }
         lastProgress = progress;
 
         const isMobile = window.innerWidth <= 768;
         const positions = isMobile ? mobilePositions : desktopPositions;
 
-        // Smooth step ease for opening
         const easeProgress = progress * progress * (3 - 2 * progress);
 
-        // 1. Open Lid (3D rotationX + vertical translation)
-        if (lid) {
-          const translateY = easeProgress * (isMobile ? -60 : -95);
-          const rotateX = easeProgress * -55;
-          const scaleY = 1 - (easeProgress * 0.1);
-          lid.style.transform = `translateY(${translateY}px) rotateX(${rotateX}deg) scaleY(${scaleY})`;
-        }
+        // 1. Rotate Lid back around hinge
+        const targetAngle = easeProgress * -1.65;
+        lidGroup.rotation.x = targetAngle;
 
-        // 2. Fade in inside glow
-        if (inside) {
-          inside.style.opacity = String(easeProgress * 0.95);
-          inside.style.transform = `scale(${0.9 + easeProgress * 0.1})`;
-        }
+        // 2. Camera perspective tilt (look slightly down as it opens)
+        camera.position.y = 0.9 + (easeProgress * 0.75);
+        camera.position.z = 4.4 - (easeProgress * 0.4);
+        camera.lookAt(0, 0.15, 0);
 
-        // 3. Circles emerge
+        // 3. Inside glow
+        internalGlowLight.intensity = easeProgress * 6.5;
+        glowInsideMaterial.opacity = easeProgress * 0.85;
+
+        // Render scene
+        renderer.render(scene, camera);
+
+        // 4. Animate circles
+        animateCirclesOnly(progress);
+      }
+
+      function animateCirclesOnly(progress) {
+        const isMobile = window.innerWidth <= 768;
+        const positions = isMobile ? mobilePositions : desktopPositions;
+
         circles.forEach((circle, i) => {
           const pos = positions[i] || { x: 0, y: 0, scale: 1 };
           
-          // Delay circle launch slightly
           let circleProgress = (progress - 0.25) / 0.75;
           circleProgress = Math.max(0, Math.min(1, circleProgress));
           
@@ -3463,18 +3553,35 @@
           const curScale = circleEase * pos.scale;
           const curOpacity = Math.min(1, circleEase * 1.5);
           
-          // Subtle float animation offset
           const floatOffset = Math.sin((window.scrollY * 0.003) + i) * 6;
 
-          // Apply transform
           circle.style.transform = `translate(-50%, -50%) translate(${curX}px, ${curY + floatOffset}px) scale(${curScale})`;
           circle.style.opacity = String(curOpacity);
         });
       }
 
+      // 8. Event listeners
       window.addEventListener('scroll', updateChestAnimation, { passive: true });
-      window.addEventListener('resize', updateChestAnimation, { passive: true });
       
+      window.addEventListener('resize', () => {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+        renderer.render(scene, camera);
+        updateChestAnimation();
+      }, { passive: true });
+
+      // Run floating animation on requestAnimationFrame when open
+      function floatLoop() {
+        if (lastProgress > 0.25) {
+          animateCirclesOnly(lastProgress);
+        }
+        requestAnimationFrame(floatLoop);
+      }
+      requestAnimationFrame(floatLoop);
+
       // Initial call
       updateChestAnimation();
     })();

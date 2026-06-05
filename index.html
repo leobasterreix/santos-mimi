@@ -447,7 +447,11 @@
       isolation: isolate;
     }
 
-    .mosaic { position: absolute; inset: 0; z-index: 1; }
+    .mosaic {
+      position: absolute; inset: 0; z-index: 1;
+      mask-image: linear-gradient(to bottom, black 75%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 100%);
+    }
     .mosaic::after {
       content: '';
       position: absolute; inset: 0;

@@ -234,36 +234,78 @@
     .particles { z-index: 3; }
     .ripples { z-index: 2; mix-blend-mode: screen; }
 
-    /* ─── Bouton de changement de thème (FAB) ──────────────── */
-    .theme-switcher {
-      position: fixed; right: 1.6rem; bottom: 1.6rem;
-      z-index: 9000;
-      width: 52px; height: 52px;
+    /* ─── Sélecteur de thème (top-right) ──────────────── */
+    .theme-picker {
+      position: fixed; top: 1.4rem; right: 1.6rem;
+      z-index: 9100;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+    .theme-picker-btn {
+      width: 46px; height: 46px;
       border: 1px solid var(--glass-border);
       border-radius: 50%;
       background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       color: var(--text-color);
-      font-size: 1.5rem; line-height: 1;
+      font-size: 1.35rem; line-height: 1;
       display: grid; place-items: center;
       cursor: none;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.15);
-      opacity: 0.95; transform: translateY(0) scale(1);
-      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-                  box-shadow 0.3s ease,
-                  background-color 0.3s ease,
-                  border-color 0.3s ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
     }
-    .theme-switcher:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25); opacity: 1; }
-    .theme-switcher:active { transform: translateY(-2px) scale(0.95); }
-    .theme-switcher.clicked {
-      animation: theme-spin 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    .theme-picker-btn:hover { transform: scale(1.1); box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
+    .theme-options {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px) scale(0.95);
+      transform-origin: top right;
+      transition: opacity 0.22s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    @keyframes theme-spin {
-      0% { transform: translateY(-4px) scale(1.08) rotate(0deg); }
-      100% { transform: translateY(-4px) scale(1.08) rotate(360deg); }
+    .theme-picker:hover .theme-options,
+    .theme-picker:focus-within .theme-options {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
     }
+    .theme-opt {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      padding: 0.38rem 0.9rem 0.38rem 0.5rem;
+      cursor: none;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-color);
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .theme-opt:hover { transform: translateX(-4px) scale(1.04); box-shadow: 0 8px 22px rgba(0,0,0,0.2); }
+    .theme-opt.active { border-color: #d63384; box-shadow: 0 4px 14px rgba(214,51,132,0.25); }
+    .theme-opt .swatch {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.35);
+      flex-shrink: 0;
+    }
+    .theme-opt[data-theme-opt="light"] .swatch { background: linear-gradient(135deg,#fff8f3,#f9e4d0); }
+    .theme-opt[data-theme-opt="dark"]  .swatch { background: linear-gradient(135deg,#1a0a2e,#4a1560); }
+    .theme-opt[data-theme-opt="abyss"] .swatch { background: linear-gradient(135deg,#0a0a14,#1a1a30); }
   </style>
 </head>
 <body>
@@ -275,7 +317,20 @@
   <div id="stage"></div>
   <p class="subtitle">cette page s'est perdue en mer 🌊</p>
   <a class="home-link" href="index.html">← retour à l'accueil</a>
-  <button id="themeSwitcher" class="theme-switcher" type="button" aria-label="Changer de thème">🎨</button>
+  <div class="theme-picker" id="themePicker" role="group" aria-label="Choisir un thème">
+    <button class="theme-picker-btn" type="button" aria-label="Thèmes" title="Changer de thème">🎨</button>
+    <div class="theme-options" role="list">
+      <button class="theme-opt" data-theme-opt="light" type="button" role="listitem" aria-label="Thème clair">
+        <span class="swatch"></span>Clair
+      </button>
+      <button class="theme-opt" data-theme-opt="dark" type="button" role="listitem" aria-label="Thème sombre">
+        <span class="swatch"></span>Sombre
+      </button>
+      <button class="theme-opt" data-theme-opt="abyss" type="button" role="listitem" aria-label="Thème abyssal">
+        <span class="swatch"></span>Abyssal
+      </button>
+    </div>
+  </div>
 
   <script>
   const IMGS = [
@@ -431,7 +486,7 @@
       cDot.style.transform = `translate(${mx - 4}px,${my - 4}px)`;
     }
   });
-  document.querySelectorAll('a, .theme-switcher').forEach(el => {
+  document.querySelectorAll('a, .theme-picker-btn, .theme-opt').forEach(el => {
     el.addEventListener('mouseenter', () => {
       rScale = 1.6;
       if (cRing) {
@@ -446,33 +501,21 @@
     });
   });
 
-  /* ─── Bouton de changement de thème (FAB) ─── */
-  const themeSwitcher = document.getElementById('themeSwitcher');
-  if (themeSwitcher) {
-    themeSwitcher.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-      let nextTheme = 'light';
-      if (currentTheme === 'light') {
-        nextTheme = 'dark';
-      } else if (currentTheme === 'dark') {
-        nextTheme = 'abyss';
-      }
-      document.documentElement.setAttribute('data-theme', nextTheme);
-      try {
-        localStorage.setItem('site-theme', nextTheme);
-      } catch (e) {
-        console.warn('localStorage is not accessible:', e);
-      }
-
-      themeSwitcher.classList.remove('clicked');
-      void themeSwitcher.offsetWidth; // Force reflow
-      themeSwitcher.classList.add('clicked');
+  /* ─── Sélecteur de thème (top-right) ─── */
+  (function initThemePicker() {
+    const setTheme = (t) => {
+      document.documentElement.setAttribute('data-theme', t);
+      try { localStorage.setItem('site-theme', t); } catch(e) {}
+      document.querySelectorAll('.theme-opt').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeOpt === t);
+      });
+    };
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    setTheme(currentTheme);
+    document.querySelectorAll('.theme-opt').forEach(btn => {
+      btn.addEventListener('click', () => setTheme(btn.dataset.themeOpt));
     });
-
-    themeSwitcher.addEventListener('animationend', () => {
-      themeSwitcher.classList.remove('clicked');
-    });
-  }
+  })();
   (function tick() {
     rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
     cRing.style.transform = `translate(${rx - 19}px,${ry - 19}px) scale(${rScale})`;

@@ -2011,20 +2011,17 @@
       -webkit-backface-visibility: hidden;
     }
     .m-front {
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1.5px solid rgba(255, 255, 255, 0.55);
-      box-shadow: 0 8px 24px rgba(107, 45, 122, 0.08);
+      background: transparent;
+      backdrop-filter: none;
+      border: none;
+      box-shadow: none;
       overflow: visible !important;
       transform: translateZ(1px);
       -webkit-transform: translateZ(1px);
-      transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
     .memory-card:hover .m-front {
-      background: rgba(255, 255, 255, 0.85);
-      border-color: rgba(255, 255, 255, 0.85);
-      box-shadow: 0 12px 32px rgba(107, 45, 122, 0.16);
+      background: transparent;
+      border-color: transparent;
     }
     .m-front img {
       width: 100%;

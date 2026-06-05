@@ -1536,19 +1536,56 @@
       flex-shrink: 0;
     }
     .mini-play:hover { transform: scale(1.08); }
-    .mini-play .pic {
-      width: 0; height: 0;
-      border-top: 6px solid transparent;
-      border-bottom: 6px solid transparent;
-      border-left: 9px solid #fff;
-      margin-left: 2px;
+    .mini-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.8px;
     }
-    .mini-play.playing .pic {
-      width: 9px; height: 11px;
-      border: 0;
-      background: linear-gradient(90deg, #fff 0 35%, transparent 35% 65%, #fff 65% 100%);
-      margin-left: 0;
+    .mini-play svg {
+      width: 16px;
+      height: 16px;
+      color: #fff;
+      stroke-width: 2.8px;
     }
+    .mini-play .icon-play {
+      display: block;
+      fill: #fff;
+    }
+    .mini-play .icon-pause {
+      display: none;
+    }
+    .mini-play.playing .icon-play {
+      display: none !important;
+    }
+    .mini-play.playing .icon-pause {
+      display: block !important;
+    }
+    .keepsake-close svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.5px;
+    }
+    .to-top svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 3px;
+    }
+    .memory-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .memory-reset svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.8px;
+    }
+    .hero .scroll-hint .arrow {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.5px;
+    }
+
     .mini-info {
       display: flex; flex-direction: column;
       gap: 4px;
@@ -2109,11 +2146,12 @@
 
   <div class="mini-player entering collapsed" id="miniPlayer" aria-label="Player musique">
     <div class="mini-notes" id="miniNotes" aria-hidden="true"></div>
-    <button class="mini-btn" id="miniBack" type="button" aria-label="Piste précédente">«</button>
+    <button class="mini-btn" id="miniBack" type="button" aria-label="Piste précédente"><i data-lucide="skip-back" aria-hidden="true"></i></button>
     <button class="mini-play" id="miniPlayBtn" type="button" aria-label="Lecture/Pause">
-      <span class="pic" aria-hidden="true"></span>
+      <i data-lucide="play" class="icon-play" aria-hidden="true"></i>
+      <i data-lucide="pause" class="icon-pause" aria-hidden="true" style="display: none;"></i>
     </button>
-    <button class="mini-btn" id="miniFwd" type="button" aria-label="Piste suivante">»</button>
+    <button class="mini-btn" id="miniFwd" type="button" aria-label="Piste suivante"><i data-lucide="skip-forward" aria-hidden="true"></i></button>
     <div class="mini-info">
       <div class="mini-track" id="miniTrack">Iko Iko · Justin Wellington</div>
       <div class="mini-bar-wrap" id="miniBarWrap"><div class="mini-bar" id="miniBar"></div></div>
@@ -2147,7 +2185,7 @@
     </div>
 
     <a href="#story" class="scroll-hint" aria-label="Défiler vers le bas">
-      défilez <span class="arrow">↓</span>
+      défilez <i data-lucide="arrow-down" class="arrow" aria-hidden="true"></i>
     </a>
 
   </header>
@@ -2373,7 +2411,7 @@
         <!-- Detail Overlay -->
         <div class="keepsake-detail-overlay" id="keepsakeOverlay" aria-hidden="true">
           <div class="keepsake-card">
-            <button class="keepsake-close" id="keepsakeClose" aria-label="Fermer">×</button>
+            <button class="keepsake-close" id="keepsakeClose" aria-label="Fermer"><i data-lucide="x" aria-hidden="true"></i></button>
             <h3 id="keepsakeTitle">Titre du souvenir</h3>
             <div class="year" id="keepsakeYear">Année</div>
             <p id="keepsakeDesc">Description du souvenir...</p>
@@ -2611,7 +2649,7 @@
         <div class="memory-hud">
           <span class="memory-stat">coups · <strong id="memMoves">0</strong></span>
           <span class="memory-stat">paires · <strong id="memPairs">0</strong>/6</span>
-          <button class="memory-reset" id="memReset" type="button">rejouer ↺</button>
+          <button class="memory-reset" id="memReset" type="button">rejouer <i data-lucide="rotate-ccw" aria-hidden="true"></i></button>
         </div>
         <p class="memory-win" id="memWin" hidden>bravo ! toutes les paires en <strong id="memWinMoves">0</strong> coups 🎉</p>
       </div>
@@ -2669,7 +2707,7 @@
   </footer>
 
   </div>
-  <button class="to-top" id="toTop" aria-label="Remonter en haut de la page">↑</button>
+  <button class="to-top" id="toTop" aria-label="Remonter en haut de la page"><i data-lucide="arrow-up" aria-hidden="true"></i></button>
 
   <script>
     /* ───────── Local bead-embroidery mosaic ───────── */
@@ -4069,6 +4107,11 @@
         requestAnimationFrame(frame);
       })(0);
     })();
+  </script>
+  <!-- Load Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
   </script>
 </body>
 </html>

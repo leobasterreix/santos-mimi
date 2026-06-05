@@ -222,6 +222,11 @@
       transform: translateY(-3px);
       box-shadow: 0 16px 36px var(--btn-shadow);
     }
+    .home-link svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.5px;
+    }
 
     .particles, .ripples {
       position: fixed; inset: 0;
@@ -242,7 +247,7 @@
 
   <div id="stage"></div>
   <p class="subtitle">cette page s'est perdue en mer 🌊</p>
-  <a class="home-link" href="index.html">← retour à l'accueil</a>
+  <a class="home-link" href="index.html"><i data-lucide="arrow-left" aria-hidden="true"></i> retour à l'accueil</a>
 
 
   <script>
@@ -634,6 +639,11 @@
   loop();
 
   addEventListener('resize', () => { fit(pCanvas); fit(rCanvas); });
+  </script>
+  <!-- Load Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
   </script>
 </body>
 </html>

@@ -284,7 +284,7 @@
       background-size: 10px 10px, 10px 10px;
       background-position: 0 0, 5px 5px;
       opacity: 0.5;
-      z-index: 1;
+      z-index: -1;
       mix-blend-mode: multiply;
     }
 
@@ -348,7 +348,7 @@
     nav.island-visible {
       opacity: 1;
     }
-    nav .logo {
+    .logo {
       font-family: 'Londrina Solid', sans-serif;
       font-weight: 900;
       font-size: clamp(1.15rem, 2.2vw, 1.45rem);
@@ -359,8 +359,9 @@
       -webkit-text-fill-color: var(--ink);
       line-height: 1;
       white-space: nowrap;
+      display: inline-block;
     }
-    nav .logo .amp {
+    .logo .amp {
       font-family: 'Parisienne', cursive;
       font-style: italic;
       font-size: 1.1em;
@@ -1083,18 +1084,6 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .contact-row {
-      margin-top: 3rem;
-      text-align: center;
-      padding: 2rem 1rem;
-      background: radial-gradient(500px 220px at 50% 50%, rgba(214, 51, 132, 0.16), transparent 70%);
-      border-radius: 32px;
-    }
-    .contact-row h3 {
-      font-family: 'Parisienne', cursive;
-      font-size: clamp(1.6rem, 4vw, 2.6rem);
-      margin-bottom: 1rem;
-    }
     .cta {
       display: inline-block;
       font-family: 'Londrina Solid', sans-serif;
@@ -1115,37 +1104,20 @@
     }
 
     footer {
-      text-align: center; padding: 3rem 2rem 2.2rem;
+      text-align: center; padding: 2.2rem 2rem;
       position: relative; z-index: 4;
-      color: var(--ruby);
       background: var(--glass-bg);
       border-top: 1px solid var(--glass-border);
       backdrop-filter: blur(8px);
     }
-    .footer-sig {
-      font-family: 'Parisienne', cursive;
-      font-size: 1.7rem; font-weight: 700;
-      background: linear-gradient(135deg, var(--ruby-bright), var(--gold), var(--magenta));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      rotate: -3deg;
-      display: inline-block;
-      margin-bottom: 0.6rem;
-    }
-    .footer-meta {
-      display: flex; justify-content: center; flex-wrap: wrap;
-      gap: 0.4rem 1.4rem;
+    .footer-note {
       font-family: 'Londrina Solid', sans-serif;
-      font-size: 0.68rem; letter-spacing: 0.28em;
-      text-transform: uppercase; opacity: 0.65;
-      margin-top: 0.6rem;
-    }
-    .footer-line {
-      width: 60px; height: 1px;
-      margin: 0.9rem auto;
-      background: linear-gradient(90deg, transparent, var(--ruby-bright), transparent);
-      opacity: 0.5;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.55;
+      margin-top: 0.7rem;
+      color: var(--ink);
     }
 
     /* ─── Chapter system ─────────────────────────────────── */
@@ -2719,34 +2691,11 @@
 
     <audio id="audio" preload="metadata"></audio>
 
-    <div class="container">
-      <div class="contact-row" id="contact">
-        <h3>On parle de ton <em>projet</em> ?</h3>
-        <a class="cta" href="mailto:hello@santosmimi.studio">hello@santosmimi.studio</a>
-      </div>
-    </div>
   </section>
 
-  <div class="divider d-horizon" aria-hidden="true">
-    <svg viewBox="0 0 1200 50" preserveAspectRatio="none">
-      <line x1="40" y1="25" x2="560" y2="25" stroke="#c41e3a" stroke-width="0.6" opacity="0.35" />
-      <line x1="640" y1="25" x2="1160" y2="25" stroke="#c41e3a" stroke-width="0.6" opacity="0.35" />
-      <circle cx="600" cy="25" r="4" fill="#d97706" />
-      <circle cx="600" cy="25" r="1.5" fill="#fff8d0" />
-    </svg>
-  </div>
-
   <footer>
-    <div class="footer-sig">santos &amp; mimi</div>
-    <div class="footer-line"></div>
-    <div class="footer-meta">
-      <span>brodé à la main</span>
-      <span>MMXXVI</span>
-      <span>lisbonne · biarritz</span>
-    </div>
-    <div class="footer-meta" style="opacity:0.5;margin-top:0.6rem">
-      <span>BO · iko iko by justin wellington</span>
-    </div>
+    <div class="logo">SANTOS <span class="amp">&amp;</span> MIMI</div>
+    <div class="footer-note">Une amitié brodée de perles</div>
   </footer>
 
   </div>

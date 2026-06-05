@@ -85,6 +85,7 @@
       --bg-grad-2: #ffe2f1;
       --bg-grad-3: #cdeeff;
       --bg-grad-4: #fff1d6;
+      --scroll-track-line: rgba(217, 119, 6, 0.2);
     }
 
     html[data-theme="dark"] {
@@ -117,6 +118,7 @@
       --bg-grad-2: #0e0717;
       --bg-grad-3: #180924;
       --bg-grad-4: #0d0614;
+      --scroll-track-line: rgba(251, 191, 36, 0.15);
     }
 
     html[data-theme="abyss"] {
@@ -149,10 +151,65 @@
       --bg-grad-2: #041724;
       --bg-grad-3: #020c12;
       --bg-grad-4: #051d2e;
+      --scroll-track-line: rgba(20, 184, 166, 0.2);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
+
+    /* ── Scrollbar de Strass ────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 15px;
+      height: 15px;
+    }
+    ::-webkit-scrollbar-track {
+      background-color: var(--cream);
+      background-image: linear-gradient(to right, transparent 7px, var(--scroll-track-line) 7px, var(--scroll-track-line) 9px, transparent 9px);
+      border-left: 1px solid var(--glass-border);
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: transparent;
+      background-image:
+        /* High-brilliance facet specular reflection (white highlight) */
+        radial-gradient(circle at 35% 35%, #ffffff 4%, rgba(255, 255, 255, 0.9) 8%, transparent 16%),
+        /* Inner core fire */
+        radial-gradient(circle at 45% 45%, var(--pink-hot) 8%, var(--ruby-bright) 20%, transparent 36%),
+        /* Crystal back/depth */
+        radial-gradient(circle at 50% 50%, var(--ruby) 24%, rgba(107, 45, 122, 0.95) 36%, transparent 38%),
+        /* Gold casing/cup */
+        radial-gradient(circle at 50% 50%, transparent 36%, var(--gold) 38%, rgba(180, 83, 9, 0.9) 44%, transparent 46%),
+        /* Drop shadow */
+        radial-gradient(circle at 52% 54%, rgba(0, 0, 0, 0.2) 32%, rgba(0, 0, 0, 0.3) 42%, transparent 48%);
+      background-size: 15px 15px;
+      background-repeat: repeat-y;
+      background-position: center center;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background-image:
+        /* Bright sparkle highlight */
+        radial-gradient(circle at 35% 35%, #ffffff 6%, rgba(255, 255, 255, 0.95) 10%, transparent 18%),
+        /* Glowing inner core */
+        radial-gradient(circle at 45% 45%, #ffffff 4%, var(--pink-hot) 12%, var(--ruby-bright) 24%, transparent 36%),
+        /* Crystal back/depth */
+        radial-gradient(circle at 50% 50%, var(--ruby-bright) 24%, rgba(107, 45, 122, 0.85) 36%, transparent 38%),
+        /* Gold casing/cup (shinier gold) */
+        radial-gradient(circle at 50% 50%, transparent 36%, #fbbf24 38%, var(--gold) 44%, transparent 46%),
+        /* Drop shadow */
+        radial-gradient(circle at 52% 54%, rgba(0, 0, 0, 0.25) 32%, rgba(0, 0, 0, 0.35) 42%, transparent 48%);
+    }
+    ::-webkit-scrollbar-thumb:active {
+      background-image:
+        /* Intense sparkle highlight */
+        radial-gradient(circle at 35% 35%, #ffffff 8%, rgba(255, 255, 255, 1) 12%, transparent 20%),
+        /* Intense glowing core */
+        radial-gradient(circle at 45% 45%, #ffffff 6%, var(--pink-hot) 14%, var(--ruby-bright) 28%, transparent 36%),
+        /* Crystal back/depth */
+        radial-gradient(circle at 50% 50%, var(--ruby-bright) 24%, var(--purple) 36%, transparent 38%),
+        /* Gold casing/cup (intense metallic gold) */
+        radial-gradient(circle at 50% 50%, transparent 36%, #fbbf24 38%, #fbbf24 44%, transparent 46%),
+        /* Drop shadow */
+        radial-gradient(circle at 52% 54%, rgba(0, 0, 0, 0.3) 32%, rgba(0, 0, 0, 0.4) 42%, transparent 48%);
+    }
 
     /* Images non sélectionnables / non déplaçables */
     img {

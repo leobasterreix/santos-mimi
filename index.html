@@ -102,7 +102,7 @@
       z-index: 0;
     }
     .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .loader.popping { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader.snapping { opacity: 0; visibility: hidden; pointer-events: none; }
     .loader-inner {
       display: none;
     }
@@ -1528,22 +1528,34 @@
       0%, 100% { transform: translate(0, 0) rotate(var(--ld-rot, 0deg)); }
       50%       { transform: translate(var(--ld-float-x, 0px), var(--ld-float-y, -12px)) rotate(calc(var(--ld-rot, 0deg) + var(--ld-float-r, 3deg))); }
     }
-    .loader.popping .loader-deco-wrap {
-      animation: bubblePop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    .loader.snapping .loader-deco-wrap.left-side {
+      animation: snapLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
     }
-    @keyframes bubblePop {
+    .loader.snapping .loader-deco-wrap.right-side {
+      animation: snapRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+    }
+    @keyframes snapLeft {
       0% {
-        transform: rotate(var(--ld-rot, 0deg)) scale(1);
+        transform: translate(0, 0) rotate(var(--ld-rot, 0deg));
       }
-      40% {
-        transform: rotate(var(--ld-rot, 0deg)) scale(1.35);
-        filter: brightness(1.6) contrast(1.1);
-        opacity: 1;
+      15% {
+        transform: translate(35px, 0) rotate(calc(var(--ld-rot, 0deg) + 6deg));
       }
       100% {
-        transform: rotate(var(--ld-rot, 0deg)) scale(0);
+        transform: translate(-120vw, -30px) rotate(calc(var(--ld-rot, 0deg) - 140deg));
         opacity: 0;
-        filter: brightness(2) contrast(1.2);
+      }
+    }
+    @keyframes snapRight {
+      0% {
+        transform: translate(0, 0) rotate(var(--ld-rot, 0deg));
+      }
+      15% {
+        transform: translate(-35px, 0) rotate(calc(var(--ld-rot, 0deg) - 6deg));
+      }
+      100% {
+        transform: translate(120vw, -30px) rotate(calc(var(--ld-rot, 0deg) + 140deg));
+        opacity: 0;
       }
     }
 
@@ -2521,26 +2533,29 @@
       setTimeout(() => {
         const decos = loader.querySelectorAll('.loader-deco-wrap');
         
-        // Calculate and apply bubble pop delay based on distance from center
         decos.forEach((deco) => {
           const leftPct = parseFloat(deco.dataset.left);
-          const topPct = parseFloat(deco.dataset.top);
-          
           const dx = leftPct - 50;
-          const dy = topPct - 50;
-          const dist = Math.sqrt(dx * dx + dy * dy);
           
-          // Stagger bubble pop outward from center (stagger delay up to ~550ms)
-          const delay = Math.round(dist * 6);
+          // Assign side classes
+          if (dx < 0) {
+            deco.classList.add('left-side');
+          } else {
+            deco.classList.add('right-side');
+          }
+          
+          // Stagger delay based on horizontal distance from center line (snapping outwards)
+          const dist = Math.abs(dx);
+          const delay = Math.round(dist * 6); // 0ms to ~390ms
           deco.style.animationDelay = delay + 'ms';
         });
         
-        // Trigger popping wave and site reveal
-        loader.classList.add('popping');
+        // Trigger snap wave and site reveal
+        loader.classList.add('snapping');
         const siteWrapper = document.getElementById('siteWrapper');
         if (siteWrapper) siteWrapper.classList.add('revealed');
         
-        // Hide loader completely after popping wave finishes (~1s popping + 0.2s fade)
+        // Hide loader completely after snap wave finishes (~0.8s snap + 0.4s fade = 1.2s)
         setTimeout(() => {
           loader.classList.add('hidden');
           document.body.classList.remove('is-loading');

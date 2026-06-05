@@ -4,13 +4,10 @@
   <meta charset="UTF-8" />
   <script>
     (function() {
-      let savedTheme = 'light';
       try {
-        savedTheme = localStorage.getItem('site-theme') || 'light';
-      } catch (e) {
-        console.warn('localStorage is not accessible:', e);
-      }
-      document.documentElement.setAttribute('data-theme', savedTheme);
+        localStorage.removeItem('site-theme');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', 'light');
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />

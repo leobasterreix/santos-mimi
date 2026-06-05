@@ -933,7 +933,8 @@
       pointer-events: none;
       z-index: 5;
       border-radius: 50%;
-      background: radial-gradient(circle, var(--magenta) 0%, var(--ruby) 70%, var(--ruby) 100%);
+      background: var(--shell-bg, radial-gradient(circle, var(--magenta) 0%, var(--ruby) 70%, var(--ruby) 100%));
+      transition: background 0.6s ease;
       border: 1.5px solid rgba(255, 255, 255, 0.25);
       box-shadow: inset 0 0 8px rgba(0,0,0,0.6), 0 3px 8px rgba(0,0,0,0.3);
       display: flex;
@@ -2920,10 +2921,22 @@
        puis ajoute une ligne ici — un objet { titre, artiste, fichier }.
        Le nom du fichier s'écrit normalement (espaces autorisés).        */
     const TRACKS = [
-      { title: 'Iko Iko', artist: 'Justin Wellington', src: 'Iko Iko Justin Wellington.mp3', bead: 'image%2042.png' },
-      { title: 'Pinky Up', artist: 'KATSEYE', src: 'KatsEye Pinky Up MV.mp3', bead: 'image%2048.png' },
-      { title: 'Mad Sounds', artist: 'Arctic Monkeys', src: 'Mad Sounds.mp3', bead: 'image%2055.png' },
-      // { title: 'Nom du son', artist: 'Artiste', src: 'mon-fichier.mp3', bead: 'image%2042.png' },
+      {
+        title: 'Iko Iko', artist: 'Justin Wellington', src: 'Iko Iko Justin Wellington.mp3',
+        bead: 'image%2042.png',
+        shellBg: 'radial-gradient(circle at 40% 40%, #ffd6e7 0%, #ffeaa7 28%, #b8f5d0 52%, #a8d8f0 75%, #d4b8f0 100%)'
+      },
+      {
+        title: 'Pinky Up', artist: 'KATSEYE', src: 'KatsEye Pinky Up MV.mp3',
+        bead: 'image%2048.png',
+        shellBg: 'radial-gradient(circle at 40% 35%, #ff6ec7 0%, #e91e8c 45%, #c2006e 100%)'
+      },
+      {
+        title: 'Mad Sounds', artist: 'Arctic Monkeys', src: 'Mad Sounds.mp3',
+        bead: 'image%2055.png',
+        shellBg: 'radial-gradient(circle at 40% 35%, #1a3a6e 0%, #0d1f45 55%, #050d20 100%)'
+      },
+      // { title: 'Nom du son', artist: 'Artiste', src: 'mon-fichier.mp3', bead: 'image%2042.png', shellBg: '' },
     ];
 
     /* ───────── Vinyl player (rotation RAF + drag-to-scratch) ───────── */
@@ -3037,7 +3050,10 @@
     function updateBigVinylFruit() {
       const shell = document.querySelector('.vinyl-shell');
       if (shell) {
-        const bead = TRACKS[currentTrack].bead || 'image%2042.png';
+        const track = TRACKS[currentTrack];
+        const bead = track.bead || 'image%2042.png';
+        const defaultBg = 'radial-gradient(circle, var(--magenta) 0%, var(--ruby) 70%, var(--ruby) 100%)';
+        shell.style.setProperty('--shell-bg', track.shellBg || defaultBg);
         shell.innerHTML = `<img id="bigVinylBead" src="images/${bead}" class="big-bead" alt="" />`;
       }
     }

@@ -82,7 +82,6 @@
       --bg-grad-2: #ffe2f1;
       --bg-grad-3: #cdeeff;
       --bg-grad-4: #fff1d6;
-      --scroll-track-line: rgba(217, 119, 6, 0.2);
     }
 
     html[data-theme="dark"] {
@@ -115,7 +114,6 @@
       --bg-grad-2: #0e0717;
       --bg-grad-3: #180924;
       --bg-grad-4: #0d0614;
-      --scroll-track-line: rgba(251, 191, 36, 0.15);
     }
 
     html[data-theme="abyss"] {
@@ -148,65 +146,10 @@
       --bg-grad-2: #041724;
       --bg-grad-3: #020c12;
       --bg-grad-4: #051d2e;
-      --scroll-track-line: rgba(20, 184, 166, 0.2);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-
-    /* ── Scrollbar de Strass ────────────────────────── */
-    ::-webkit-scrollbar {
-      width: 15px;
-      height: 15px;
-    }
-    ::-webkit-scrollbar-track {
-      background-color: var(--cream);
-      background-image: linear-gradient(to right, transparent 7px, var(--scroll-track-line) 7px, var(--scroll-track-line) 9px, transparent 9px);
-      border-left: 1px solid var(--glass-border);
-    }
-    ::-webkit-scrollbar-thumb {
-      background-color: transparent;
-      background-image:
-        /* High-brilliance facet specular reflection (white highlight) */
-        radial-gradient(circle at 35% 35%, #ffffff 4%, rgba(255, 255, 255, 0.9) 8%, transparent 16%),
-        /* Inner core fire */
-        radial-gradient(circle at 45% 45%, var(--pink-hot) 8%, var(--ruby-bright) 20%, transparent 36%),
-        /* Crystal back/depth */
-        radial-gradient(circle at 50% 50%, var(--ruby) 24%, rgba(107, 45, 122, 0.95) 36%, transparent 38%),
-        /* Gold casing/cup */
-        radial-gradient(circle at 50% 50%, transparent 36%, var(--gold) 38%, rgba(180, 83, 9, 0.9) 44%, transparent 46%),
-        /* Drop shadow */
-        radial-gradient(circle at 52% 54%, rgba(0, 0, 0, 0.2) 32%, rgba(0, 0, 0, 0.3) 42%, transparent 48%);
-      background-size: 15px 15px;
-      background-repeat: repeat-y;
-      background-position: center center;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background-image:
-        /* Bright sparkle highlight */
-        radial-gradient(circle at 35% 35%, #ffffff 6%, rgba(255, 255, 255, 0.95) 10%, transparent 18%),
-        /* Glowing inner core */
-        radial-gradient(circle at 45% 45%, #ffffff 4%, var(--pink-hot) 12%, var(--ruby-bright) 24%, transparent 36%),
-        /* Crystal back/depth */
-        radial-gradient(circle at 50% 50%, var(--ruby-bright) 24%, rgba(107, 45, 122, 0.85) 36%, transparent 38%),
-        /* Gold casing/cup (shinier gold) */
-        radial-gradient(circle at 50% 50%, transparent 36%, #fbbf24 38%, var(--gold) 44%, transparent 46%),
-        /* Drop shadow */
-        radial-gradient(circle at 52% 54%, rgba(0, 0, 0, 0.25) 32%, rgba(0, 0, 0, 0.35) 42%, transparent 48%);
-    }
-    ::-webkit-scrollbar-thumb:active {
-      background-image:
-        /* Intense sparkle highlight */
-        radial-gradient(circle at 35% 35%, #ffffff 8%, rgba(255, 255, 255, 1) 12%, transparent 20%),
-        /* Intense glowing core */
-        radial-gradient(circle at 45% 45%, #ffffff 6%, var(--pink-hot) 14%, var(--ruby-bright) 28%, transparent 36%),
-        /* Crystal back/depth */
-        radial-gradient(circle at 50% 50%, var(--ruby-bright) 24%, var(--purple) 36%, transparent 38%),
-        /* Gold casing/cup (intense metallic gold) */
-        radial-gradient(circle at 50% 50%, transparent 36%, #fbbf24 38%, #fbbf24 44%, transparent 46%),
-        /* Drop shadow */
-        radial-gradient(circle at 52% 54%, rgba(0, 0, 0, 0.3) 32%, rgba(0, 0, 0, 0.4) 42%, transparent 48%);
-    }
 
     /* Images non sélectionnables / non déplaçables */
     img {
@@ -341,7 +284,7 @@
       background-size: 10px 10px, 10px 10px;
       background-position: 0 0, 5px 5px;
       opacity: 0.5;
-      z-index: -1;
+      z-index: 1;
       mix-blend-mode: multiply;
     }
 
@@ -405,7 +348,7 @@
     nav.island-visible {
       opacity: 1;
     }
-    .logo {
+    nav .logo {
       font-family: 'Londrina Solid', sans-serif;
       font-weight: 900;
       font-size: clamp(1.15rem, 2.2vw, 1.45rem);
@@ -416,9 +359,8 @@
       -webkit-text-fill-color: var(--ink);
       line-height: 1;
       white-space: nowrap;
-      display: inline-block;
     }
-    .logo .amp {
+    nav .logo .amp {
       font-family: 'Parisienne', cursive;
       font-style: italic;
       font-size: 1.1em;
@@ -1141,23 +1083,69 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-
+    .contact-row {
+      margin-top: 3rem;
+      text-align: center;
+      padding: 2rem 1rem;
+      background: radial-gradient(500px 220px at 50% 50%, rgba(214, 51, 132, 0.16), transparent 70%);
+      border-radius: 32px;
+    }
+    .contact-row h3 {
+      font-family: 'Parisienne', cursive;
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      margin-bottom: 1rem;
+    }
+    .cta {
+      display: inline-block;
+      font-family: 'Londrina Solid', sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.2em;
+      padding: 0.95rem 2rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--ruby-bright), var(--magenta), var(--purple));
+      color: white;
+      text-decoration: none;
+      box-shadow: 0 12px 28px rgba(196, 30, 58, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: none;
+    }
+    .cta:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 18px 38px rgba(196, 30, 58, 0.5);
+    }
 
     footer {
-      text-align: center; padding: 2.2rem 2rem;
+      text-align: center; padding: 3rem 2rem 2.2rem;
       position: relative; z-index: 4;
+      color: var(--ruby);
       background: var(--glass-bg);
       border-top: 1px solid var(--glass-border);
       backdrop-filter: blur(8px);
     }
-    .footer-note {
+    .footer-sig {
+      font-family: 'Parisienne', cursive;
+      font-size: 1.7rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--ruby-bright), var(--gold), var(--magenta));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      rotate: -3deg;
+      display: inline-block;
+      margin-bottom: 0.6rem;
+    }
+    .footer-meta {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 0.4rem 1.4rem;
       font-family: 'Londrina Solid', sans-serif;
-      font-size: 0.72rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      opacity: 0.55;
-      margin-top: 0.7rem;
-      color: var(--ink);
+      font-size: 0.68rem; letter-spacing: 0.28em;
+      text-transform: uppercase; opacity: 0.65;
+      margin-top: 0.6rem;
+    }
+    .footer-line {
+      width: 60px; height: 1px;
+      margin: 0.9rem auto;
+      background: linear-gradient(90deg, transparent, var(--ruby-bright), transparent);
+      opacity: 0.5;
     }
 
     /* ─── Chapter system ─────────────────────────────────── */
@@ -1166,6 +1154,8 @@
       content: '';
       position: absolute; inset: 0;
       pointer-events: none; z-index: 0;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
     }
     .chapter > .container { position: relative; z-index: 1; }
     .chapter.ch-1::before {
@@ -1749,6 +1739,156 @@
     .to-top.show { opacity: 0.95; transform: translateY(0) scale(1); pointer-events: auto; }
     .to-top:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 16px 36px rgba(214, 51, 132, 0.62); opacity: 1; }
 
+    /* ─── Boîte à Souvenirs (Ancienne & interactive) ───────── */
+    .keepsake-section {
+      display: none !important;
+      padding: 6rem 2rem !important;
+      text-align: center;
+    }
+    .keepsake-tray {
+      position: relative;
+      max-width: 900px;
+      margin: 3rem auto 0;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      box-shadow: 
+        0 30px 60px rgba(60, 10, 30, 0.14),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      overflow: hidden;
+      height: auto;
+      padding: 4rem 2rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3.5rem;
+      justify-items: center;
+      align-items: center;
+    }
+    /* Le coffre en bois au centre (Masqué sur toutes les résolutions) */
+    .keepsake-chest {
+      display: none !important;
+    }
+    .chest-lid {
+      width: 160px; height: 60px;
+      transform-origin: bottom center;
+      transition: transform 0.1s linear;
+      will-change: transform;
+    }
+    .chest-base {
+      width: 160px; height: 80px;
+      margin-top: -2px;
+    }
+
+    /* Les objets de la boîte à souvenirs en grille */
+    .keepsake-item-wrap {
+      position: relative;
+      width: 100px; height: 100px;
+      z-index: 4;
+      display: grid; place-items: center;
+    }
+    .keepsake-item-wrap:hover, .keepsake-item-wrap:focus-within {
+      z-index: 10;
+    }
+    .keepsake-item {
+      width: 100%; height: 100%;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease;
+      filter: drop-shadow(0 6px 12 rgba(60, 10, 30, 0.18));
+      outline: none;
+    }
+    .keepsake-item:hover, .keepsake-item:focus {
+      transform: translateY(-10px) scale(1.15) rotate(4deg);
+      filter: drop-shadow(0 16px 28px rgba(60, 10, 30, 0.32));
+      z-index: 15;
+    }
+
+    /* Detail Card Overlay */
+    .keepsake-detail-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 247, 237, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 20;
+    }
+    .keepsake-detail-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .keepsake-card {
+      background: var(--cream);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      padding: 2.2rem;
+      max-width: 440px;
+      width: 90%;
+      text-align: left;
+      box-shadow: 0 24px 48px rgba(60,10,30,0.25);
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      position: relative;
+    }
+    .keepsake-detail-overlay.active .keepsake-card {
+      transform: translateY(0) scale(1);
+    }
+    .keepsake-card h3 {
+      font-family: 'Londrina Solid', sans-serif;
+      font-size: 1.8rem;
+      color: var(--ruby);
+      margin-bottom: 0.2rem;
+    }
+    .keepsake-card .year {
+      font-family: 'Parisienne', cursive;
+      font-size: 1.1rem;
+      color: var(--pink-hot);
+      margin-bottom: 1.2rem;
+    }
+    .keepsake-card p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+    .keepsake-close {
+      position: absolute;
+      top: 1.2rem; right: 1.2rem;
+      border: none; background: transparent;
+      font-size: 1.5rem; cursor: pointer;
+      color: var(--ruby);
+      line-height: 1;
+    }
+    
+    @media (max-width: 768px) {
+      .keepsake-tray {
+        height: auto;
+        padding: 2.5rem 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
+        justify-items: center;
+        align-items: center;
+      }
+      .keepsake-chest {
+        display: none !important;
+      }
+      .keepsake-item-wrap {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+        width: 100px !important;
+        height: 100px !important;
+      }
+    }
+
 
 
     /* ─── Jeu de mémoire ─────────────────────────────────── */
@@ -2080,6 +2220,212 @@
     </div>
   </section>
 
+  <!-- ─── Boîte à Souvenirs (Tribute Keepsake Box) ─── -->
+  <section class="block chapter ch-1 keepsake-section" id="keepsake" aria-label="Boîte à souvenirs">
+    <div class="container">
+      <div class="ch-tag">
+        <span class="num">1.5</span>
+        <span class="label">la boîte à souvenirs</span>
+      </div>
+      <h2>Nos petits <em>trésors</em> &amp; références partagées.</h2>
+      <p style="max-width: 600px; margin: 1rem auto 0; font-size: 0.95rem; opacity: 0.85;">
+        Chaque amitié a ses repères secrets, ses souvenirs gravés et ses petits objets fétiches. 
+        Défilez pour ouvrir notre coffre aux trésors et les voir s'envoler.
+      </p>
+
+      <div class="keepsake-tray">
+        
+        <!-- Le coffre de pirate au centre -->
+        <div class="keepsake-chest" id="keepsakeChest">
+          <div class="chest-lid">
+            <svg viewBox="0 0 160 60" width="160" height="60">
+              <path d="M10 55 C10 15 150 15 150 55 Z" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+              <path d="M30 46 C30 20 40 20 40 46" fill="none" stroke="#fbbf24" stroke-width="3"/>
+              <path d="M130 46 C130 20 120 20 120 46" fill="none" stroke="#fbbf24" stroke-width="3"/>
+              <rect x="73" y="48" width="14" height="12" rx="1" fill="#d97706" stroke="#451a03" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="chest-base">
+            <svg viewBox="0 0 160 80" width="160" height="80">
+              <path d="M10 5 L150 5 L140 75 L20 75 Z" fill="#451a03" stroke="#1c1917" stroke-width="2"/>
+              <path d="M10 5 L150 5 L145 75 L15 75 Z" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+              <path d="M10 5 L20 5 L25 75 L15 75 Z" fill="#d97706"/>
+              <path d="M150 5 L140 5 L135 75 L145 75 Z" fill="#d97706"/>
+              <rect x="73" y="0" width="14" height="15" rx="1" fill="#fbbf24" stroke="#451a03" stroke-width="1.5"/>
+              <circle cx="80" cy="7" r="2.5" fill="#000"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Les objets enrobés dans des wrappers pour les translations dynamiques -->
+        
+        <!-- Item 1: Coquillage -->
+        <div class="keepsake-item-wrap" data-keepsake="shell">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Coquillage de Biarritz">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <path d="M50 15 C30 15 15 35 15 65 C15 75 25 85 50 85 C75 85 85 75 85 65 C85 35 70 15 50 15 Z" fill="url(#shellGrad)" stroke="var(--ruby)" stroke-width="1.5"/>
+              <path d="M50 15 C45 35 30 50 25 80" fill="none" stroke="rgba(139, 30, 43, 0.25)" stroke-width="1.2"/>
+              <path d="M50 15 C48 35 40 50 40 85" fill="none" stroke="rgba(139, 30, 43, 0.25)" stroke-width="1.2"/>
+              <path d="M50 15 C52 35 60 50 60 85" fill="none" stroke="rgba(139, 30, 43, 0.25)" stroke-width="1.2"/>
+              <path d="M50 15 C55 35 70 50 75 80" fill="none" stroke="rgba(139, 30, 43, 0.25)" stroke-width="1.2"/>
+              <defs>
+                <linearGradient id="shellGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fff8f3" />
+                  <stop offset="60%" stop-color="#fcd34d" />
+                  <stop offset="100%" stop-color="#f59e0b" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Item 2: Azulejo -->
+        <div class="keepsake-item-wrap" data-keepsake="tile">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Azulejo de Lisbonne">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <rect x="5" y="5" width="90" height="90" rx="8" fill="#f8fafc" stroke="var(--ruby)" stroke-width="1.8"/>
+              <rect x="12" y="12" width="76" height="76" rx="4" fill="none" stroke="#0e7490" stroke-width="1.2" stroke-dasharray="2 2"/>
+              <path d="M50 15 L50 85 M15 50 L85 50" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+              <circle cx="50" cy="50" r="14" fill="none" stroke="#0e7490" stroke-width="1.5"/>
+              <path d="M50 36 C45 42 42 45 36 50 C42 55 45 58 50 64 C55 58 58 55 64 50 C58 45 55 42 50 36 Z" fill="none" stroke="#f43f5e" stroke-width="1.2"/>
+              <circle cx="50" cy="50" r="3" fill="#f43f5e"/>
+              <path d="M15 15 L25 25 M85 15 L75 25 M15 85 L25 75 M85 85 L75 75" stroke="#0e7490" stroke-width="1.2"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Item 3: Aiguille Dorée -->
+        <div class="keepsake-item-wrap" data-keepsake="needle">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Aiguille dorée et fil rose">
+            <svg viewBox="0 0 120 120" width="100%" height="100%">
+              <path d="M15 105 L95 25 Q100 20 105 25 Q110 30 105 35 L25 115 Z" fill="url(#needleGrad)"/>
+              <ellipse cx="98" cy="28" rx="2" ry="5" transform="rotate(45 98 28)" fill="#1a1230"/>
+              <path d="M120 10 C90 15 95 28 98 28 C102 28 105 45 90 70 C75 95 60 100 45 105" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="needleGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#b45309" />
+                  <stop offset="50%" stop-color="#fbbf24" />
+                  <stop offset="100%" stop-color="#fef3c7" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Item 4: Polaroid -->
+        <div class="keepsake-item-wrap" data-keepsake="polaroid">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Polaroid de nos 18 ans">
+            <svg viewBox="0 0 100 120" width="100%" height="100%">
+              <rect x="5" y="5" width="90" height="110" rx="3" fill="#fff" stroke="var(--glass-border)" stroke-width="1.5"/>
+              <rect x="12" y="12" width="76" height="76" rx="1" fill="#f1f5f9"/>
+              <circle cx="38" cy="48" r="8" fill="none" stroke="#d63384" stroke-width="1.5"/>
+              <path d="M25 70 C25 60 51 60 51 70" fill="none" stroke="#d63384" stroke-width="1.5"/>
+              <circle cx="62" cy="46" r="8" fill="none" stroke="#0e7490" stroke-width="1.5"/>
+              <path d="M49 70 C49 58 75 58 75 70" fill="none" stroke="#0e7490" stroke-width="1.5"/>
+              <path d="M50 36 C48 32 42 32 42 36 C42 42 50 46 50 46 C50 46 58 42 58 36 C58 32 52 32 50 36 Z" fill="#f43f5e"/>
+              <text x="50" y="102" font-family="'Parisienne', cursive" font-size="12" text-anchor="middle" fill="var(--ruby)">les 18 ans</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Item 5: Cassette Audio -->
+        <div class="keepsake-item-wrap" data-keepsake="tape">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Cassette audio de notre BO">
+            <svg viewBox="0 0 120 80" width="100%" height="100%">
+              <rect x="5" y="5" width="110" height="70" rx="6" fill="#1e1b4b" stroke="var(--ruby)" stroke-width="1.5"/>
+              <rect x="15" y="15" width="90" height="36" rx="3" fill="#fffef0" stroke="#f43f5e" stroke-width="1"/>
+              <rect x="35" y="25" width="50" height="16" rx="2" fill="#1e1b4b"/>
+              <circle cx="48" cy="33" r="5" fill="#f59e0b"/>
+              <circle cx="72" cy="33" r="5" fill="#f59e0b"/>
+              <text x="60" y="48" font-family="monospace" font-size="5" text-anchor="middle" fill="#d63384">MIMI &amp; SANTOS BO</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Item 6: Star Ac -->
+        <div class="keepsake-item-wrap" data-keepsake="starac">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Star Academy">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" fill="url(#starGrad)" stroke="var(--ruby)" stroke-width="1.5"/>
+              <rect x="46" y="45" width="8" height="25" rx="3" fill="#475569" stroke="#1e293b" stroke-width="1"/>
+              <circle cx="50" cy="40" r="7" fill="#94a3b8" stroke="#1e293b" stroke-width="1"/>
+              <defs>
+                <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fef08a" />
+                  <stop offset="100%" stop-color="#ca8a04" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Item 7: Secret Story -->
+        <div class="keepsake-item-wrap" data-keepsake="secret">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Secret Story">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <path d="M10 50 C25 20 75 20 90 50 C75 80 25 80 10 50 Z" fill="#fff" stroke="var(--ruby)" stroke-width="1.8"/>
+              <circle cx="50" cy="50" r="20" fill="url(#eyeIris)" stroke="#0e7490" stroke-width="1"/>
+              <circle cx="50" cy="50" r="10" fill="#1e1b4b"/>
+              <circle cx="45" cy="45" r="3" fill="#fff"/>
+              <defs>
+                <linearGradient id="eyeIris" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="100%" stop-color="#0369a1" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Item 8: Tocard -->
+        <div class="keepsake-item-wrap" data-keepsake="tocard">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Médaille des Tocards">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <polygon points="40,50 30,90 50,80 70,90 60,50" fill="#f43f5e" stroke="#991b1b" stroke-width="1.2"/>
+              <circle cx="50" cy="45" r="22" fill="url(#medalGrad)" stroke="#b45309" stroke-width="1.5"/>
+              <circle cx="50" cy="45" r="16" fill="none" stroke="#fbbf24" stroke-dasharray="2 2"/>
+              <text x="50" y="53" font-family="'Londrina Solid', sans-serif" font-size="24" font-weight="900" text-anchor="middle" fill="#78350f">T</text>
+              <defs>
+                <linearGradient id="medalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fef3c7" />
+                  <stop offset="50%" stop-color="#fbbf24" />
+                  <stop offset="100%" stop-color="#d97706" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Item 9: Neuille -->
+        <div class="keepsake-item-wrap" data-keepsake="neuille">
+          <div class="keepsake-item" tabindex="0" role="button" aria-label="Le Noeud de Neuille">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <path d="M25 50 C25 25 75 25 75 50 C75 65 55 75 50 85 C45 75 25 65 25 50 Z" fill="none" stroke="url(#braceletGrad)" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="50" cy="30" r="7" fill="#fbbf24" stroke="#d97706" stroke-width="1"/>
+              <defs>
+                <linearGradient id="braceletGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#f43f5e" />
+                  <stop offset="50%" stop-color="#a855f7" />
+                  <stop offset="100%" stop-color="#06b6d4" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Detail Overlay -->
+        <div class="keepsake-detail-overlay" id="keepsakeOverlay" aria-hidden="true">
+          <div class="keepsake-card">
+            <button class="keepsake-close" id="keepsakeClose" aria-label="Fermer">×</button>
+            <h3 id="keepsakeTitle">Titre du souvenir</h3>
+            <div class="year" id="keepsakeYear">Année</div>
+            <p id="keepsakeDesc">Description du souvenir...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ─── Filmstrip photobooth ─────────────────────── -->
   <section class="filmstrip-section" aria-label="Galerie photos">
     <div class="filmstrip-track">
@@ -2373,12 +2719,34 @@
 
     <audio id="audio" preload="metadata"></audio>
 
-
+    <div class="container">
+      <div class="contact-row" id="contact">
+        <h3>On parle de ton <em>projet</em> ?</h3>
+        <a class="cta" href="mailto:hello@santosmimi.studio">hello@santosmimi.studio</a>
+      </div>
+    </div>
   </section>
 
+  <div class="divider d-horizon" aria-hidden="true">
+    <svg viewBox="0 0 1200 50" preserveAspectRatio="none">
+      <line x1="40" y1="25" x2="560" y2="25" stroke="#c41e3a" stroke-width="0.6" opacity="0.35" />
+      <line x1="640" y1="25" x2="1160" y2="25" stroke="#c41e3a" stroke-width="0.6" opacity="0.35" />
+      <circle cx="600" cy="25" r="4" fill="#d97706" />
+      <circle cx="600" cy="25" r="1.5" fill="#fff8d0" />
+    </svg>
+  </div>
+
   <footer>
-    <div class="logo">SANTOS <span class="amp">&amp;</span> MIMI</div>
-    <div class="footer-note">Une amitié brodée de perles</div>
+    <div class="footer-sig">santos &amp; mimi</div>
+    <div class="footer-line"></div>
+    <div class="footer-meta">
+      <span>brodé à la main</span>
+      <span>MMXXVI</span>
+      <span>lisbonne · biarritz</span>
+    </div>
+    <div class="footer-meta" style="opacity:0.5;margin-top:0.6rem">
+      <span>BO · iko iko by justin wellington</span>
+    </div>
   </footer>
 
   </div>
@@ -2917,6 +3285,227 @@
       document.getElementById('miniPlayer').classList.remove('entering');
     }, 100);
 
+    /* ─── Boîte à Souvenirs — Pirate Chest & Scroll Animation ─── */
+    (function initKeepsakeChest() {
+      const section = document.getElementById('keepsake');
+      if (!section) return;
+
+      const tray = section.querySelector('.keepsake-tray');
+      const chest = document.getElementById('keepsakeChest');
+      const overlay = document.getElementById('keepsakeOverlay');
+      const closeBtn = document.getElementById('keepsakeClose');
+      const titleEl = document.getElementById('keepsakeTitle');
+      const yearEl = document.getElementById('keepsakeYear');
+      const descEl = document.getElementById('keepsakeDesc');
+
+      if (!tray || !chest || !overlay) return;
+
+      const lid = chest.querySelector('.chest-lid');
+      const items = section.querySelectorAll('.keepsake-item-wrap');
+
+      // Add a glow element inside the chest base dynamically
+      const chestBase = chest.querySelector('.chest-base');
+      let glow = chest.querySelector('.chest-glow');
+      if (!glow && chestBase) {
+        glow = document.createElement('div');
+        glow.className = 'chest-glow';
+        glow.style.cssText = `
+          position: absolute;
+          bottom: 30px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 120px;
+          height: 120px;
+          background: radial-gradient(circle, rgba(251, 191, 36, 0.75) 0%, rgba(251, 191, 36, 0) 70%);
+          filter: blur(10px);
+          mix-blend-mode: screen;
+          opacity: 0;
+          pointer-events: none;
+          z-index: 3;
+          will-change: opacity;
+          transition: opacity 0.1s linear;
+        `;
+        chest.insertBefore(glow, chestBase);
+      }
+
+      // Memory descriptions for all 9 objects
+      const memories = {
+        shell: {
+          title: "Le Coquillage de Biarritz",
+          year: "Été 2018 · La rencontre",
+          desc: "Tout a commencé sur le sable chaud de Biarritz. Entre deux baignades, on s'est rendu compte qu'on partageait la même passion pour l'artisanat. On ramassait ces coquillages en rêvant de les broder sur des vestes en jean. C'est l'étincelle de notre duo."
+        },
+        tile: {
+          title: "L'Azulejo de Lisbonne",
+          year: "Printemps 2020 · L'inspiration",
+          desc: "Lisbonne et ses façades chargées d'histoire. Perdus dans les ruelles de l'Alfama, on est tombés en admiration devant la géométrie complexe et les couleurs des azulejos traditionnels. C'est de là qu'est née l'inspiration pour nos premiers patchs structurés."
+        },
+        needle: {
+          title: "L'Aiguille Dorée",
+          year: "Le geste · Des milliers d'heures",
+          desc: "Notre outil le plus précieux, qui ne nous quitte jamais. Elle symbolise la patience infinie de la broderie main, le temps suspendu à l'atelier, et toutes les heures passées à refaire le monde, côte à côte, au fil de nos créations."
+        },
+        polaroid: {
+          title: "Le Polaroid de nos 18 ans",
+          year: "Automne 2017 · L'insouciance",
+          desc: "Un instantané volé un jour de pluie. Des rires incontrôlables, des grimaces, et l'insouciance totale de nos dix-huit ans. Ce polaroïd un peu jauni est punaisé au-dessus de notre établi principal pour nous rappeler d'où l'on vient."
+        },
+        tape: {
+          title: "La Cassette Playlist",
+          year: "La Bande Son · En boucle",
+          desc: "Mad Sounds des Arctic Monkeys, Justin Wellington... Notre complicité passe aussi par la musique. Cette cassette symbolise la playlist commune qu'on écoute en boucle quand on brode tard la nuit, rythmée par le cliquetis de nos perles."
+        },
+        starac: {
+          title: "La Star Academy",
+          year: "Les débriefs · Chaque saison",
+          desc: "Le rendez-vous sacré du samedi soir ! Des heures à chanter à tue-tête, à analyser les évaluations et à débriefer chaque prime comme si on faisait partie du jury. Un hommage à nos passions inavouables et nos fous rires partagés."
+        },
+        secret: {
+          title: "Secret Story",
+          year: "La Voix · Nos secrets",
+          desc: "« Ici la Voix... » Une boîte à secrets géante à notre image. Nos répliques cultes, les stratégies imaginaires et les mystères de l'atelier qu'on garde précieusement. C'est tout le piquant de nos discussions nocturnes."
+        },
+        tocard: {
+          title: "La Médaille des Tocards",
+          year: "Notre club · Pour la vie",
+          desc: "Le titre suprême de notre auto-dérision. Une médaille d'or décernée à nos meilleures gaffes, nos projets ratés et nos idées les plus absurdes. Être des tocards ensemble, c'est ce qui fait la force de notre amitié."
+        },
+        neuille: {
+          title: "Le Noeud de Neuille",
+          year: "Le symbole · Indestructible",
+          desc: "Un fil multicolore tressé dans les moments de doute. Ce nœud symbolise le lien indestructible qui nous unit, peu importe la distance ou les tempêtes. Une promesse d'être toujours là l'un pour l'autre."
+        }
+      };
+
+      // Ellipse layout configuration
+      const rx = 295;
+      const ry = 180;
+      const numItems = items.length;
+
+      // Click / interactive handlers
+      items.forEach(wrap => {
+        const item = wrap.querySelector('.keepsake-item');
+        if (!item) return;
+
+        item.addEventListener('click', () => {
+          const key = wrap.dataset.keepsake;
+          const data = memories[key];
+          if (data) {
+            titleEl.textContent = data.title;
+            yearEl.textContent = data.year;
+            descEl.textContent = data.desc;
+            overlay.classList.add('active');
+            overlay.setAttribute('aria-hidden', 'false');
+          }
+        });
+
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            item.click();
+          }
+        });
+      });
+
+      const closeOverlay = () => {
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+      };
+
+      if (closeBtn) closeBtn.addEventListener('click', closeOverlay);
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeOverlay();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) {
+          closeOverlay();
+        }
+      });
+
+      // Scroll-driven animation tick
+      let lastProgress = -1;
+      function animateChest() {
+        // Stop animation if the section is hidden OR the chest is hidden (forces grid layout)
+        if (window.getComputedStyle(section).display === 'none' || window.getComputedStyle(chest).display === 'none') {
+          // Reset styles so they use grid fallback from CSS
+          items.forEach(wrap => {
+            wrap.style.transform = '';
+            wrap.style.opacity = '';
+          });
+          if (lid) lid.style.transform = '';
+          if (glow) glow.style.opacity = '';
+          return;
+        }
+
+        // Only run on desktop (when chest is visible)
+        if (window.innerWidth <= 768) {
+          // Reset styles on mobile so they use grid fallback from CSS
+          items.forEach(wrap => {
+            wrap.style.transform = '';
+            wrap.style.opacity = '';
+          });
+          if (lid) lid.style.transform = '';
+          if (glow) glow.style.opacity = '';
+          return;
+        }
+
+        const trayRect = tray.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // Define animation range based on tray position inside viewport
+        const startY = windowHeight * 0.85; // starts when tray enters lower part of screen
+        const endY = windowHeight * 0.22;   // fully opened when tray is in upper part of screen
+        
+        let progress = (startY - trayRect.top) / (startY - endY);
+        progress = Math.max(0, Math.min(1, progress));
+
+        // Avoid useless styling writes if progress hasn't changed
+        if (Math.abs(progress - lastProgress) < 0.001) return;
+        lastProgress = progress;
+
+        const easeProgress = progress * progress * (3 - 2 * progress); // smoothstep ease
+
+        // 1. Open Lid (3D rotationX)
+        if (lid) {
+          const angle = easeProgress * -115;
+          lid.style.transform = `perspective(600px) rotateX(${angle}deg)`;
+        }
+
+        // 2. Adjust Glow
+        if (glow) {
+          glow.style.opacity = String(easeProgress * 0.95);
+        }
+
+        // 3. Fly items out (Galaxy / Vortex layout using compositor-only transform)
+        items.forEach((wrap, i) => {
+          const targetAngle = (i * 2 * Math.PI / numItems) - Math.PI / 2;
+          
+          // Vortex spiral: rotate as they expand
+          const currentAngle = targetAngle + (1 - easeProgress) * 1.6;
+          const currentRadiusX = easeProgress * rx;
+          const currentRadiusY = easeProgress * ry;
+
+          const x = Math.cos(currentAngle) * currentRadiusX;
+          const y = Math.sin(currentAngle) * currentRadiusY;
+
+          const scale = easeProgress;
+          const opacity = Math.min(1, easeProgress * 1.5);
+          
+          // Self-rotation spinning applied to the wrapper
+          const itemRot = (i * 40) + easeProgress * 360;
+
+          wrap.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) scale(${scale}) rotate(${itemRot}deg)`;
+          wrap.style.opacity = String(opacity);
+        });
+      }
+
+      window.addEventListener('scroll', animateChest, { passive: true });
+      window.addEventListener('resize', animateChest, { passive: true });
+      
+      // Initial call to set positions
+      animateChest();
+    })();
+
     /* ───────── Custom cursor (UNCHANGED) ───────── */
     const dot = document.querySelector('.cursor-dot');
     const ring = document.querySelector('.cursor-ring');
@@ -2936,7 +3525,7 @@
     }
     followRing();
 
-    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top').forEach(el => {
+    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top, .keepsake-item, .keepsake-close').forEach(el => {
       el.addEventListener('mouseenter', () => {
         if (ring) ring.classList.add('hover');
       });
@@ -3327,6 +3916,8 @@
       handleScroll();
       toTop.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
     }
+
+
 
 
 

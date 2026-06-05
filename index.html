@@ -1237,136 +1237,129 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
     }
 
-    /* ─── Patch cards ────────────────────────────────────── */
-    .patch-board {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3rem 2rem;
-    }
-    @media (max-width: 860px) { .patch-board { grid-template-columns: repeat(2, 1fr); gap: 2.4rem 1.2rem; } }
-    @media (max-width: 560px) { .patch-board { grid-template-columns: 1fr; } }
-    .patch-card {
+    /* ─── Rubrique 2 Chest Animation ─────────────────────── */
+    .chest-scroll-track {
       position: relative;
-      perspective: 1400px;
-      cursor: none;
-      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                  box-shadow 0.5s ease;
-      box-shadow: 0 12px 28px rgba(107, 45, 122, 0.14);
+      height: 220vh; /* scroll depth for chest animation */
     }
-    .patch-inner {
-      position: relative;
-      transform-style: preserve-3d;
-      -webkit-transform-style: preserve-3d;
-      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-      border-radius: inherit;
-      will-change: transform;
-    }
-    .patch-card.flipped .patch-inner { transform: rotateY(180deg); }
-    .patch-front, .patch-back {
-      border-radius: inherit;
-    }
-    .patch-front {
-      position: relative;
-      padding: 1.2rem 1.2rem 1.4rem;
-      background: var(--glass-bg);
-      backdrop-filter: blur(14px) saturate(160%);
-      -webkit-backdrop-filter: blur(14px) saturate(160%);
-      border: 1px solid var(--glass-border);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      transform: translateZ(1px);
-      -webkit-transform: translateZ(1px);
-    }
-    .patch-back {
-      position: absolute; inset: 0;
-      transform: rotateY(180deg) translateZ(1px);
-      -webkit-transform: rotateY(180deg) translateZ(1px);
-      overflow: hidden;
-      background: #120b05;
+    .chest-sticky-container {
+      position: sticky;
+      top: 0;
+      height: 100vh;
       display: flex;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
-    .patch-back img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
+    .chest-sticky-container > .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
     }
-
+    .chest-wrapper {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      margin-top: 1.5rem;
+      perspective: 1200px;
+    }
     @media (max-width: 768px) {
-      .patch-front {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        background: var(--cream) !important;
-        border: 1px solid var(--glass-border) !important;
+      .chest-wrapper {
+        width: 220px;
+        height: 220px;
       }
     }
-    .patch-card:hover {
-      transform: translateY(-8px) rotate(0deg) !important;
-      box-shadow: 0 22px 44px rgba(107, 45, 122, 0.22);
-    }
-    .patch-card:nth-child(1) { border-radius: 38% 62% 52% 48% / 45% 55% 45% 55%; rotate: -1.5deg; }
-    .patch-card:nth-child(2) { border-radius: 52% 48% 38% 62% / 55% 45% 55% 45%; rotate: 1.2deg; margin-top: 2rem; }
-    .patch-card:nth-child(3) { border-radius: 45% 55% 60% 40% / 50% 50% 40% 60%; rotate: -1deg; }
-    .patch-card:nth-child(4) { border-radius: 60% 40% 45% 55% / 40% 60% 50% 50%; rotate: 1.5deg; margin-top: 2.5rem; }
-    .patch-card:nth-child(5) { border-radius: 42% 58% 55% 45% / 48% 52% 48% 52%; rotate: -0.7deg; }
-    .patch-card:nth-child(6) { border-radius: 55% 45% 50% 50% / 52% 48% 52% 48%; rotate: 1deg; margin-top: 1.8rem; }
-    .patch-front::before, .patch-back::before {
-      content: '';
-      position: absolute; inset: 9px;
-      border-radius: inherit;
-      border: 1.8px dashed rgba(196, 30, 58, 0.38);
-      pointer-events: none;
-      z-index: 2;
-    }
-    /* petit indice « retourne-moi » sur le recto */
-    .patch-front::after {
-      content: '↺';
-      position: absolute; top: 0.5rem; right: 0.9rem;
-      font-size: 1rem; color: var(--ruby); opacity: 0.5;
-      pointer-events: none; z-index: 3;
-    }
-    .patch-card .thumb {
-      aspect-ratio: 4 / 3;
-      margin: -1.6rem -0.4rem 0.5rem;
-      position: relative;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .patch-card .thumb img {
-      width: 96%; height: 108%; object-fit: contain;
-      filter: drop-shadow(0 10px 18px rgba(60, 10, 30, 0.32));
-      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .patch-card:hover .thumb img { transform: scale(1.08) rotate(-3deg); }
-    .patch-card h3 {
-      font-family: 'Parisienne', cursive;
-      font-size: 1.9rem; font-weight: 700;
-      line-height: 1; color: var(--ruby);
-      rotate: -2deg;
-      margin: 0.4rem 0 0.3rem;
-      text-align: center;
-    }
-    .patch-card .meta {
-      font-family: 'Parisienne', cursive;
-      font-size: 1.05rem;
-      color: var(--ink); opacity: 0.7;
-      text-align: center;
-      rotate: 1deg;
-    }
-    .patch-card .pin {
+    .chest-lid, .chest-base {
       position: absolute;
-      top: -7px; left: 50%;
-      transform: translateX(-50%);
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff5d4 0%, #d97706 65%, #854d0e 100%);
-      box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.38),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('images/chest_closed.png');
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      mix-blend-mode: multiply;
+      will-change: transform;
+      z-index: 5;
+    }
+    .chest-lid {
+      /* Show only the top lid */
+      clip-path: inset(0 0 54.5% 0);
+      transform-origin: center 22%; /* rotate around the back lid top area */
+      transition: transform 0.08s linear;
+    }
+    .chest-base {
+      /* Show only the bottom base */
+      clip-path: inset(45.5% 0 0 0);
       z-index: 3;
     }
-    .ch-2 .patch-card::before { border-color: rgba(20, 184, 166, 0.4); }
-    .ch-2 .patch-card h3 { color: var(--teal-deep); }
+    .chest-inside {
+      position: absolute;
+      top: 44%;
+      left: 10%;
+      width: 80%;
+      height: 34%;
+      background: radial-gradient(circle at center, rgba(253, 224, 71, 0.9) 0%, rgba(202, 138, 4, 0.8) 40%, rgba(30, 27, 75, 0.95) 90%);
+      border-radius: 20px 20px 40px 40px;
+      box-shadow: 
+        inset 0 10px 30px rgba(0,0,0,0.95), 
+        0 0 40px rgba(253, 224, 71, 0.65);
+      z-index: 2;
+      opacity: 0;
+      transform: scale(0.9);
+      will-change: opacity, transform;
+      transition: opacity 0.08s linear, transform 0.08s linear;
+    }
+    
+    /* Floating circles */
+    .floating-circle {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 110px;
+      height: 110px;
+      margin-left: -55px;
+      margin-top: -55px;
+      z-index: 4;
+      opacity: 0;
+      transform: translate(0, 0) scale(0);
+      will-change: transform, opacity;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .floating-circle {
+        width: 76px;
+        height: 76px;
+        margin-left: -38px;
+        margin-top: -38px;
+      }
+    }
+    .circle-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--circle-grad);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 3px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 
+        0 10px 24px var(--circle-shadow),
+        inset 0 4px 12px rgba(255, 255, 255, 0.5),
+        inset 0 -4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    }
+    .floating-circle:hover .circle-inner {
+      transform: scale(1.12);
+      box-shadow: 
+        0 15px 30px var(--circle-shadow),
+        0 0 15px var(--circle-glow),
+        inset 0 4px 12px rgba(255, 255, 255, 0.6);
+    }
 
     /* ─── Section dividers ───────────────────────────────── */
     .divider {
@@ -2521,80 +2514,42 @@
     </div>
   </section>
 
-  <section class="block chapter ch-2" id="work">
-    <div class="container">
-      <div class="ch-tag">
-        <span class="num">02</span>
-        <span class="label">ce qu'on a cousu ensemble</span>
-      </div>
-      <h2>Patchs brodés, polis par les <em>vagues</em>.</h2>
-      <div class="patch-board">
-        <article class="patch-card">
-          <div class="patch-inner">
-            <div class="patch-front">
-              <div class="pin"></div>
-              <div class="thumb"><img src="images/image%2054.png" alt="" /></div>
-              <h3>Bubble Cola</h3>
-              <p class="meta">branding · 2026</p>
-            </div>
-            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%203.png" alt="Santos &amp; Mimi" /></div>
+  <section class="chapter ch-2 chest-scroll-track" id="work">
+    <div class="chest-sticky-container">
+      <div class="container">
+        <div class="ch-tag" style="position: absolute; top: 2.5rem; left: 2rem; z-index: 10; margin-bottom: 0;">
+          <span class="num">02</span>
+          <span class="label">ce qu'on a cousu ensemble</span>
+        </div>
+        <h2 style="position: absolute; top: 5.5rem; left: 2rem; z-index: 10; text-align: left; max-width: 600px;">
+          Notre coffre aux <em>trésors</em> secrets.
+        </h2>
+        
+        <div class="chest-wrapper">
+          <div class="chest-inside"></div>
+          <div class="chest-lid"></div>
+          <div class="chest-base"></div>
+          
+          <!-- Floating circles (simulation elements for future photos/objects) -->
+          <div class="floating-circle" data-index="0" style="--circle-grad: linear-gradient(135deg, rgba(236,72,153,0.9), rgba(244,63,94,0.7)); --circle-shadow: rgba(244,63,94,0.35); --circle-glow: rgba(236,72,153,0.5);">
+            <div class="circle-inner"></div>
           </div>
-        </article>
-        <article class="patch-card">
-          <div class="patch-inner">
-            <div class="patch-front">
-              <div class="pin"></div>
-              <div class="thumb"><img src="images/image%2063.png" alt="" /></div>
-              <h3>Aqua Editions</h3>
-              <p class="meta">art direction</p>
-            </div>
-            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%204.png" alt="Santos &amp; Mimi" /></div>
+          <div class="floating-circle" data-index="1" style="--circle-grad: linear-gradient(135deg, rgba(20,184,166,0.9), rgba(13,148,136,0.7)); --circle-shadow: rgba(13,148,136,0.35); --circle-glow: rgba(20,184,166,0.5);">
+            <div class="circle-inner"></div>
           </div>
-        </article>
-        <article class="patch-card">
-          <div class="patch-inner">
-            <div class="patch-front">
-              <div class="pin"></div>
-              <div class="thumb"><img src="images/image%2078.png" alt="" /></div>
-              <h3>Mimi Beach Club</h3>
-              <p class="meta">identité · signalétique</p>
-            </div>
-            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%205.png" alt="Santos &amp; Mimi" /></div>
+          <div class="floating-circle" data-index="2" style="--circle-grad: linear-gradient(135deg, rgba(245,158,11,0.9), rgba(217,119,6,0.7)); --circle-shadow: rgba(217,119,6,0.35); --circle-glow: rgba(245,158,11,0.5);">
+            <div class="circle-inner"></div>
           </div>
-        </article>
-        <article class="patch-card">
-          <div class="patch-inner">
-            <div class="patch-front">
-              <div class="pin"></div>
-              <div class="thumb"><img src="images/image%2068.png" alt="" /></div>
-              <h3>Holo Records</h3>
-              <p class="meta">label · covers y2k</p>
-            </div>
-            <div class="patch-back"><img src="images/TaPhotoTabobine%20%281%29%206.png" alt="Santos &amp; Mimi" /></div>
+          <div class="floating-circle" data-index="3" style="--circle-grad: linear-gradient(135deg, rgba(168,85,247,0.9), rgba(124,58,237,0.7)); --circle-shadow: rgba(124,58,237,0.35); --circle-glow: rgba(168,85,247,0.5);">
+            <div class="circle-inner"></div>
           </div>
-        </article>
-        <article class="patch-card">
-          <div class="patch-inner">
-            <div class="patch-front">
-              <div class="pin"></div>
-              <div class="thumb"><img src="images/image%2076.png" alt="" /></div>
-              <h3>Shellz Mag</h3>
-              <p class="meta">magazine · 4 numéros</p>
-            </div>
-            <div class="patch-back"><img src="images/TaPhotoTabobine%202%203.png" alt="Santos &amp; Mimi" /></div>
+          <div class="floating-circle" data-index="4" style="--circle-grad: linear-gradient(135deg, rgba(6,182,212,0.9), rgba(8,145,178,0.7)); --circle-shadow: rgba(8,145,178,0.35); --circle-glow: rgba(6,182,212,0.5);">
+            <div class="circle-inner"></div>
           </div>
-        </article>
-        <article class="patch-card">
-          <div class="patch-inner">
-            <div class="patch-front">
-              <div class="pin"></div>
-              <div class="thumb"><img src="images/image%2087.png" alt="" /></div>
-              <h3>Glitter Tour</h3>
-              <p class="meta">tournée · zara l.</p>
-            </div>
-            <div class="patch-back"><img src="images/TaPhotoTabobine%202%204.png" alt="Santos &amp; Mimi" /></div>
+          <div class="floating-circle" data-index="5" style="--circle-grad: linear-gradient(135deg, rgba(239,68,68,0.9), rgba(220,38,38,0.7)); --circle-shadow: rgba(220,38,38,0.35); --circle-glow: rgba(239,68,68,0.5);">
+            <div class="circle-inner"></div>
           </div>
-        </article>
+        </div>
       </div>
     </div>
   </section>
@@ -3423,6 +3378,105 @@
       
       // Initial call to set positions
       animateChest();
+    })();
+
+    /* ─── Rubrique 2 — Realistic Chest Scroll Animation ─── */
+    (function initRealisticWorkChest() {
+      const section = document.getElementById('work');
+      if (!section) return;
+
+      const chestWrapper = section.querySelector('.chest-wrapper');
+      if (!chestWrapper) return;
+
+      const lid = chestWrapper.querySelector('.chest-lid');
+      const inside = chestWrapper.querySelector('.chest-inside');
+      const circles = chestWrapper.querySelectorAll('.floating-circle');
+
+      // Define target offsets for the 6 circles
+      // These are translations from the center of the chest
+      const desktopPositions = [
+        { x: -280, y: -160, scale: 1.0 }, // top-left
+        { x: -320, y: 30,  scale: 1.0 }, // middle-left
+        { x: -250, y: 210, scale: 1.0 }, // bottom-left
+        { x: 280,  y: -160, scale: 1.0 }, // top-right
+        { x: 320,  y: 30,  scale: 1.0 }, // middle-right
+        { x: 250,  y: 210, scale: 1.0 }  // bottom-right
+      ];
+
+      const mobilePositions = [
+        { x: -75,  y: -150, scale: 0.82 },
+        { x: 75,   y: -150, scale: 0.82 },
+        { x: -115, y: -40,  scale: 0.82 },
+        { x: 115,  y: -40,  scale: 0.82 },
+        { x: -85,  y: 75,   scale: 0.82 },
+        { x: 85,   y: 75,   scale: 0.82 }
+      ];
+
+      let lastProgress = -1;
+
+      function updateChestAnimation() {
+        const sectionRect = section.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // Scroll track height
+        const totalDuration = sectionRect.height - windowHeight;
+        if (totalDuration <= 0) return;
+
+        let progress = -sectionRect.top / totalDuration;
+        progress = Math.max(0, Math.min(1, progress));
+
+        if (Math.abs(progress - lastProgress) < 0.001) return;
+        lastProgress = progress;
+
+        const isMobile = window.innerWidth <= 768;
+        const positions = isMobile ? mobilePositions : desktopPositions;
+
+        // Smooth step ease for opening
+        const easeProgress = progress * progress * (3 - 2 * progress);
+
+        // 1. Open Lid (3D rotationX + vertical translation)
+        if (lid) {
+          const translateY = easeProgress * (isMobile ? -60 : -95);
+          const rotateX = easeProgress * -55;
+          const scaleY = 1 - (easeProgress * 0.1);
+          lid.style.transform = `translateY(${translateY}px) rotateX(${rotateX}deg) scaleY(${scaleY})`;
+        }
+
+        // 2. Fade in inside glow
+        if (inside) {
+          inside.style.opacity = String(easeProgress * 0.95);
+          inside.style.transform = `scale(${0.9 + easeProgress * 0.1})`;
+        }
+
+        // 3. Circles emerge
+        circles.forEach((circle, i) => {
+          const pos = positions[i] || { x: 0, y: 0, scale: 1 };
+          
+          // Delay circle launch slightly
+          let circleProgress = (progress - 0.25) / 0.75;
+          circleProgress = Math.max(0, Math.min(1, circleProgress));
+          
+          const circleEase = circleProgress * circleProgress * (3 - 2 * circleProgress);
+
+          const curX = circleEase * pos.x;
+          const curY = circleEase * pos.y;
+          const curScale = circleEase * pos.scale;
+          const curOpacity = Math.min(1, circleEase * 1.5);
+          
+          // Subtle float animation offset
+          const floatOffset = Math.sin((window.scrollY * 0.003) + i) * 6;
+
+          // Apply transform
+          circle.style.transform = `translate(-50%, -50%) translate(${curX}px, ${curY + floatOffset}px) scale(${curScale})`;
+          circle.style.opacity = String(curOpacity);
+        });
+      }
+
+      window.addEventListener('scroll', updateChestAnimation, { passive: true });
+      window.addEventListener('resize', updateChestAnimation, { passive: true });
+      
+      // Initial call
+      updateChestAnimation();
     })();
 
     /* ───────── Custom cursor (UNCHANGED) ───────── */

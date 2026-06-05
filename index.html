@@ -934,7 +934,6 @@
       z-index: 5;
       border-radius: 50%;
       background: var(--shell-bg, radial-gradient(circle, var(--magenta) 0%, var(--ruby) 70%, var(--ruby) 100%));
-      transition: background 0.6s ease;
       border: 1.5px solid rgba(255, 255, 255, 0.25);
       box-shadow: inset 0 0 8px rgba(0,0,0,0.6), 0 3px 8px rgba(0,0,0,0.3);
       display: flex;
@@ -1022,7 +1021,6 @@
       border-radius: 50%;
       background: var(--track-shell-bg, radial-gradient(circle, var(--magenta) 0%, var(--ruby) 70%, var(--ruby) 100%));
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
-      transition: background 0.4s ease;
     }
     .track-disc::after {
       content: '';
@@ -2691,7 +2689,7 @@
     <div class="container">
       <div class="ch-tag">
         <span class="num">03</span>
-        <span class="label">notre BO</span>
+        <span class="label">(Santos &amp; Mimi mix)</span>
       </div>
     </div>
 
@@ -2705,11 +2703,11 @@
           et laisse-le tourner.
         </p>
         <ul class="playlist" id="playlist" aria-label="Playlist Santos &amp; Mimi"></ul>
-        <p class="music-meta">side a · santos &amp; mimi mix</p>
+
       </div>
       <div class="vinyl-stage" id="vinylStage">
         <div class="vinyl-record" id="vinyl">
-          <div class="vinyl-shell" aria-hidden="true">
+          <div class="vinyl-shell" aria-hidden="true" style="--shell-bg:radial-gradient(circle at 40% 40%, #ffd6e7 0%, #ffeaa7 28%, #b8f5d0 52%, #a8d8f0 75%, #d4b8f0 100%)">
             <img id="bigVinylBead" src="images/image%2042.png" class="big-bead" alt="" />
           </div>
         </div>

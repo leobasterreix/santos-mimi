@@ -2,6 +2,17 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    (function() {
+      let savedTheme = 'light';
+      try {
+        savedTheme = localStorage.getItem('site-theme') || 'light';
+      } catch (e) {
+        console.warn('localStorage is not accessible:', e);
+      }
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title> Santos &amp; Mimi </title>
 
@@ -44,7 +55,7 @@
     }
   </style>
   <style>
-    :root {
+    :root, html[data-theme="light"] {
       --ruby: #8b1e2b;
       --ruby-bright: #c41e3a;
       --coral: #e8506f;
@@ -63,6 +74,81 @@
       --ch1: #ff6b9d;      --ch1-tint: rgba(255, 134, 180, 0.16);
       --ch2: #14b8a6;      --ch2-tint: rgba(45, 212, 191, 0.16);
       --ch3: #c41e3a;      --ch3-tint: rgba(214, 51, 132, 0.18);
+      --glass-bg: rgba(255, 247, 237, 0.55);
+      --glass-border: rgba(196, 30, 58, 0.18);
+
+      /* Dynamic gradients */
+      --bg-radial-1: #ffe2ef;
+      --bg-radial-2: #ffd6c6;
+      --bg-radial-3: #e3d6ff;
+      --bg-grad-1: #fff1e0;
+      --bg-grad-2: #ffe2f1;
+      --bg-grad-3: #cdeeff;
+      --bg-grad-4: #fff1d6;
+    }
+
+    html[data-theme="dark"] {
+      --ruby: #ff4a68;
+      --ruby-bright: #ff3355;
+      --coral: #ff5e83;
+      --pink-hot: #f43f5e;
+      --magenta: #db2777;
+      --purple: #a855f7;
+      --teal-deep: #06b6d4;
+      --turquoise: #2dd4bf;
+      --emerald: #10b981;
+      --gold: #fbbf24;
+      --cream: #0f0913;
+      --pearl: #1a1024;
+      --ink: #f3f0f7;
+
+      /* Chapter accents */
+      --ch1: #db2777;      --ch1-tint: rgba(219, 39, 119, 0.16);
+      --ch2: #a855f7;      --ch2-tint: rgba(168, 85, 247, 0.16);
+      --ch3: #ff3355;      --ch3-tint: rgba(255, 51, 85, 0.18);
+      --glass-bg: rgba(26, 16, 36, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.12);
+
+      /* Dynamic gradients */
+      --bg-radial-1: #3b1d5c;
+      --bg-radial-2: #1e1136;
+      --bg-radial-3: #2a0b2d;
+      --bg-grad-1: #09050d;
+      --bg-grad-2: #0e0717;
+      --bg-grad-3: #180924;
+      --bg-grad-4: #0d0614;
+    }
+
+    html[data-theme="abyss"] {
+      --ruby: #2dd4bf;
+      --ruby-bright: #06b6d4;
+      --coral: #0891b2;
+      --pink-hot: #0891b2;
+      --magenta: #0db7d4;
+      --purple: #06b6d4;
+      --teal-deep: #0f766e;
+      --turquoise: #2dd4bf;
+      --emerald: #10b981;
+      --gold: #14b8a6;
+      --cream: #020c12;
+      --pearl: #051926;
+      --ink: #e0f2fe;
+
+      /* Chapter accents */
+      --ch1: #2dd4bf;      --ch1-tint: rgba(45, 212, 191, 0.16);
+      --ch2: #0891b2;      --ch2-tint: rgba(8, 145, 178, 0.16);
+      --ch3: #10b981;      --ch3-tint: rgba(16, 185, 129, 0.18);
+      --glass-bg: rgba(5, 25, 38, 0.55);
+      --glass-border: rgba(34, 211, 238, 0.15);
+
+      /* Dynamic gradients */
+      --bg-radial-1: #0f3d59;
+      --bg-radial-2: #05263b;
+      --bg-radial-3: #082d2c;
+      --bg-grad-1: #020c12;
+      --bg-grad-2: #041724;
+      --bg-grad-3: #020c12;
+      --bg-grad-4: #051d2e;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -182,10 +268,10 @@
       font-family: 'Mona Sans', 'Outfit', system-ui, sans-serif;
       color: var(--ink);
       background:
-        radial-gradient(900px 500px at 85% -5%, #ffe2ef 0%, transparent 60%),
-        radial-gradient(800px 400px at 5% 25%, #ffd6c6 0%, transparent 65%),
-        radial-gradient(700px 400px at 95% 60%, #e3d6ff 0%, transparent 60%),
-        linear-gradient(180deg, #fff1e0 0%, #ffe2f1 35%, #cdeeff 70%, #fff1d6 100%);
+        radial-gradient(900px 500px at 85% -5%, var(--bg-radial-1) 0%, transparent 60%),
+        radial-gradient(800px 400px at 5% 25%, var(--bg-radial-2) 0%, transparent 65%),
+        radial-gradient(700px 400px at 95% 60%, var(--bg-radial-3) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 35%, var(--bg-grad-3) 70%, var(--bg-grad-4) 100%);
       min-height: 100vh;
       overflow-x: hidden;
       cursor: none;
@@ -289,7 +375,6 @@
     nav ul { display: none; }
 
     /* ─── Élément morph (titre → pilule) ────────────────────── */
-    /* Morph : toujours rendu comme une pilule, transform+opacity seulement en JS */
     .hero-morph {
       position: fixed;
       left: 50%; top: 0;
@@ -297,7 +382,38 @@
       pointer-events: none;
       opacity: 0;
       will-change: transform, opacity;
-      /* Pill styles constants – jamais animés */
+      transform-origin: center center;
+    }
+    .hero-morph .layer-start {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Londrina Solid', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      line-height: 0.9;
+      background: linear-gradient(135deg,
+                    var(--ruby-bright) 0%, var(--gold) 20%, var(--magenta) 40%,
+                    var(--teal-deep) 60%, var(--purple) 80%, var(--ruby-bright) 100%);
+      background-size: 220% 220%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 8s ease-in-out infinite;
+      opacity: 1;
+      will-change: opacity;
+    }
+    .hero-morph .layer-start .amp {
+      font-family: 'Parisienne', cursive;
+      font-style: italic;
+      font-size: 0.7em;
+      vertical-align: middle;
+    }
+    .hero-morph .layer-end {
+      display: block;
       font-family: 'Londrina Solid', sans-serif;
       font-weight: 900;
       font-size: clamp(1.15rem, 2.2vw, 1.45rem);
@@ -310,10 +426,11 @@
       padding: 0.85rem 2.4rem;
       border-radius: 999px;
       border: 1px solid rgba(205, 238, 255, 0.5);
-      backdrop-filter: blur(16px) saturate(160%);
-      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      background: rgba(205, 238, 255, 0.70);
+      opacity: 0;
+      will-change: opacity;
     }
-    .hero-morph .amp {
+    .hero-morph .layer-end .amp {
       font-family: 'Parisienne', cursive;
       font-style: italic;
       font-size: 1.1em;
@@ -352,9 +469,9 @@
       position: absolute;
       filter: drop-shadow(0 8px 14px rgba(60, 10, 30, 0.32));
       transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
-      will-change: transform;
     }
     .patch:hover {
+      will-change: transform;
       transform: var(--t-base) scale(1.18) !important;
       filter: drop-shadow(0 16px 24px rgba(60, 10, 30, 0.48));
       z-index: 99 !important;
@@ -420,11 +537,12 @@
       font-size: 1rem;
       line-height: 1.55;
       color: var(--ink);
-      background: rgba(255, 247, 237, 0.65);
+      background: var(--glass-bg);
       padding: 0.7rem 1.2rem;
       border-radius: 999px;
       backdrop-filter: blur(10px);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+      border: 1px solid var(--glass-border);
     }
 
     .hero .scroll-hint {
@@ -438,12 +556,13 @@
       animation: bob 2.4s ease-in-out infinite;
       opacity: 0.85;
       color: var(--ruby);
-      background: rgba(255, 247, 237, 0.7);
+      background: var(--glass-bg);
       padding: 0.5rem 1rem;
       border-radius: 999px;
       backdrop-filter: blur(8px);
-      box-shadow: 0 6px 18px rgba(196, 30, 58, 0.18);
+      box-shadow: 0 6px 18px var(--glass-border);
       transition: opacity 0.3s ease;
+      border: 1px solid var(--glass-border);
     }
     .hero .scroll-hint .arrow { letter-spacing: 0; font-size: 0.95rem; }
     @keyframes bob {
@@ -593,6 +712,8 @@
     section.block {
       padding: 4.5rem 2rem;
       position: relative; z-index: 4;
+      content-visibility: auto;
+      contain-intrinsic-size: auto 600px;
     }
     .container { max-width: 1200px; margin: 0 auto; position: relative; }
 
@@ -633,8 +754,8 @@
     .card {
       backdrop-filter: blur(16px) saturate(180%);
       -webkit-backdrop-filter: blur(16px) saturate(180%);
-      background: rgba(255, 247, 237, 0.55);
-      border: 1px solid rgba(196, 30, 58, 0.18);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 22px;
       padding: 1.2rem;
       box-shadow:
@@ -996,8 +1117,8 @@
       text-align: center; padding: 3rem 2rem 2.2rem;
       position: relative; z-index: 4;
       color: var(--ruby);
-      background: rgba(255, 247, 237, 0.4);
-      border-top: 1px solid rgba(196, 30, 58, 0.15);
+      background: var(--glass-bg);
+      border-top: 1px solid var(--glass-border);
       backdrop-filter: blur(8px);
     }
     .footer-sig {
@@ -1172,9 +1293,10 @@
     .patch-front {
       position: relative;
       padding: 1.2rem 1.2rem 1.4rem;
-      background: rgba(255, 247, 237, 0.62);
+      background: var(--glass-bg);
       backdrop-filter: blur(14px) saturate(160%);
       -webkit-backdrop-filter: blur(14px) saturate(160%);
+      border: 1px solid var(--glass-border);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -1200,7 +1322,8 @@
       .patch-front {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        background: rgba(255, 247, 237, 0.96) !important;
+        background: var(--cream) !important;
+        border: 1px solid var(--glass-border) !important;
       }
     }
     .patch-card:hover {
@@ -1391,10 +1514,10 @@
       display: flex; align-items: center; gap: 0.45rem;
       padding: 0.55rem 1.1rem 0.55rem 0.55rem;
       border-radius: 999px;
-      background: rgba(255, 247, 237, 0.88);
+      background: var(--glass-bg);
       backdrop-filter: blur(18px) saturate(180%);
       -webkit-backdrop-filter: blur(18px) saturate(180%);
-      border: 1px solid rgba(196, 30, 58, 0.22);
+      border: 1px solid var(--glass-border);
       box-shadow:
         0 14px 36px rgba(60, 10, 30, 0.28),
         inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -1529,16 +1652,12 @@
     /* ─── Site Wrapper Reveal ────────────────────────── */
     .site-wrapper {
       opacity: 0;
-      transform: scale(0.98);
       filter: blur(8px);
-      transition: opacity 1.8s ease-in-out,
-                  transform 1.8s cubic-bezier(0.25, 1, 0.3, 1),
-                  filter 1.8s ease-out;
-      will-change: transform, opacity, filter;
+      transition: opacity 1.8s ease-in-out, filter 1.8s ease-out;
+      will-change: opacity, filter;
     }
     .site-wrapper.revealed {
       opacity: 1;
-      transform: scale(1);
       filter: blur(0px);
     }
 
@@ -1546,6 +1665,8 @@
     .filmstrip-section {
       position: relative; z-index: 5; overflow: hidden; padding: 4.5rem 0;
       contain: paint;
+      content-visibility: auto;
+      contain-intrinsic-size: auto 300px;
     }
     .filmstrip-track {
       overflow: hidden;
@@ -1614,6 +1735,40 @@
     }
     .to-top.show { opacity: 0.95; transform: translateY(0) scale(1); pointer-events: auto; }
     .to-top:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 16px 36px rgba(214, 51, 132, 0.62); opacity: 1; }
+
+    /* ─── Bouton de changement de thème (FAB) ──────────────── */
+    .theme-switcher {
+      position: fixed; right: 1.6rem; bottom: 5.8rem;
+      z-index: 9000;
+      width: 52px; height: 52px;
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--ink);
+      font-size: 1.5rem; line-height: 1;
+      display: grid; place-items: center;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.15);
+      opacity: 0; transform: translateY(20px) scale(0.85);
+      pointer-events: none;
+      transition: opacity 0.35s ease,
+                  transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.3s ease,
+                  background-color 0.3s ease,
+                  border-color 0.3s ease;
+    }
+    .theme-switcher.show { opacity: 0.95; transform: translateY(0) scale(1); pointer-events: auto; }
+    .theme-switcher:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25); opacity: 1; }
+    .theme-switcher:active { transform: translateY(-2px) scale(0.95); }
+    .theme-switcher.clicked {
+      animation: theme-spin 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    @keyframes theme-spin {
+      0% { transform: translateY(-4px) scale(1.08) rotate(0deg); }
+      100% { transform: translateY(-4px) scale(1.08) rotate(360deg); }
+    }
 
     /* ─── Jeu de mémoire ─────────────────────────────────── */
     .memory-section {
@@ -1872,6 +2027,7 @@
 
   <canvas class="ripples"></canvas>
   <canvas class="particles"></canvas>
+  <button id="themeSwitcher" class="theme-switcher" type="button" aria-label="Changer de thème">🎨</button>
 
   <div class="mini-player entering collapsed" id="miniPlayer" aria-label="Player musique">
     <div class="mini-notes" id="miniNotes" aria-hidden="true"></div>
@@ -1885,6 +2041,10 @@
       <div class="mini-bar-wrap" id="miniBarWrap"><div class="mini-bar" id="miniBar"></div></div>
     </div>
   </div>
+
+  <nav>
+    <div class="logo">SANTOS <span class="amp">&amp;</span> MIMI</div>
+  </nav>
 
   <svg class="filters" aria-hidden="true">
     <defs>
@@ -1900,9 +2060,6 @@
   </svg>
 
   <div class="site-wrapper" id="siteWrapper">
-    <nav>
-      <div class="logo">SANTOS <span class="amp">&amp;</span> MIMI</div>
-    </nav>
 
   <header class="hero">
     <div class="mosaic" id="mosaic"></div>
@@ -2813,14 +2970,20 @@
     function followRing() {
       rx += (mx - rx) * 0.18;
       ry += (my - ry) * 0.18;
-      ring.style.transform = `translate(${rx - 19}px, ${ry - 19}px)`;
+      if (ring) {
+        ring.style.transform = `translate(${rx - 19}px, ${ry - 19}px)`;
+      }
       requestAnimationFrame(followRing);
     }
     followRing();
 
-    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top').forEach(el => {
-      el.addEventListener('mouseenter', () => ring.classList.add('hover'));
-      el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top, .theme-switcher').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        if (ring) ring.classList.add('hover');
+      });
+      el.addEventListener('mouseleave', () => {
+        if (ring) ring.classList.remove('hover');
+      });
     });
 
     /* Magnetic CTA */
@@ -2925,8 +3088,21 @@
     let lastEmit = 0;
     let isLooping = false;
 
+    let scrollTimeout = null;
+    let isScrolling = false;
+    window.addEventListener('scroll', () => {
+      isScrolling = true;
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        isScrolling = false;
+        if (particles.length > 0 || ripples.length > 0) {
+          startLoop();
+        }
+      }, 120);
+    }, { passive: true });
+
     function startLoop() {
-      if (!isLooping) {
+      if (!isLooping && !isScrolling) {
         isLooping = true;
         requestAnimationFrame(loop);
       }
@@ -3034,6 +3210,12 @@
         isLooping = false;
         return;
       }
+      if (isScrolling) {
+        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+        rCtx.clearRect(0, 0, rCanvas.width, rCanvas.height);
+        isLooping = false;
+        return;
+      }
       pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
       rCtx.clearRect(0, 0, rCanvas.width, rCanvas.height);
       
@@ -3072,7 +3254,10 @@
 
       const morph = document.createElement('div');
       morph.className = 'hero-morph';
-      morph.innerHTML = 'SANTOS <span class="amp">&amp;</span> MIMI';
+      morph.innerHTML = `
+        <div class="layer-start">SANTOS <span class="amp">&amp;</span> MIMI</div>
+        <div class="layer-end">SANTOS <span class="amp">&amp;</span> MIMI</div>
+      `;
       document.body.appendChild(morph);
 
       const lerp    = (a, b, t) => a + (b - a) * t;
@@ -3080,21 +3265,34 @@
       const eio     = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
 
       /* Métriques cachées — layout read une seule fois */
-      let h1AbsTop = 0, h1H = 0, h1FS = 80, morphH = 50, morphW = 160, scaleOrigin = 4;
+      let h1AbsTop = 0, h1H = 0, h1FS = 80, morphH = 50, morphW = 160, morphTextH = 24, scaleOrigin = 4;
+      let metricsCached = false;
+      let layerStart = null;
+      let layerEnd = null;
 
       function cacheMetrics() {
+        layerStart = morph.querySelector('.layer-start');
+        layerEnd   = morph.querySelector('.layer-end');
+        if (!layerStart || !layerEnd) return;
+
         const rh = h1.getBoundingClientRect();
         h1AbsTop = rh.top + window.scrollY;
         h1H      = rh.height;
         h1FS     = parseFloat(getComputedStyle(h1).fontSize) || 80;
-        /* Morph rendu en pilule, on lit ses dimensions réelles */
-        morph.style.opacity = '0.001'; // force layout sans montrer
-        const rm = morph.getBoundingClientRect();
+
+        // Mesures des dimensions réelles sans perturber le style
+        morph.style.opacity = '0.001'; // force layout sans afficher
+        const rmStart = layerStart.getBoundingClientRect();
+        morphTextH = rmStart.height || 24;
+
+        const rmEnd = layerEnd.getBoundingClientRect();
+        morphH = rmEnd.height || 50;
+        morphW = rmEnd.width || 160;
         morph.style.opacity = '0';
-        morphH   = rm.height || 50;
-        morphW   = rm.width  || 160;
-        /* Ratio pour que la pilule paraisse grande comme le h1 au départ */
-        scaleOrigin = Math.max(h1H / morphH, 1.5);
+
+        /* Ratio pour que le texte de départ paraisse grand comme le h1 */
+        scaleOrigin = Math.max(h1H / morphTextH, 1.0);
+        metricsCached = true;
       }
 
       let raf = null;
@@ -3104,7 +3302,8 @@
 
       function tick() {
         raf = null;
-        if (!h1AbsTop) cacheMetrics();
+        if (!metricsCached) cacheMetrics();
+        if (!layerStart || !layerEnd) return;
 
         const sy  = window.scrollY;
         /* Progress : 0 quand h1 entre dans la zone, 1 quand h1 est sorti */
@@ -3124,38 +3323,32 @@
           return;
         }
 
-        /* ── Propriétés compositor-only : transform + opacity ── */
-
-        /* h1 : fade out simple */
-        h1.style.opacity = String(clamp01(1 - t * 1.6));
+        // Pendant la transition, le titre original est masqué, seul le morph est visible
+        h1.style.opacity = '0';
+        morph.style.opacity = '1';
         nav.classList.remove('island-visible');
 
-        /* morph : monte 0→1 sur t:0..0.35, reste à 1 jusqu'à raw=1
-           → à ce moment il est déjà à la bonne taille/position,
-             la nav prend le relais sans écart visible */
-        const morphOpacity = clamp01(t / 0.35);
-        morph.style.opacity = String(morphOpacity);
+        // Animation GPU-only : uniquement opacité sur les calques compositor
+        layerStart.style.opacity = String(clamp01(1 - t * 1.3));
+        layerEnd.style.opacity   = String(clamp01(t * 1.3));
 
         /* Y centre du h1 dans le viewport → Y centre de la pilule */
         const h1VCY  = h1AbsTop + h1H * 0.5 - sy;
         const pillCY = 16 + morphH * 0.5;           // top:1rem + demi-hauteur
-        const cy     = lerp(h1VCY, pillCY, t) - morphH * 0.5; // → top de la pilule
+        const centerY = lerp(h1VCY, pillCY, t);
+        const cy     = centerY - morphH * 0.5;      // → top de la pilule
 
-        /* Scale : démarre à scaleOrigin (taille h1) et descend à 1 (taille pilule) */
+        /* Scale : de scaleOrigin à 1 */
         const scale = lerp(scaleOrigin, 1, t);
 
-        /* Un seul write : transform + background (repaint, pas layout) */
+        /* Un seul transform write (GPU-accelerated) */
         morph.style.transform  = 'translateX(-50%) translateY(' + cy + 'px) scale(' + scale + ')';
-        morph.style.background = 'rgba(205,238,255,' + lerp(0.1, 0.70, t) + ')';
-        morph.style.boxShadow  = t > 0.4
-          ? '0 8px 28px rgba(125,211,252,' + lerp(0,0.35,t) + '),0 2px 8px rgba(0,0,0,' + lerp(0,0.08,t) + ')'
-          : 'none';
       }
 
       window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', () => { cacheMetrics(); tick(); }, { passive: true });
-      document.getElementById('loader')?.addEventListener('transitionend', () => { cacheMetrics(); tick(); }, { once: true });
-      requestAnimationFrame(() => { cacheMetrics(); tick(); });
+      window.addEventListener('resize', () => { metricsCached = false; tick(); }, { passive: true });
+      document.getElementById('loader')?.addEventListener('transitionend', () => { metricsCached = false; tick(); }, { once: true });
+      requestAnimationFrame(() => { metricsCached = false; tick(); });
     })();
 
     /* ─── Bouton retour en haut ─── */
@@ -3165,6 +3358,38 @@
         toTop.classList.toggle('show', scrollY > 500);
       }, { passive: true });
       toTop.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+
+    /* ─── Bouton de changement de thème (FAB) ─── */
+    const themeSwitcher = document.getElementById('themeSwitcher');
+    if (themeSwitcher) {
+      addEventListener('scroll', () => {
+        themeSwitcher.classList.toggle('show', scrollY > 500);
+      }, { passive: true });
+
+      themeSwitcher.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        let nextTheme = 'light';
+        if (currentTheme === 'light') {
+          nextTheme = 'dark';
+        } else if (currentTheme === 'dark') {
+          nextTheme = 'abyss';
+        }
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        try {
+          localStorage.setItem('site-theme', nextTheme);
+        } catch (e) {
+          console.warn('localStorage is not accessible:', e);
+        }
+
+        themeSwitcher.classList.remove('clicked');
+        void themeSwitcher.offsetWidth; // Force reflow
+        themeSwitcher.classList.add('clicked');
+      });
+
+      themeSwitcher.addEventListener('animationend', () => {
+        themeSwitcher.classList.remove('clicked');
+      });
     }
 
     /* ─── Images non déplaçables (bloque le drag fantôme, tous navigateurs) ─── */

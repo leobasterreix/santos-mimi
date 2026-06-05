@@ -75,104 +75,106 @@
       -webkit-user-drag: none;
     }
 
-    /* ─── Loader ─────────────────────────────────────────── */
+    /* ─── Loader (Plateau de Tri) ───────────────────────── */
     .loader {
       position: fixed; inset: 0;
       z-index: 99999;
-      background:
-        radial-gradient(900px 500px at 85% -5%, #ffe2ef 0%, transparent 60%),
-        radial-gradient(800px 400px at 5% 25%, #ffd6c6 0%, transparent 65%),
-        radial-gradient(700px 400px at 95% 60%, #e3d6ff 0%, transparent 60%),
-        linear-gradient(180deg, #fff1e0 0%, #ffe2f1 35%, #cdeeff 70%, #fff1d6 100%);
-      display: flex; align-items: center; justify-content: center;
-      transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 1.2s ease-out;
+      background: #090608; /* Very dark warm black */
+      transition: opacity 1.5s ease-in-out, visibility 1.5s ease-in-out;
       overflow: hidden;
-    }
-    .loader::before {
-      content: '';
-      position: absolute; inset: 0;
-      pointer-events: none;
-      background-image:
-        radial-gradient(circle, rgba(139, 30, 43, 0.10) 0.8px, transparent 1.3px),
-        radial-gradient(circle, rgba(13, 116, 144, 0.08) 0.8px, transparent 1.3px);
-      background-size: 10px 10px, 10px 10px;
-      background-position: 0 0, 5px 5px;
-      opacity: 0.5;
-      mix-blend-mode: multiply;
-      z-index: 0;
+      perspective: 1400px;
+      perspective: 1400px;
     }
     .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .loader.dispersing { opacity: 0; visibility: hidden; pointer-events: none; }
-    .loader-inner {
-      display: none;
+    .loader.dispersing {
+      opacity: 0; visibility: hidden; pointer-events: none;
     }
-    .loader-kicker {
-      font-family: 'Italiana', serif;
-      font-size: 0.8rem;
-      letter-spacing: 0.6em;
-      text-transform: uppercase;
-      opacity: 0.88; color: #7dd3fc;
-      margin-bottom: 1.4rem;
+
+    .loader-tray-bg {
+      position: absolute; inset: 0;
+      z-index: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 14vh; /* EXACT MATCH to .hero-content */
+      pointer-events: none;
     }
-    .loader-logo {
+    .loader-tray-bg {
+      position: absolute; inset: 0;
+      z-index: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 14vh; /* EXACT MATCH to .hero-content */
+      pointer-events: none;
+    }
+    .loader-title {
       font-family: 'Londrina Solid', sans-serif;
-      font-size: clamp(2.4rem, 8vw, 5rem);
+      font-size: clamp(2.8rem, 11vw, 9.5rem);
+      line-height: 0.9;
       letter-spacing: -0.02em;
-      line-height: 0.95;
+      text-transform: uppercase;
+      margin: 0;
+      text-align: center;
+      
+      /* Gris clair avec effets de lumière */
       background: linear-gradient(135deg,
-        #fff 0%, #7dd3fc 18%, #fbbf24 42%,
-        #f472b6 64%, #7dd3fc 82%, #fff 100%);
-      background-size: 220% 220%;
+        #666666 0%, #999999 40%, 
+        #ffffff 50%, 
+        #999999 60%, #666666 100%);
+      background-size: 200% 200%;
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 6px 18px rgba(34, 211, 238, 0.35));
-      animation: shimmer 4s ease-in-out infinite;
-      margin-bottom: 2rem;
+      -webkit-text-stroke: 0px transparent;
+      
+      /* L'effet de lumière qui part et revient (alternate) */
+      animation: sweepLight 2.5s ease-in-out infinite alternate;
+      transition: -webkit-text-stroke 0.4s ease, background 0.4s ease;
     }
-    .loader-logo .amp {
+    .loader-title .amp {
       font-family: 'Parisienne', cursive;
       font-style: italic;
       font-size: 0.7em;
       vertical-align: middle;
+      -webkit-text-fill-color: transparent;
     }
-    .loader-spinner {
-      width: clamp(90px, 14vw, 130px);
-      aspect-ratio: 1;
-      margin: 0 auto 1.6rem;
-      animation: spin 2.6s linear infinite;
+
+    @keyframes sweepLight {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
-    .loader-spinner img {
-      width: 100%; height: 100%; object-fit: contain;
-      filter: drop-shadow(0 14px 28px rgba(34, 211, 238, 0.55));
+
+    /* Étape 2: 100% -> Remplissage transparent et uniquement les contours */
+    .loader.is-ready .loader-title {
+      background: none;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+      animation: none;
     }
-    .loader-center {
+    .loader.is-ready .loader-title .amp {
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.9);
+    }
+
+    .loader-bottom {
       position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
+      bottom: 0;
+      left: 0;
+      width: 100%;
       z-index: 10;
+      text-align: center;
       pointer-events: none;
-    }
-    .loader-progress {
-      width: clamp(180px, 30vw, 260px);
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(157, 23, 77, 0.12);
-      overflow: hidden;
-      margin: 0 auto 1.2rem;
-    }
-    .loader-bar {
-      height: 100%; width: 0%;
-      background: linear-gradient(90deg, #22d3ee, #fbbf24, #f472b6, #a78bfa);
-      transition: width 0.25s ease;
     }
     .loader-percent {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.72rem; letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: #9d174d; opacity: 0.85;
-      white-space: nowrap;
+      font-weight: 300;
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      letter-spacing: 0.1em;
+      color: rgba(255, 247, 237, 0.8);
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
     }
     body.is-loading { overflow: hidden; }
 
@@ -1508,46 +1510,36 @@
       .mini-btn { width: 26px; height: 26px; }
     }
 
-    /* ─── Loader deco stickers ───────────────────────── */
+    /* ─── Loader deco stickers (Plateau de Tri) ───────── */
     .loader-deco-wrap {
       position: absolute; pointer-events: none;
-      will-change: left, top, transform, opacity;
-      z-index: 1;
-      transition: left 0.9s cubic-bezier(0.76, 0, 0.24, 1),
-                  top 0.9s cubic-bezier(0.76, 0, 0.24, 1),
-                  transform 0.9s cubic-bezier(0.76, 0, 0.24, 1),
-                  opacity 0.6s ease;
+      will-change: transform, top;
+      z-index: 5;
+      transition: top 0.7s cubic-bezier(0.5, 0, 0.8, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      filter: drop-shadow(0 12px 18px rgba(60, 10, 30, 0.25));
     }
     .loader-deco-float {
       width: 100%; height: 100%;
-      will-change: transform;
-      animation: loaderFloat var(--ld-dur, 5s) ease-in-out infinite;
-      animation-delay: var(--ld-delay, 0s);
-    }
-    @keyframes loaderFloat {
-      0%, 100% { transform: translate(0, 0) rotate(var(--ld-rot, 0deg)); }
-      50%       { transform: translate(var(--ld-float-x, 0px), var(--ld-float-y, -12px)) rotate(calc(var(--ld-rot, 0deg) + var(--ld-float-r, 3deg))); }
     }
     .loader.dispersing .loader-deco-wrap {
-      transform: translate(var(--disp-x, 0px), var(--disp-y, 0px)) rotate(var(--disp-rot, 0deg)) scale(1.3) !important;
-      opacity: 0;
-      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease-out !important;
+      top: 150% !important;
+      transition: top 0.8s cubic-bezier(0.5, 0, 1, 1) !important;
     }
 
     /* ─── Site Wrapper Reveal ────────────────────────── */
     .site-wrapper {
       opacity: 0;
-      clip-path: circle(0% at 50% 50%);
-      transform: scale(0.95);
-      transition: clip-path 1.4s cubic-bezier(0.25, 1, 0.3, 1),
-                  opacity 0.8s ease-out,
-                  transform 1.4s cubic-bezier(0.25, 1, 0.3, 1);
-      will-change: clip-path, opacity, transform;
+      transform: scale(0.98);
+      filter: blur(8px);
+      transition: opacity 1.8s ease-in-out,
+                  transform 1.8s cubic-bezier(0.25, 1, 0.3, 1),
+                  filter 1.8s ease-out;
+      will-change: transform, opacity, filter;
     }
     .site-wrapper.revealed {
       opacity: 1;
-      clip-path: circle(120% at 50% 50%);
       transform: scale(1);
+      filter: blur(0px);
     }
 
     /* ─── Filmstrip band ─────────────────────────────── */
@@ -1864,20 +1856,14 @@
   </style>
 </head>
 <body class="is-loading">
+  <!-- Loader global -->
   <div class="loader" id="loader">
-    <!-- Bead art stickers décoratifs (générés dynamiquement) -->
-
-
-    <div class="loader-inner">
-      <p class="loader-kicker">bead studio · MMXXVI</p>
-      <h1 class="loader-logo">santos<br /><span class="amp">&amp;</span> mimi</h1>
-      <div class="loader-spinner">
-        <img src="images/image%2063.png" alt="" />
-      </div>
+    <div class="loader-tray-bg">
+      <h1 class="loader-title" id="loaderTitle">Santos <span class="amp">&amp;</span> Mimi</h1>
     </div>
-    <div class="loader-center">
-      <div class="loader-progress"><div class="loader-bar" id="loaderBar"></div></div>
-      <div class="loader-percent" id="loaderPercent">0% · chargement en cours</div>
+    <div id="loaderBeadsContainer" style="position: absolute; inset: 0; z-index: 5; pointer-events: none;"></div>
+    <div class="loader-bottom">
+      <div class="loader-percent" id="loaderPercent">0%</div>
     </div>
   </div>
 
@@ -2399,91 +2385,18 @@
 
     /* ───────── Loader — track all images ───────── */
     const loader = document.getElementById('loader');
-    const loaderBar = document.getElementById('loaderBar');
     const loaderPercent = document.getElementById('loaderPercent');
+    const loaderBeadsContainer = document.getElementById('loaderBeadsContainer');
+    const loaderEnterBtn = document.getElementById('loaderEnterBtn');
+    const loaderTitleFill = document.getElementById('loaderTitleFill');
     const startTime = Date.now();
-
-    // Dynamic generation of Y2K bead deco stickers (denser coverage, randomly scattered)
-    const DECO_IMAGES = [
-      'image%2031.png', 'image%2032.png', 'image%2033.png', 'image%2035.png', 'image%2036.png',
-      'image%2037.png', 'image%2038.png', 'image%2039.png', 'image%2040.png', 'image%2041.png',
-      'image%2042.png', 'image%2043.png', 'image%2044.png', 'image%2045.png', 'image%2046.png',
-      'image%2047.png', 'image%2048.png', 'image%2049.png', 'image%2050.png', 'image%2051.png',
-      'image%2052.png', 'image%2053.png', 'image%2054.png', 'image%2055.png', 'image%2057.png',
-      'image%2058.png', 'image%2059.png', 'image%2060.png', 'image%2062.png', 'image%2063.png',
-      'image%2064.png', 'image%2065.png', 'image%2066.png', 'image%2067.png', 'image%2068.png',
-      'image%2069.png', 'image%2072.png', 'image%2073.png', 'image%2075.png', 'image%2076.png',
-      'image%2078.png', 'image%2081.png', 'image%2082.png', 'image%2084.png', 'image%2085.png',
-      'image%2086.png', 'image%2087.png'
-    ];
-
-    const numStickers = 90; // Optimized sticker count for smooth 60fps rendering
-    for (let i = 0; i < numStickers; i++) {
-      const imgName = DECO_IMAGES[Math.floor(Math.random() * DECO_IMAGES.length)];
-      
-      const wrap = document.createElement('div');
-      wrap.className = 'loader-deco-wrap';
-      
-      const floatDiv = document.createElement('div');
-      floatDiv.className = 'loader-deco-float';
-      
-      const img = document.createElement('img');
-      img.src = 'images/' + imgName;
-      img.alt = '';
-      img.style.width = '100%';
-      img.style.height = '100%';
-      img.style.objectFit = 'contain';
-      
-      floatDiv.appendChild(img);
-      wrap.appendChild(floatDiv);
-      
-      // Random coordinates bleeding off-screen (-15% to 115%) for edge-to-edge coverage
-      // with a central exclusion zone (28% to 72% left, 33% to 67% top) to clear space for the loader progress bar
-      let top, left;
-      let inExclusion = true;
-      let attempts = 0;
-      while (inExclusion && attempts < 100) {
-        top = Math.random() * 130 - 15;
-        left = Math.random() * 130 - 15;
-        if (left >= 28 && left <= 72 && top >= 33 && top <= 67) {
-          attempts++;
-        } else {
-          inExclusion = false;
-        }
-      }
-      const rot = (Math.random() - 0.5) * 70; // rotation up to +-35deg
-      const dur = Math.random() * 2.5 + 3.5; // duration 3.5s to 6s
-      const delay = Math.random() * -5;
-      
-      // Sizes ranging from 80px to 170px for full visual density with fewer elements
-      const size = Math.floor(Math.random() * 90) + 80; 
-      
-      // Floating wobble values
-      const floatX = (Math.random() - 0.5) * 20; // -10px to 10px
-      const floatY = -(Math.random() * 10 + 10); // -10px to -20px
-      const floatR = (Math.random() - 0.5) * 12; // -6deg to 6deg
-      
-      wrap.style.width = size + 'px';
-      wrap.style.height = size + 'px';
-      wrap.style.top = top.toFixed(1) + '%';
-      wrap.style.left = left.toFixed(1) + '%';
-      
-      wrap.style.setProperty('--ld-rot', rot.toFixed(1) + 'deg');
-      wrap.style.setProperty('--ld-dur', dur.toFixed(2) + 's');
-      wrap.style.setProperty('--ld-delay', delay.toFixed(2) + 's');
-      
-      wrap.style.setProperty('--ld-float-x', floatX.toFixed(1) + 'px');
-      wrap.style.setProperty('--ld-float-y', floatY.toFixed(1) + 'px');
-      wrap.style.setProperty('--ld-float-r', floatR.toFixed(1) + 'deg');
-      
-      // Store initial percentages to compute dispersion vectors later
-      wrap.dataset.top = top.toFixed(1);
-      wrap.dataset.left = left.toFixed(1);
-      
-      loader.insertBefore(wrap, loader.querySelector('.loader-inner'));
+    
+    // Empêche le navigateur de restaurer la position de scroll (évite le décalage après le refresh)
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
     }
 
-    const allImages = [...loader.querySelectorAll('img')];
+    const allImages = [...document.querySelectorAll('img')];
     const total = allImages.length;
     let loaded = 0;
     let isDoneLoading = false;
@@ -2507,79 +2420,40 @@
     checkRealImages();
 
     function finishLoader() {
-      loaderPercent.textContent = '100% · prêt';
+      if (loaderPercent) loaderPercent.textContent = '100%';
       
+      // Ajoute la classe qui vide le texte et met les contours blancs !
+      loader.classList.add('is-ready');
+      
+      // On attend 1 seconde pour admirer le logo évidé avant d'ouvrir le site
       setTimeout(() => {
-        const decos = loader.querySelectorAll('.loader-deco-wrap');
-        
-        // Calculate and apply dispersion variables to each charm
-        decos.forEach((deco) => {
-          const leftPct = parseFloat(deco.dataset.left);
-          const topPct = parseFloat(deco.dataset.top);
-          
-          let dx = leftPct - 50;
-          let dy = topPct - 50;
-          
-          // Randomize direction if too close to the center
-          if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
-            const angle = Math.random() * Math.PI * 2;
-            dx = Math.cos(angle);
-            dy = Math.sin(angle);
-          }
-          
-          const len = Math.sqrt(dx * dx + dy * dy);
-          const ux = dx / len;
-          const uy = dy / len;
-          
-          // Propel completely off-screen based on diagonal viewport size
-          const pushDist = Math.max(window.innerWidth, window.innerHeight) * 1.0 + Math.random() * 300;
-          const x = Math.round(ux * pushDist);
-          const y = Math.round(uy * pushDist);
-          const rot = Math.round((Math.random() - 0.5) * 540);
-          
-          deco.style.setProperty('--disp-x', x + 'px');
-          deco.style.setProperty('--disp-y', y + 'px');
-          deco.style.setProperty('--disp-rot', rot + 'deg');
-          
-          // Stagger delay based on distance from the center (wave effect matching the clip-path iris!)
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const delay = Math.round(dist * 5); // 0ms to ~450ms
-          deco.style.transitionDelay = delay + 'ms';
-        });
-        
-        // Trigger dispersion and reveal
+        // Force reset du scroll pour contrer la mémorisation du navigateur
+        window.scrollTo(0, 0);
         loader.classList.add('dispersing');
         const siteWrapper = document.getElementById('siteWrapper');
         if (siteWrapper) siteWrapper.classList.add('revealed');
-        
-        // Hide loader completely after transition (1.4s transition + 0.45s max delay = 1.85s)
         setTimeout(() => {
           loader.classList.add('hidden');
           document.body.classList.remove('is-loading');
-        }, 1900);
-        
-      }, 400);
+          window.scrollTo(0, 0);
+        }, 1500);
+      }, 300); // Court délai à 100%
     }
 
-    // Smooth incremental animation (reaches 90% in ~1.8-2.2s, then waits for real assets to finish to reach 100%)
     const loaderInterval = setInterval(() => {
       if (currentPct < 90) {
-        // Increment smoothly by random small steps
-        currentPct += Math.floor(Math.random() * 3) + 1; // 1% to 3%
+        currentPct += Math.floor(Math.random() * 2) + 1;
         if (currentPct > 90) currentPct = 90;
       } else if (isDoneLoading) {
-        // Complete the loader smoothly to 100% once assets are fully ready
-        currentPct += Math.floor(Math.random() * 5) + 3; // 3% to 7%
+        currentPct += Math.floor(Math.random() * 3) + 2;
         if (currentPct >= 100) {
           currentPct = 100;
           clearInterval(loaderInterval);
           finishLoader();
         }
       }
-      loaderBar.style.width = currentPct + '%';
-      loaderPercent.textContent = currentPct + '% · chargement en cours';
-    }, 40);
-
+      if (loaderPercent) loaderPercent.textContent = currentPct + '%';
+    }, 60);
     /* ───────── Playlist Santos & Mimi (vinyles) ─────────────────────
        Pour ajouter un son : dépose le fichier .mp3 à la racine du projet
        puis ajoute une ligne ici — un objet { titre, artiste, fichier }.

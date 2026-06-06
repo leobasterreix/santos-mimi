@@ -582,9 +582,10 @@
     .scroll-text .letter {
       display: inline-block;
     }
-    .hero .scroll-hint.is-hovered .letter {
+    .hero .scroll-hint.is-hovered .letter,
+    .hero .scroll-hint.is-leaving .letter {
       animation: letter-stair 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
-      animation-delay: calc(var(--i) * 0.055s);
+      animation-delay: var(--delay, 0s);
     }
     @keyframes letter-stair {
       0%   { translate: 0 0;     opacity: 1; }
@@ -4203,16 +4204,35 @@
         `<span class="scroll-text" aria-label="défilez">${wrapped}</span> ` +
         (arrow ? arrow.outerHTML : '');
       lucide.createIcons();
-      /* ── Pause/resume bob without restart ── */
+      /* ── Staircase hover with reverse on leave ── */
       const hintEl = document.querySelector('.scroll-hint');
       if (hintEl) {
+        const letters = hintEl.querySelectorAll('.letter');
+        const n = letters.length;
+        const STEP = 0.055; // seconds between each letter
+        const DURATION = 0.55; // animation duration per letter
+        let leaveTimer = null;
+
         hintEl.addEventListener('mouseenter', () => {
+          if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = null; }
           hintEl.style.animationPlayState = 'paused';
+          // Forward: d → z
+          letters.forEach((l, i) => l.style.setProperty('--delay', `${i * STEP}s`));
+          hintEl.classList.remove('is-leaving');
           hintEl.classList.add('is-hovered');
         });
+
         hintEl.addEventListener('mouseleave', () => {
           hintEl.classList.remove('is-hovered');
-          hintEl.style.animationPlayState = 'running';
+          // Reverse: z → d
+          letters.forEach((l, i) => l.style.setProperty('--delay', `${(n - 1 - i) * STEP}s`));
+          hintEl.classList.add('is-leaving');
+          const totalMs = ((n - 1) * STEP + DURATION) * 1000;
+          leaveTimer = setTimeout(() => {
+            hintEl.classList.remove('is-leaving');
+            hintEl.style.animationPlayState = 'running';
+            leaveTimer = null;
+          }, totalMs);
         });
       }
     })();

@@ -555,6 +555,7 @@
       font-size: 0.7rem; letter-spacing: 0.4em;
       text-transform: uppercase;
       text-decoration: none;
+      cursor: none;
       opacity: 0.85;
       color: var(--ruby);
       background: var(--glass-bg);
@@ -563,12 +564,10 @@
       backdrop-filter: blur(8px);
       box-shadow: 0 6px 18px var(--glass-border);
       border: 1px solid var(--glass-border);
-      transition: opacity 0.25s ease, translate 0.25s ease, scale 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-    }
-    .hero .scroll-hint:not(:hover) {
       animation: bob 2.4s ease-in-out infinite;
+      transition: opacity 0.25s ease;
     }
-    .hero .scroll-hint:hover { opacity: 1; }
+    .hero .scroll-hint.is-hovered { opacity: 1; }
     .hero .scroll-hint .arrow {
       letter-spacing: 0;
       font-size: 0.95rem;
@@ -583,7 +582,7 @@
     .scroll-text .letter {
       display: inline-block;
     }
-    .hero .scroll-hint:hover .letter {
+    .hero .scroll-hint.is-hovered .letter {
       animation: letter-stair 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
       animation-delay: calc(var(--i) * 0.055s);
     }
@@ -4204,6 +4203,18 @@
         `<span class="scroll-text" aria-label="défilez">${wrapped}</span> ` +
         (arrow ? arrow.outerHTML : '');
       lucide.createIcons();
+      /* ── Pause/resume bob without restart ── */
+      const hintEl = document.querySelector('.scroll-hint');
+      if (hintEl) {
+        hintEl.addEventListener('mouseenter', () => {
+          hintEl.style.animationPlayState = 'paused';
+          hintEl.classList.add('is-hovered');
+        });
+        hintEl.addEventListener('mouseleave', () => {
+          hintEl.classList.remove('is-hovered');
+          hintEl.style.animationPlayState = 'running';
+        });
+      }
     })();
     /* ── Split 'rejouer' into letter spans ── */
     (function () {

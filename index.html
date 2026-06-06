@@ -568,25 +568,34 @@
     .hero .scroll-hint:not(:hover) {
       animation: bob 2.4s ease-in-out infinite;
     }
-    .hero .scroll-hint:hover {
-      opacity: 1;
-    }
+    .hero .scroll-hint:hover { opacity: 1; }
     .hero .scroll-hint .arrow {
       letter-spacing: 0;
       font-size: 0.95rem;
       display: inline-flex;
-      transition: animation 0s;
     }
-    .hero .scroll-hint:hover .arrow {
-      animation: arrow-bounce 0.5s ease-in-out infinite;
+    /* ── Staircase text on hover ── */
+    .scroll-text {
+      display: inline-flex;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+    .scroll-text .letter {
+      display: inline-block;
+    }
+    .hero .scroll-hint:hover .letter {
+      animation: letter-stair 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+      animation-delay: calc(var(--i) * 0.055s);
+    }
+    @keyframes letter-stair {
+      0%   { translate: 0 0;     opacity: 1; }
+      38%  { translate: 0 14px;  opacity: 0; }
+      39%  { translate: 0 -14px; opacity: 0; }
+      100% { translate: 0 0;     opacity: 1; }
     }
     @keyframes bob {
       0%, 100% { translate: 0 0; }
       50% { translate: 0 6px; }
-    }
-    @keyframes arrow-bounce {
-      0%, 100% { translate: 0 0; }
-      50% { translate: 0 5px; }
     }
 
     /* ─── Translucent water ──────────────────────────────── */
@@ -4179,6 +4188,20 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
     lucide.createIcons();
+    /* ── Split 'défilez' into letter spans for staircase hover ── */
+    (function () {
+      const hint = document.querySelector('.scroll-hint');
+      if (!hint) return;
+      const arrow = hint.querySelector('.arrow');
+      const text = 'défilez';
+      const wrapped = [...text].map((ch, i) =>
+        `<span class="letter" style="--i:${i}" aria-hidden="true">${ch}</span>`
+      ).join('');
+      hint.innerHTML =
+        `<span class="scroll-text" aria-label="défilez">${wrapped}</span> ` +
+        (arrow ? arrow.outerHTML : '');
+      lucide.createIcons();
+    })();
   </script>
 </body>
 </html>

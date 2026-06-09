@@ -2749,6 +2749,9 @@
       });
     }
 
+    /* Mobile / tactile : on coupe les effets coûteux (canvas, etc.) pour la fluidité */
+    const lowPower = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
     /* ───────── Particles (UNCHANGED) ───────── */
     const pCanvas = document.querySelector('.particles');
     const pCtx = pCanvas.getContext('2d');
@@ -2846,6 +2849,7 @@
     }, { passive: true });
 
     document.addEventListener('click', e => {
+      if (lowPower) return;
       for (let i = 0; i < 24; i++) {
         const a = (Math.PI * 2 * i) / 24;
         particles.push(new Particle(e.clientX, e.clientY, {

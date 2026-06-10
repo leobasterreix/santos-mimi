@@ -1257,9 +1257,9 @@
       /* Reveal générique pour le reste du contenu */
       .rv {
         opacity: 0;
-        transform: translateY(28px);
-        transition: opacity 0.7s ease var(--rv-d, 0s),
-                    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0s);
+        transform: translateY(22px);
+        transition: opacity 0.55s ease var(--rv-d, 0s),
+                    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0s);
       }
       .rv.rv-in { opacity: 1; transform: none; }
     }
@@ -4014,19 +4014,27 @@
 
       /* Contenu : sélecteurs simples + groupes en cascade */
       const singles = document.querySelectorAll(
-        '.story-text p, .duo-brooches, .memory-info, .memory-grid,' +
-        ' .polaroids-row, .bo-left, .vinyl-stage, .contact-row, footer'
+        '.story-text p, .keepsake-section .container > p,' +
+        ' .memory-info, .memory-grid, .bo-left, .vinyl-stage, footer'
       );
       const groups = [document.querySelectorAll('.patch-board .patch-card')];
 
       singles.forEach(el => el.classList.add('rv'));
       groups.forEach(list => list.forEach((el, i) => {
         el.classList.add('rv');
-        el.style.setProperty('--rv-d', (i * 0.1).toFixed(2) + 's');
+        /* cascade par rangée (3 colonnes) plutôt que par carte,
+           pour que les dernières cartes n'arrivent pas trop tard */
+        el.style.setProperty('--rv-d', (Math.floor(i % 3) * 0.08).toFixed(2) + 's');
       }));
 
+      /* On ignore les éléments masqués (ex. section keepsake désactivée),
+         sinon ils restent observés pour rien */
       const content = [...singles, ...groups.flatMap(l => [...l])];
-      const targets = [...titles, ...content];
+      const targets = [...titles, ...content].filter(el => {
+        if (el.getClientRects().length) return true;
+        el.classList.remove('rv');
+        return false;
+      });
 
       if (!('IntersectionObserver' in window)) {
         targets.forEach(el => el.classList.add('rv-in'));
@@ -4038,17 +4046,18 @@
           e.target.classList.add('rv-in');
           io.unobserve(e.target);
           /* Une fois l'entrée jouée, on rend l'élément à ses styles
-             d'origine (hover des patch-cards, transforms internes…) */
+             d'origine (hover des patch-cards, transforms internes…).
+             Minuteur plutôt que transitionend : fiable même si la
+             transition est interrompue par un scroll rapide. */
           if (e.target.classList.contains('rv')) {
-            e.target.addEventListener('transitionend', function clean(ev) {
-              if (ev.target !== e.target) return;
+            const delay = parseFloat(e.target.style.getPropertyValue('--rv-d')) || 0;
+            setTimeout(() => {
               e.target.classList.remove('rv', 'rv-in');
               e.target.style.removeProperty('--rv-d');
-              e.target.removeEventListener('transitionend', clean);
-            });
+            }, 700 + delay * 1000);
           }
         });
-      }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+      }, { threshold: 0.05 });
       targets.forEach(el => io.observe(el));
     })();
 

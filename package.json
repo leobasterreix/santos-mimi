@@ -1,0 +1,12 @@
+{
+  "name": "santos-mimi",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "browser-sync start --server --files 'index.html, images/**' --no-notify --open",
+    "main": "bash dev.sh main",
+    "branch": "bash dev.sh"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.3"
+  }
+}

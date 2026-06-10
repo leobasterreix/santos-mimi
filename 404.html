@@ -2,6 +2,14 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    (function() {
+      try {
+        localStorage.removeItem('site-theme');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', 'light');
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>404 · Santos &amp; Mimi</title>
 
@@ -15,11 +23,59 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Major+Mono+Display&family=Outfit:wght@300;500;800&family=Italiana&display=swap" rel="stylesheet" />
   <style>
+    :root, html[data-theme="light"] {
+      --bg-color: #fdf6e3;
+      --bg-overlay: rgba(253, 246, 227, 0.70);
+      --text-color: #1a1230;
+      --subtitle-color: rgba(26, 18, 48, 0.75);
+      --kicker-color: #8b1e2b;
+      --btn-bg: linear-gradient(135deg, #8b1e2b, #e8506f, #b91d6a);
+      --btn-shadow: rgba(232, 80, 111, 0.38);
+      --radial-1: rgba(232, 80, 111, 0.15);
+      --radial-2: rgba(217, 119, 6, 0.12);
+      --cursor-ring-color: rgba(196, 30, 58, 0.55);
+      --cursor-dot-glow: #d63384;
+      --glass-bg: rgba(255, 247, 237, 0.55);
+      --glass-border: rgba(196, 30, 58, 0.18);
+    }
+
+    html[data-theme="dark"] {
+      --bg-color: #0f0913;
+      --bg-overlay: rgba(15, 9, 19, 0.65);
+      --text-color: #f3f0f7;
+      --subtitle-color: rgba(243, 240, 247, 0.75);
+      --kicker-color: #ff4a68;
+      --btn-bg: linear-gradient(135deg, #ff4a68, #db2777, #a855f7);
+      --btn-shadow: rgba(219, 39, 119, 0.38);
+      --radial-1: rgba(168, 85, 247, 0.15);
+      --radial-2: rgba(251, 191, 36, 0.12);
+      --cursor-ring-color: rgba(251, 191, 36, 0.55);
+      --cursor-dot-glow: #ff4a68;
+      --glass-bg: rgba(26, 16, 36, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.12);
+    }
+
+    html[data-theme="abyss"] {
+      --bg-color: #020c12;
+      --bg-overlay: rgba(2, 12, 18, 0.55);
+      --text-color: #e0f2fe;
+      --subtitle-color: rgba(224, 242, 254, 0.7);
+      --kicker-color: #7dd3fc;
+      --btn-bg: linear-gradient(135deg, #0e7490, #22d3ee, #0891b2);
+      --btn-shadow: rgba(34, 211, 238, 0.38);
+      --radial-1: rgba(14, 116, 144, 0.20);
+      --radial-2: rgba(34, 211, 238, 0.12);
+      --cursor-ring-color: rgba(214, 51, 132, 0.55);
+      --cursor-dot-glow: #d63384;
+      --glass-bg: rgba(5, 25, 38, 0.55);
+      --glass-border: rgba(34, 211, 238, 0.15);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Outfit', system-ui, sans-serif;
-      background: #020c12;
+      background: var(--bg-color);
       height: 100vh;
       overflow: hidden;
       cursor: none;
@@ -33,18 +89,24 @@
 
     body::before {
       content: '';
-      position: fixed; inset: 0;
-      background-image: radial-gradient(circle, rgba(34,211,238,0.07) 1px, transparent 1px);
-      background-size: 13px 13px;
+      position: fixed;
+      inset: -10px;
+      background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('images/404_fond.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(8px);
+      z-index: -1;
       pointer-events: none;
     }
     body::after {
       content: '';
       position: fixed; inset: 0;
       background:
-        radial-gradient(ellipse 65% 45% at 8%  18%, rgba(14,116,144,0.20) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 40% at 92% 82%, rgba(34,211,238,0.12) 0%, transparent 65%);
+        radial-gradient(ellipse 65% 45% at 8%  18%, var(--radial-1) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 92% 82%, var(--radial-2) 0%, transparent 65%);
       pointer-events: none;
+      z-index: -1;
     }
 
     /* ── Cursor ── */
@@ -54,13 +116,13 @@
     }
     .cursor-dot {
       width: 8px; height: 8px;
-      background: radial-gradient(circle, #fff 0%, #d63384 80%);
+      background: radial-gradient(circle, #fff 0%, var(--cursor-dot-glow) 80%);
       border-radius: 50%;
-      box-shadow: 0 0 12px #d63384, 0 0 24px #e8506f;
+      box-shadow: 0 0 12px var(--cursor-dot-glow), 0 0 24px var(--cursor-dot-glow);
     }
     .cursor-ring {
       width: 38px; height: 38px;
-      border: 1.5px solid rgba(214, 51, 132, 0.55);
+      border: 1.5px solid var(--cursor-ring-color);
       border-radius: 50%;
       transition: transform 0.18s ease, border-color 0.18s ease;
       mix-blend-mode: screen;
@@ -78,7 +140,7 @@
       font-family: 'Italiana', serif;
       font-size: 0.8rem; letter-spacing: 0.6em;
       text-transform: uppercase;
-      color: #7dd3fc; opacity: 0.6;
+      color: var(--kicker-color);
       text-align: center;
     }
 
@@ -88,15 +150,49 @@
       flex-shrink: 0;
     }
 
-    /* Individual cell fade-in */
-    @keyframes cellIn {
-      from { opacity: 0; transform: scale(0.6); }
-      to   { opacity: 1; transform: scale(1); }
+    .bead-container {
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      left: var(--left);
+      top: var(--top);
+      transform-origin: center center;
+      pointer-events: none;
+      /* Gather first, then float */
+      animation: 
+        gatherBeads 2.0s cubic-bezier(0.19, 1, 0.22, 1) both,
+        cellFloat 4.0s ease-in-out infinite 2.0s;
+      z-index: 2;
     }
-    /* Gentle individual float */
+
+    .bead-image-inner {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
+    }
+
+    /* Bead gathering from all directions */
+    @keyframes gatherBeads {
+      0% {
+        transform: translate(var(--startX), var(--startY)) rotate(var(--startRot)) scale(0.2);
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate(0, 0) rotate(var(--targetRot)) scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Gentle individual float once gathered */
     @keyframes cellFloat {
-      0%, 100% { transform: translateY(0px)   rotate(var(--r,0deg)); }
-      50%       { transform: translateY(-7px)  rotate(var(--r,0deg)); }
+      0%, 100% { transform: translateY(0px) rotate(var(--targetRot)); }
+      50%       { transform: translateY(-6px) rotate(var(--targetRot)); }
     }
 
     .subtitle {
@@ -104,26 +200,47 @@
       font-family: 'Caveat', cursive;
       font-size: clamp(1.2rem, 2.4vw, 1.8rem);
       font-weight: 700;
-      color: rgba(255,255,255,0.7);
+      color: var(--subtitle-color);
       text-align: center;
     }
-
     .home-link {
       position: relative; z-index: 2;
       display: inline-flex; align-items: center; gap: 0.6rem;
-      font-family: 'Major Mono Display', monospace;
-      font-size: 0.76rem; letter-spacing: 0.22em;
+      font-family: 'Outfit', system-ui, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      padding: 0.8rem 1.9rem;
+      padding: 0.8rem 2rem;
       border-radius: 999px;
-      background: linear-gradient(135deg, #0e7490, #22d3ee, #0891b2);
+      background: var(--btn-bg);
       color: #fff; text-decoration: none; cursor: none;
-      box-shadow: 0 10px 28px rgba(34,211,238,0.38);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 10px 28px var(--btn-shadow);
+      transition: box-shadow 0.25s ease;
     }
     .home-link:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 16px 36px rgba(34,211,238,0.56);
+      box-shadow: 0 16px 36px var(--btn-shadow);
+    }
+    .home-link .scroll-text {
+      display: inline-flex;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+    .home-link .letter { display: inline-block; }
+    .home-link:hover .letter {
+      animation: letter-stair 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+      animation-delay: calc(var(--i) * 0.04s);
+    }
+    @keyframes letter-stair {
+      0%   { translate: 0 0;     opacity: 1; }
+      38%  { translate: 0 14px;  opacity: 0; }
+      39%  { translate: 0 -14px; opacity: 0; }
+      100% { translate: 0 0;     opacity: 1; }
+    }
+    .home-link svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.5px;
     }
 
     .particles, .ripples {
@@ -133,6 +250,8 @@
     }
     .particles { z-index: 3; }
     .ripples { z-index: 2; mix-blend-mode: screen; }
+
+
   </style>
 </head>
 <body>
@@ -141,10 +260,10 @@
   <canvas class="particles" id="pCanvas"></canvas>
   <canvas class="ripples"   id="rCanvas"></canvas>
 
-  <p class="kicker">santos &amp; mimi · bead studio · MMXXVI</p>
   <div id="stage"></div>
   <p class="subtitle">cette page s'est perdue en mer 🌊</p>
-  <a class="home-link" href="index.html">← retour au studio</a>
+  <a class="home-link" href="index.html"><i data-lucide="arrow-left" aria-hidden="true"></i> retour à l'accueil</a>
+
 
   <script>
   const IMGS = [
@@ -164,11 +283,16 @@
     'images/image%2085.png','images/image%2086.png','images/image%2087.png',
   ];
 
-  /* ─── Build using SVG clipPath — no canvas font sampling needed ─── */
-  document.fonts.ready.then(build);
+  /* ─── Build using SVG path sampling ─── */
+  let activeBeads = [];
+  build();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(build);
+  }
 
   function build() {
     const stage = document.getElementById('stage');
+    stage.innerHTML = ''; // Clear stage in case of re-runs
 
     /* Stage dimensions */
     const maxH = window.innerHeight - 170;
@@ -177,89 +301,110 @@
     stage.style.width  = W + 'px';
     stage.style.height = H + 'px';
 
-    /* Grid cell size — images packed at ~H/5.5 so you can see each one
-       but together they clearly fill the letter shapes */
-    const cell = Math.round(Math.min(88, Math.max(60, H / 5.5)));
-    const cols = Math.ceil(W / cell) + 1;
-    const rows = Math.ceil(H / cell) + 1;
+    /* Grid cell size — size of each charm */
+    const cell = Math.round(Math.min(58, Math.max(38, H / 7.8)));
 
-    /* Shuffle image order once */
+    /* Stroke paths of '404' in a 1000x340 coordinate system (aligned symmetrically with 70px gaps) */
+    const pathData = [
+      // First '4' (shifted right by 50px to span 130 to 310)
+      "M 260,50 L 130,230 L 310,230",
+      "M 250,80 L 250,290",
+      // '0' (centered at 500, spanning 380 to 620)
+      "M 500,50 A 120,120 0 1,0 500,290 A 120,120 0 1,0 500,50 Z",
+      // Second '4' (shifted left by 10px to span 690 to 870)
+      "M 820,50 L 690,230 L 870,230",
+      "M 810,80 L 810,290"
+    ];
+
+    const points = [];
+    const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const step = cell * 0.46; // Balanced spacing along path strokes
+
+    pathData.forEach(d => {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d);
+      tempSvg.appendChild(path);
+      
+      const totalLength = path.getTotalLength();
+      const numPoints = Math.max(3, Math.round(totalLength / step));
+      
+      for (let i = 0; i <= numPoints; i++) {
+        const length = (i / numPoints) * totalLength;
+        const pt = path.getPointAtLength(length);
+        
+        // Scale coordinate space (1000x340) to actual stage dimensions W and H
+        const px = (pt.x / 1000) * W;
+        const py = (pt.y / 340) * H;
+        
+        // Place 2 staggered beads at each step to thicken the stroke organically
+        const beadsPerPoint = 2;
+        for (let k = 0; k < beadsPerPoint; k++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * cell * 0.36; // Wide enough to double the stroke thickness
+          const jx = Math.cos(angle) * dist;
+          const jy = Math.sin(angle) * dist;
+          
+          points.push({ x: px + jx, y: py + jy });
+        }
+      }
+    });
+
+    /* Shuffle images to randomly distribute them */
     const deck = [...IMGS];
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
 
-    const NS  = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('width',  W);
-    svg.setAttribute('height', H);
-    svg.style.cssText = 'display:block;overflow:visible';
+    activeBeads = []; // Reset active beads list
 
-    /* ── ClipPath: "404" text shape ── */
-    const defs = document.createElementNS(NS, 'defs');
+    // Append charm image elements directly
+    points.forEach((pt, index) => {
+      const src = deck[index % deck.length];
 
-    const clip = document.createElementNS(NS, 'clipPath');
-    clip.id = 'clip404';
+      // Create container (handles position, layout and floating/gathering animations)
+      const container = document.createElement('div');
+      container.className = 'bead-container';
 
-    const t = document.createElementNS(NS, 'text');
-    t.setAttribute('x', W / 2);
-    t.setAttribute('y', H * 0.535);
-    t.setAttribute('text-anchor',     'middle');
-    t.setAttribute('dominant-baseline','middle');
-    /* "Major Mono Display" — same font as the site; Impact as reliable fallback */
-    t.setAttribute('font-family', '"Major Mono Display", Impact, "Arial Black", monospace');
-    t.setAttribute('font-size',   Math.round(H * 0.90));
-    t.setAttribute('font-weight', '900');
-    t.textContent = '404';
+      // Create inner image (handles smooth hover push transitions in JS)
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = 'bead-image-inner';
 
-    clip.appendChild(t);
-    defs.appendChild(clip);
-    svg.appendChild(defs);
+      // Set random offscreen start coordinates for the gather animation
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.max(window.innerWidth, window.innerHeight) * 0.8 + Math.random() * 200;
+      const startX = Math.cos(angle) * dist;
+      const startY = Math.sin(angle) * dist;
 
-    /* ── Clipped group: grid of bead images ── */
-    const g = document.createElementNS(NS, 'g');
-    g.setAttribute('clip-path', 'url(#clip404)');
+      // Random rotations
+      const startRot = Math.round((Math.random() - 0.5) * 540);
+      const targetRot = Math.round((Math.random() - 0.5) * 40);
 
-    let delay = 0;
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const src = deck[(row * cols + col) % deck.length];
+      // Stagger the gather animation
+      const delay = (Math.random() * 0.6).toFixed(3);
 
-        /* Slight random offset + rotation for a "scattered bead" feel */
-        const jx  = (Math.random() - 0.5) * cell * 0.25;
-        const jy  = (Math.random() - 0.5) * cell * 0.25;
-        const rot = Math.round((Math.random() - 0.5) * 40);
-        const cx  = col * cell + cell / 2 + jx;
-        const cy  = row * cell + cell / 2 + jy;
+      container.style.setProperty('--size', `${cell}px`);
+      container.style.setProperty('--left', `${pt.x - cell / 2}px`);
+      container.style.setProperty('--top', `${pt.y - cell / 2}px`);
+      container.style.setProperty('--startX', `${Math.round(startX)}px`);
+      container.style.setProperty('--startY', `${Math.round(startY)}px`);
+      container.style.setProperty('--startRot', `${startRot}deg`);
+      container.style.setProperty('--targetRot', `${targetRot}deg`);
+      
+      // Delay both gatherBeads and cellFloat on the container
+      container.style.animationDelay = `${delay}s, ${(2.0 + parseFloat(delay)).toFixed(3)}s`;
 
-        const img = document.createElementNS(NS, 'image');
-        img.setAttribute('href',              src);
-        img.setAttribute('x',                 cx - cell / 2);
-        img.setAttribute('y',                 cy - cell / 2);
-        img.setAttribute('width',             cell);
-        img.setAttribute('height',            cell);
-        img.setAttribute('preserveAspectRatio','xMidYMid meet');
-        img.setAttribute('transform',
-          `rotate(${rot} ${cx} ${cy})`
-        );
+      container.appendChild(img);
+      stage.appendChild(container);
 
-        /* Staggered fade-in → then continuous float */
-        const floatDur   = (3.8 + Math.random() * 3.5).toFixed(2);
-        const floatDelay = (delay + 0.55 - Math.random() * 2).toFixed(3);
-        img.style.cssText = [
-          '--r:' + rot + 'deg',
-          `animation: cellIn 0.5s cubic-bezier(0.22,1,0.36,1) both ${delay.toFixed(3)}s,`
-          + ` cellFloat ${floatDur}s ease-in-out infinite ${floatDelay}s`,
-        ].join(';');
-
-        g.appendChild(img);
-        delay += 0.016; /* 16ms stagger per cell */
-      }
-    }
-
-    svg.appendChild(g);
-    stage.appendChild(svg);
+      // Save metadata for hover proximity tracking
+      activeBeads.push({
+        el: img,
+        px: pt.x,
+        py: pt.y
+      });
+    });
   }
 
   /* ─── Cursor (scale handled in JS — no CSS !important conflict) ─── */
@@ -270,15 +415,65 @@
 
   document.addEventListener('pointermove', e => {
     mx = e.clientX; my = e.clientY;
-    cDot.style.transform = `translate(${mx - 4}px,${my - 4}px)`;
+    if (cDot) {
+      cDot.style.transform = `translate(${mx - 4}px,${my - 4}px)`;
+    }
   });
   document.querySelectorAll('a').forEach(el => {
-    el.addEventListener('mouseenter', () => { rScale = 1.6; cRing.style.borderColor = '#0e7490'; });
-    el.addEventListener('mouseleave', () => { rScale = 1;   cRing.style.borderColor = 'rgba(214, 51, 132, 0.55)'; });
+    el.addEventListener('mouseenter', () => {
+      rScale = 1.6;
+      if (cRing) {
+        cRing.style.borderColor = '#0e7490';
+      }
+    });
+    el.addEventListener('mouseleave', () => {
+      rScale = 1;
+      if (cRing) {
+        cRing.style.borderColor = 'rgba(214, 51, 132, 0.55)';
+      }
+    });
   });
+
+
   (function tick() {
     rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
     cRing.style.transform = `translate(${rx - 19}px,${ry - 19}px) scale(${rScale})`;
+
+    // Proximity hover effect on charms (desktop / pointer interactions)
+    const stage = document.getElementById('stage');
+    if (stage && activeBeads.length > 0) {
+      const rect = stage.getBoundingClientRect();
+      const stageX = rect.left;
+      const stageY = rect.top;
+      const mouseStageX = mx - stageX;
+      const mouseStageY = my - stageY;
+
+      const threshold = 95; // Radius of proximity in pixels
+
+      activeBeads.forEach(bead => {
+        const dx = bead.px - mouseStageX;
+        const dy = bead.py - mouseStageY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < threshold) {
+          const force = (threshold - dist) / threshold; // 0 (far) to 1 (on top)
+          const angle = Math.atan2(dy, dx);
+          
+          // Push bead away slightly (up to 20px)
+          const pushDist = force * 20; 
+          const pushX = Math.cos(angle) * pushDist;
+          const pushY = Math.sin(angle) * pushDist;
+
+          // Rotate slightly based on push force
+          const pushRot = pushX * 0.5;
+
+          bead.el.style.transform = `translate(${pushX.toFixed(1)}px, ${pushY.toFixed(1)}px) rotate(${pushRot.toFixed(1)}deg) scale(1.12)`;
+        } else {
+          bead.el.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)';
+        }
+      });
+    }
+
     requestAnimationFrame(tick);
   })();
 
@@ -459,6 +654,26 @@
   loop();
 
   addEventListener('resize', () => { fit(pCanvas); fit(rCanvas); });
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+    /* ── Split 'retour à l’accueil' into letter spans ── */
+    (function () {
+      const btn = document.querySelector('.home-link');
+      if (!btn) return;
+      const icon = btn.querySelector('svg') || btn.querySelector('i');
+      const text = "retour \u00e0 l'accueil";
+      const wrapped = [...text].map((ch, i) =>
+        ch === ' '
+          ? `<span class="letter" style="--i:${i}" aria-hidden="true">&nbsp;</span>`
+          : `<span class="letter" style="--i:${i}" aria-hidden="true">${ch}</span>`
+      ).join('');
+      const iconHTML = icon ? icon.outerHTML : '';
+      btn.innerHTML = iconHTML +
+        `<span class="scroll-text" aria-label="retour \u00e0 l'accueil">${wrapped}</span>`;
+      lucide.createIcons();
+    })();
   </script>
 </body>
 </html>

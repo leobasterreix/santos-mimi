@@ -1001,6 +1001,103 @@
       text-transform: uppercase; opacity: 0.6; color: var(--ruby);
     }
 
+    /* ─── Bras de lecture ────────────────────────────────── */
+    .tonearm {
+      position: absolute;
+      top: -7%; right: -4%;
+      width: 32%; height: 82%;
+      z-index: 8;
+      pointer-events: none;
+      /* pivot = centre du cercle doré (88/120, 34/300) */
+      transform-origin: 73.3% 11.3%;
+      transform: rotate(-26deg);
+      transition: transform 0.95s cubic-bezier(0.34, 1.15, 0.45, 1);
+      filter: drop-shadow(-5px 9px 7px rgba(0, 0, 0, 0.32));
+    }
+    .tonearm.on { transform: rotate(var(--arm-deg, -1deg)); }
+
+    /* ─── Pochette du vinyle ─────────────────────────────── */
+    .vinyl-sleeve {
+      position: absolute;
+      inset: 4%;
+      z-index: 7;
+      border-radius: 16px;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 45%),
+        var(--sleeve-bg, radial-gradient(circle at 40% 40%, #ffd6e7 0%, #ffeaa7 28%, #b8f5d0 52%, #a8d8f0 75%, #d4b8f0 100%));
+      border: 3px solid rgba(255, 247, 237, 0.85);
+      box-shadow:
+        0 18px 42px rgba(60, 10, 30, 0.4),
+        inset -14px 0 24px rgba(0, 0, 0, 0.22),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 4%;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-135%) rotate(-6deg);
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+    }
+    .sleeve-ring {
+      width: 46%; aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2.5px dashed rgba(255, 247, 237, 0.8);
+      background: rgba(255, 247, 237, 0.22);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.12);
+    }
+    .sleeve-bead {
+      width: 62%; height: 62%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+    .sleeve-label { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; }
+    .sleeve-title {
+      font-family: 'Parisienne', cursive;
+      font-size: clamp(1.3rem, 4vw, 1.9rem);
+      color: #fff7ec;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      line-height: 1;
+    }
+    .sleeve-artist {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.68rem; letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255, 247, 237, 0.92);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+    /* chorégraphie : le disque se range, la pochette entre… */
+    #vinyl {
+      translate: 0 0;
+      scale: 1;
+      transition: translate 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                  scale 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .vinyl-stage.sleeve-in .vinyl-sleeve {
+      opacity: 1;
+      transform: translateX(0) rotate(0deg);
+    }
+    .vinyl-stage.sleeve-in #vinyl {
+      translate: -9% 1.5%;
+      scale: 0.93;
+    }
+    /* …puis le disque émerge pendant qu'elle repart */
+    .vinyl-stage.sleeve-out .vinyl-sleeve {
+      opacity: 0;
+      transform: translateX(-135%) rotate(-6deg);
+      transition: transform 0.6s cubic-bezier(0.45, 0, 0.55, 1), opacity 0.45s ease 0.1s;
+    }
+    .vinyl-stage.sleeve-out #vinyl {
+      translate: 0 0;
+      scale: 1;
+      transition: translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+                  scale 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tonearm { transition: none; }
+      .vinyl-sleeve { transition: none; }
+    }
+
     /* ─── Playlist : plein de petits vinyles à cliquer ───── */
     .playlist {
       list-style: none;
@@ -2781,6 +2878,31 @@
             <img id="bigVinylBead" src="images/image%2042.png" class="big-bead" alt="" />
           </div>
         </div>
+        <div class="vinyl-sleeve" id="vinylSleeve" aria-hidden="true">
+          <div class="sleeve-ring">
+            <img class="sleeve-bead" id="sleeveBead" src="images/image%2042.png" alt="" />
+          </div>
+          <div class="sleeve-label">
+            <span class="sleeve-title" id="sleeveTitle">Iko Iko</span>
+            <span class="sleeve-artist" id="sleeveArtist">Justin Wellington</span>
+          </div>
+        </div>
+        <svg class="tonearm" id="tonearm" viewBox="0 0 120 300" aria-hidden="true">
+          <!-- contrepoids -->
+          <rect x="96" y="2" width="22" height="30" rx="9" fill="#4a3550" stroke="#2e1f33" stroke-width="1.5" />
+          <!-- tige : pivot → coude → tête -->
+          <path d="M88 34 L82 168 L62 246" stroke="#e8d9c0" stroke-width="7" fill="none" stroke-linecap="round" />
+          <path d="M88 34 L82 168 L62 246" stroke="rgba(0,0,0,0.18)" stroke-width="2" fill="none" stroke-linecap="round" />
+          <!-- pivot -->
+          <circle cx="88" cy="34" r="17" fill="#d97706" stroke="#8a4a04" stroke-width="2" />
+          <circle cx="88" cy="34" r="7" fill="#fff7ec" stroke="#8a4a04" stroke-width="1.5" />
+          <!-- tête de lecture -->
+          <g transform="rotate(16 62 246)">
+            <rect x="48" y="240" width="28" height="38" rx="6" fill="#c41e3a" stroke="#7a0f22" stroke-width="1.5" />
+            <rect x="55" y="276" width="14" height="9" rx="2.5" fill="#3a2f45" />
+            <circle cx="62" cy="254" r="4.5" fill="#ffd6e7" />
+          </g>
+        </svg>
         <div class="note-field" id="noteField" aria-hidden="true"></div>
         <div class="vinyl-hint">choisis un vinyle · clique pour lancer</div>
       </div>
@@ -3010,6 +3132,9 @@
     /* ───────── Vinyl player (rotation RAF + drag-to-scratch) ───────── */
     const audio = document.getElementById('audio');
     const vinyl = document.getElementById('vinyl');
+    const vinylStage = document.getElementById('vinylStage');
+    const vinylSleeve = document.getElementById('vinylSleeve');
+    const tonearm = document.getElementById('tonearm');
     const playlistEl = document.getElementById('playlist');
     const noteField = document.getElementById('noteField');
     const miniNotes = document.getElementById('miniNotes');
@@ -3098,11 +3223,17 @@
       });
     }
 
+    /* Le bras reste posé pendant un scratch (isDragging), sinon il suit la lecture */
+    function updateArm() {
+      tonearm.classList.toggle('on', isPlaying || isDragging);
+    }
+
     function setUIPlaying(playing) {
       isPlaying = playing;
       miniPlayBtn.classList.toggle('playing', playing);
       miniPlayer.classList.toggle('collapsed', !playing); // bulle ouverte si ça joue, réduite sinon
       if (playing) startNotes(); else stopNotes();
+      updateArm();
       highlightActive();
     }
 
@@ -3130,17 +3261,56 @@
       currentTrack = (i + TRACKS.length) % TRACKS.length;
       audio.src = encodeURI(TRACKS[currentTrack].src);
       audio.load();
+      tonearm.style.setProperty('--arm-deg', '-1deg'); // bras prêt au bord des sillons
       updateMiniInfo();
       highlightActive();
       updateBigVinylFruit();
     }
 
+    function playNow() {
+      ensureBuffer();
+      audio.play().then(() => setUIPlaying(true)).catch(() => {});
+    }
+
+    /* Changement de disque : le bras se lève, la pochette du nouveau titre
+       entre, le disque se range derrière elle, on échange les visuels,
+       puis le disque émerge de la pochette qui repart. */
+    const SLEEVE_ANIM = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let sleeveBusy = false, sleeveTarget = 0, sleeveAutoplay = false;
+
+    function dressSleeve(t) {
+      const defaultBg = 'radial-gradient(circle, var(--magenta) 0%, var(--ruby) 70%, var(--ruby) 100%)';
+      vinylSleeve.style.setProperty('--sleeve-bg', t.shellBg || defaultBg);
+      document.getElementById('sleeveBead').src = 'images/' + (t.bead || 'image%2042.png');
+      document.getElementById('sleeveTitle').textContent = t.title;
+      document.getElementById('sleeveArtist').textContent = t.artist;
+    }
+
     function selectTrack(i, autoplay) {
-      loadTrack(i);
-      if (autoplay) {
-        ensureBuffer();
-        audio.play().then(() => setUIPlaying(true)).catch(() => {});
+      const target = (i + TRACKS.length) % TRACKS.length;
+      if (!SLEEVE_ANIM || target === currentTrack) {
+        loadTrack(target);
+        if (autoplay) playNow();
+        return;
       }
+      sleeveTarget = target;
+      sleeveAutoplay = autoplay;
+      dressSleeve(TRACKS[target]);
+      if (sleeveBusy) return;             // l'anim en cours prendra la nouvelle cible
+      sleeveBusy = true;
+      audio.pause();                      // le bras se relève
+      vinylStage.classList.add('sleeve-in');
+      setTimeout(() => {
+        loadTrack(sleeveTarget);          // échange pendant que le disque est couvert
+        vinylStage.classList.remove('sleeve-in');
+        vinylStage.classList.add('sleeve-out');
+        setTimeout(() => {
+          vinylStage.classList.remove('sleeve-out');
+          sleeveBusy = false;
+          if (sleeveTarget !== currentTrack) { selectTrack(sleeveTarget, sleeveAutoplay); return; }
+          if (sleeveAutoplay) playNow();  // le bras se pose une fois le disque en place
+        }, 680);
+      }, 560);
     }
 
     /* ── Moteur audio partagé (Web Audio, sans aucun fichier son) ── */
@@ -3289,6 +3459,7 @@
       scrubStartAudio = audio.currentTime;
       scrubAccumDeg = 0;
       scrubStart(); // prépare le scrub de la musique
+      updateArm();  // le bras reste posé pendant le scratch
       try { vinyl.setPointerCapture(e.pointerId); } catch (_) {}
     });
 
@@ -3325,6 +3496,7 @@
       } else if (wasPlayingBeforeDrag) {
         audio.play().then(() => setUIPlaying(true)).catch(() => {});
       }
+      updateArm();
     }
     document.addEventListener('pointermove', onMove, { passive: false });
     document.addEventListener('pointerup', endDrag);
@@ -3342,6 +3514,9 @@
     audio.addEventListener('timeupdate', () => {
       if (audio.duration) {
         miniBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
+        /* le bras avance du bord des sillons (début) vers le label (fin) */
+        const p = audio.currentTime / audio.duration;
+        tonearm.style.setProperty('--arm-deg', (-1 + p * 19.5).toFixed(2) + 'deg');
       }
     });
     audio.addEventListener('play',  () => setUIPlaying(true));

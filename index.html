@@ -1077,6 +1077,15 @@
       .ch-tag.rv-in .num { opacity: 1; transform: none; }
       .ch-tag.rv-in .label { opacity: 0.75; transform: none; letter-spacing: 0.45em; }
       .chapter h2.rv-in { opacity: 1; transform: none; }
+
+      /* Reveal générique pour le reste du contenu */
+      .rv {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity 0.7s ease var(--rv-d, 0s),
+                    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0s);
+      }
+      .rv.rv-in { opacity: 1; transform: none; }
     }
 
     /* ─── Duo brooches (S & M) ───────────────────────────── */
@@ -3062,20 +3071,46 @@
     }
 
     /* ─── Reveal des titres / rubriques au scroll ─── */
-    (function titleReveal() {
-      const targets = document.querySelectorAll('.ch-tag, .chapter h2');
+    (function scrollReveal() {
+      const titles = [...document.querySelectorAll('.ch-tag, .chapter h2')];
+
+      /* Contenu : sélecteurs simples + groupes en cascade */
+      const singles = document.querySelectorAll(
+        '.story-text p, .duo-brooches, .memory-info, .memory-grid,' +
+        ' .polaroids-row, .bo-left, .vinyl-stage, .contact-row, footer'
+      );
+      const groups = [document.querySelectorAll('.patch-board .patch-card')];
+
+      singles.forEach(el => el.classList.add('rv'));
+      groups.forEach(list => list.forEach((el, i) => {
+        el.classList.add('rv');
+        el.style.setProperty('--rv-d', (i * 0.1).toFixed(2) + 's');
+      }));
+
+      const content = [...singles, ...groups.flatMap(l => [...l])];
+      const targets = [...titles, ...content];
+
       if (!('IntersectionObserver' in window)) {
         targets.forEach(el => el.classList.add('rv-in'));
         return;
       }
       const io = new IntersectionObserver(entries => {
         entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('rv-in');
-            io.unobserve(e.target);
+          if (!e.isIntersecting) return;
+          e.target.classList.add('rv-in');
+          io.unobserve(e.target);
+          /* Une fois l'entrée jouée, on rend l'élément à ses styles
+             d'origine (hover des patch-cards, transforms internes…) */
+          if (e.target.classList.contains('rv')) {
+            e.target.addEventListener('transitionend', function clean(ev) {
+              if (ev.target !== e.target) return;
+              e.target.classList.remove('rv', 'rv-in');
+              e.target.style.removeProperty('--rv-d');
+              e.target.removeEventListener('transitionend', clean);
+            });
           }
         });
-      }, { threshold: 0.3, rootMargin: '0px 0px -8% 0px' });
+      }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
       targets.forEach(el => io.observe(el));
     })();
 

@@ -1457,14 +1457,15 @@
     }
     .chest-wrapper {
       position: relative;
-      width: 440px;
-      height: 440px;
+      width: 580px;
+      height: 400px;
       margin-top: 1.5rem;
     }
     @media (max-width: 768px) {
       .chest-wrapper {
-        width: 300px;
-        height: 300px;
+        width: 100%;
+        max-width: 440px;
+        height: 320px;
       }
     }
     #chest3DCanvas {
@@ -3484,7 +3485,7 @@
 
       // 2. Camera setup
       const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
-      camera.position.set(0, 0.8, 3.8); 
+      camera.position.set(0, 0.8, 4.4); 
       camera.lookAt(0, 0.25, 0);
 
       // 3. Renderer setup
@@ -3679,7 +3680,7 @@
 
         // 2. Camera perspective tilt (controlled vertical movement to prevent clipping!)
         camera.position.y = 0.8 + (easeProgress * 0.35);
-        camera.position.z = 3.8 - (easeProgress * 0.15);
+        camera.position.z = 4.4 - (easeProgress * 0.15);
         camera.lookAt(0, 0.25 + easeProgress * 0.1, 0);
 
         // 3. Inside glow

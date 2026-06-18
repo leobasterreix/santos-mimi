@@ -87,35 +87,35 @@
     }
 
     html[data-theme="dark"] {
-      --ruby: #ff4a68;
-      --ruby-bright: #ff3355;
-      --coral: #ff5e83;
-      --pink-hot: #f43f5e;
-      --magenta: #db2777;
-      --purple: #a855f7;
-      --teal-deep: #06b6d4;
-      --turquoise: #2dd4bf;
-      --emerald: #10b981;
-      --gold: #fbbf24;
-      --cream: #0f0913;
-      --pearl: #1a1024;
-      --ink: #f3f0f7;
+      --ruby: #d63b50;
+      --ruby-bright: #ff526b;
+      --coral: #f27b93;
+      --pink-hot: #e35893;
+      --magenta: #c43b7f;
+      --purple: #9e60a3;
+      --teal-deep: #2c8a9e;
+      --turquoise: #4ecdc4;
+      --emerald: #3fa385;
+      --gold: #e5a93b;
+      --cream: #12090f;
+      --pearl: #1b0e17;
+      --ink: #f7eef3;
 
       /* Chapter accents */
-      --ch1: #db2777;      --ch1-tint: rgba(219, 39, 119, 0.16);
-      --ch2: #a855f7;      --ch2-tint: rgba(168, 85, 247, 0.16);
-      --ch3: #ff3355;      --ch3-tint: rgba(255, 51, 85, 0.18);
-      --glass-bg: rgba(26, 16, 36, 0.55);
-      --glass-border: rgba(255, 255, 255, 0.12);
+      --ch1: #e35893;      --ch1-tint: rgba(227, 88, 147, 0.12);
+      --ch2: #4ecdc4;      --ch2-tint: rgba(78, 205, 196, 0.12);
+      --ch3: #ff526b;      --ch3-tint: rgba(255, 82, 107, 0.12);
+      --glass-bg: rgba(27, 14, 23, 0.65);
+      --glass-border: rgba(255, 82, 107, 0.15);
 
       /* Dynamic gradients */
-      --bg-radial-1: #3b1d5c;
-      --bg-radial-2: #1e1136;
-      --bg-radial-3: #2a0b2d;
-      --bg-grad-1: #09050d;
-      --bg-grad-2: #0e0717;
-      --bg-grad-3: #180924;
-      --bg-grad-4: #0d0614;
+      --bg-radial-1: #4a182d;
+      --bg-radial-2: #1d0a18;
+      --bg-radial-3: #0f262b;
+      --bg-grad-1: #0c050a;
+      --bg-grad-2: #10070e;
+      --bg-grad-3: #180b15;
+      --bg-grad-4: #0e070c;
     }
 
     html[data-theme="abyss"] {
@@ -2072,6 +2072,43 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
+    /* ─── Bannière de restauration Plein Écran ──────────── */
+    .fs-restore-banner {
+      position: fixed;
+      top: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      z-index: 9999;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      padding: 0.8rem 1.6rem;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      color: var(--ink);
+      font-size: 0.85rem;
+      font-weight: 500;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .fs-restore-banner.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .fs-restore-content {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .fs-restore-content svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.5px;
+      color: var(--ruby-bright);
+    }
+
     /* Override motif logo pour le mode sombre */
     html[data-theme="dark"] body::before {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cstyle%3E.txt%7Bfill:rgba(255,247,237,0.015);font-size:8px;font-family:'Londrina Solid','Outfit',system-ui,sans-serif;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-anchor:middle;%7D%3C/style%3E%3Ctext x='60' y='30' class='txt' transform='rotate(-12, 60, 30)'%3ESANTOS %26 MIMI%3C/text%3E%3Ctext x='180' y='90' class='txt' transform='rotate(-12, 180, 90)'%3ESANTOS %26 MIMI%3C/text%3E%3C/svg%3E");
@@ -2340,6 +2377,14 @@
 
   <div class="cursor-ring"></div>
   <div class="cursor-dot"></div>
+
+  <!-- Notification de restauration Plein Écran -->
+  <div class="fs-restore-banner" id="fsRestoreBanner" style="display: none;">
+    <div class="fs-restore-content">
+      <i data-lucide="expand" aria-hidden="true"></i>
+      <span>Cliquez n'importe où pour rétablir le plein écran</span>
+    </div>
+  </div>
 
   <!-- Bouton Plein Écran -->
   <button class="fullscreen-btn" id="fullscreenBtn" type="button" aria-label="Mettre en plein écran">
@@ -4252,12 +4297,22 @@
       // Restore fullscreen on first user interaction if it was active before reload
       try {
         if (localStorage.getItem('site-fullscreen') === 'true') {
+          const banner = document.getElementById('fsRestoreBanner');
+          if (banner) {
+            banner.style.display = 'block';
+            requestAnimationFrame(() => banner.classList.add('show'));
+          }
+
           const autoEnter = () => {
             const doc = document.documentElement;
             const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
             if (!isFS) {
               const req = doc.requestFullscreen || doc.webkitRequestFullscreen || doc.mozRequestFullScreen || doc.msRequestFullscreen;
               if (req) req.call(doc).catch(err => console.error(err));
+            }
+            if (banner) {
+              banner.classList.remove('show');
+              setTimeout(() => banner.style.display = 'none', 500);
             }
             document.removeEventListener('click', autoEnter);
             document.removeEventListener('keydown', autoEnter);
@@ -4323,7 +4378,7 @@
         const delta = currentScrollY - lastScrollY;
         lastScrollY = currentScrollY;
         
-        scrollSpeed += delta * 0.35;
+        scrollSpeed = Math.max(-10, Math.min(10, scrollSpeed + delta * 0.05));
       }, { passive: true });
 
       function tick() {

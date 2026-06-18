@@ -3556,9 +3556,9 @@
       });
 
       const insideMaterial = new THREE.MeshStandardMaterial({
-        color: 0x110c08,      // dark interior
-        roughness: 0.9,
-        metalness: 0.0
+        color: 0x5a1818,      // deep velvet burgundy interior lining
+        roughness: 0.85,
+        metalness: 0.05
       });
 
       const glowInsideMaterial = new THREE.MeshBasicMaterial({
@@ -3679,9 +3679,9 @@
         }
 
         // 2. Camera perspective tilt (controlled vertical movement to prevent clipping!)
-        camera.position.y = 0.8 + (easeProgress * 0.35);
-        camera.position.z = 4.4 - (easeProgress * 0.15);
-        camera.lookAt(0, 0.25 + easeProgress * 0.1, 0);
+        camera.position.y = 0.8 + (easeProgress * 0.1);
+        camera.position.z = 4.4 + (easeProgress * 0.75);
+        camera.lookAt(0, 0.25 + easeProgress * 0.05, 0);
 
         // 3. Inside glow
         internalGlowLight.intensity = easeProgress * 6.5;

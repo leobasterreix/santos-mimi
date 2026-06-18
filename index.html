@@ -2877,15 +2877,92 @@
     }
     
     /* Boutons de contrôle de la caméra */
+    /* Boutons de contrôle de la caméra - Style 3D tactile rétro */
     .camera-controls {
       display: flex;
       gap: 1rem;
       width: 100%;
       justify-content: center;
+      background: #141211;
+      padding: 10px;
+      border-radius: 14px;
+      box-shadow: 
+        inset 0 3px 8px rgba(0, 0, 0, 0.75),
+        0 1px 0 rgba(255, 255, 255, 0.08);
+      margin-top: 0.5rem;
     }
-    .camera-btn {
+    button.camera-btn {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      cursor: none;
+      transition: transform 0.1s, box-shadow 0.1s, background 0.2s, color 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
       flex: 1;
-      max-width: 170px;
+      border: 2.5px solid #000 !important;
+    }
+    
+    /* Style Démarrer (Allumer) */
+    #btnToggleCam.camera-btn {
+      background: linear-gradient(to bottom, #5c6370, #3e4451);
+      color: #f7eef3;
+      box-shadow: 
+        0 4px 0 #1c1f26,
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    #btnToggleCam.camera-btn:not(:disabled):hover {
+      background: linear-gradient(to bottom, #6b7587, #484f5e);
+      transform: translateY(-1px);
+      box-shadow: 
+        0 5px 0 #1c1f26,
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 0 10px rgba(255, 255, 255, 0.15);
+    }
+    #btnToggleCam.camera-btn:active {
+      transform: translateY(3px);
+      box-shadow: 
+        0 1px 0 #1c1f26,
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Style Prendre (CLIC !) */
+    #btnShutter.camera-btn {
+      background: linear-gradient(to bottom, #ff526b, #c41e3a);
+      color: #fff;
+      box-shadow: 
+        0 4px 0 #8c1224,
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    #btnShutter.camera-btn:not(:disabled):hover {
+      background: linear-gradient(to bottom, #ff6b82, #d6223e);
+      transform: translateY(-1px);
+      box-shadow: 
+        0 5px 0 #8c1224,
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        0 0 12px rgba(255, 82, 107, 0.4);
+    }
+    #btnShutter.camera-btn:active {
+      transform: translateY(3px);
+      box-shadow: 
+        0 1px 0 #8c1224,
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Boutons de caméra désactivés (plat / renfoncé) */
+    .camera-controls button.camera-btn:disabled {
+      background: #23201f !important;
+      color: #4b4442 !important;
+      border-color: #12100f !important;
+      box-shadow: none !important;
+      transform: translateY(3px) !important;
+      opacity: 0.65;
     }
     
     /* Fente d'impression (printer slot) */
@@ -3105,19 +3182,96 @@
     }
     .camera-caption-input {
       font-family: 'Outfit', sans-serif;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 999px;
-      padding: 0.6rem 1.2rem;
-      font-size: 0.85rem;
+      background: transparent;
+      border: none;
+      border-bottom: 4px solid var(--ink);
+      border-radius: 0;
+      padding: 0.6rem 0.2rem;
+      font-size: 1.05rem;
       color: var(--ink);
+      font-weight: 700;
       outline: none;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      transition: border-bottom-color 0.3s;
       cursor: none;
     }
     .camera-caption-input:focus {
+      border-bottom-color: var(--ruby-bright);
+    }
+    .camera-caption-input::placeholder {
+      color: var(--ink);
+      opacity: 0.4;
+      font-weight: 400;
+    }
+    
+    /* Lightbox Polaroid (Zoom au clic) */
+    .polaroid-lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 10, 12, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      cursor: none;
+    }
+    .polaroid-lightbox.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 2010;
+    }
+    .lightbox-close:hover {
+      transform: scale(1.1) rotate(90deg);
+      background: var(--ruby-bright);
+      color: #fff;
       border-color: var(--ruby-bright);
-      box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.12);
+    }
+    .lightbox-close svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2.5;
+    }
+    .lightbox-content {
+      width: 90%;
+      max-width: 440px;
+      transform: scale(0.85) rotate(-3deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .polaroid-lightbox.active .lightbox-content {
+      transform: scale(1) rotate(0deg);
+    }
+    .lightbox-card {
+      width: 100%;
+      padding: 18px 18px 54px 18px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      transform: none !important; /* Empecher les rotations de l'album sur le zoom */
+    }
+    .lightbox-card .caption {
+      font-size: 1.6rem !important;
+      bottom: 14px !important;
+      left: 18px !important;
+      right: 18px !important;
+      opacity: 0.9 !important;
     }
     
     /* Galerie de droite (l'album) */
@@ -3308,21 +3462,26 @@
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      border: 2px solid var(--glass-border);
+      border: 3.5px solid #141211;
       cursor: none;
       position: relative;
       overflow: hidden;
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.25s;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.25s, box-shadow 0.25s;
+      box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.35),
+        inset 0 1px 2px rgba(255, 255, 255, 0.15);
       background: #000;
     }
     .filter-btn:hover {
-      transform: scale(1.15) translateY(-2px);
+      transform: scale(1.12) rotate(15deg);
+      border-color: #fff;
     }
     .filter-btn.active {
       border-color: var(--ruby-bright);
-      box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.3), 0 6px 12px rgba(196, 30, 58, 0.2);
-      transform: scale(1.1);
+      box-shadow: 
+        0 0 15px var(--ruby-bright),
+        0 6px 12px rgba(0, 0, 0, 0.45);
+      transform: scale(1.18) rotate(0deg);
     }
     /* Aperçus miniatures des filtres */
     .filter-btn::after {
@@ -4109,6 +4268,21 @@
 
   </div>
   <button class="to-top" id="toTop" aria-label="Remonter en haut de la page"><i data-lucide="arrow-up" aria-hidden="true"></i></button>
+
+  <!-- Polaroid Lightbox (Zoom au clic) -->
+  <div class="polaroid-lightbox" id="polaroidLightbox" role="dialog" aria-modal="true" aria-label="Agrandissement photo">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Fermer la vue agrandie">
+      <i data-lucide="x"></i>
+    </button>
+    <div class="lightbox-content">
+      <div class="polaroid-card developed lightbox-card">
+        <div class="polaroid-img-wrap">
+          <img id="lightboxImg" src="" alt="Photo agrandie" />
+        </div>
+        <div class="caption" id="lightboxCaption"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- ─── Easter Egg Section (Konami Code) ────────────────── -->
   <section class="easter-egg-section" id="easterEggSection" aria-hidden="true" style="display: none;">
@@ -6262,6 +6436,10 @@
       const filterSelector = document.getElementById('filterSelector');
       const stickerSelector = document.getElementById('stickerSelector');
       const btnClearStickers = document.getElementById('btnClearStickers');
+      const polaroidLightbox = document.getElementById('polaroidLightbox');
+      const lightboxImg = document.getElementById('lightboxImg');
+      const lightboxCaption = document.getElementById('lightboxCaption');
+      const lightboxClose = document.getElementById('lightboxClose');
       
       let mediaStream = null;
       let isDemoMode = false;
@@ -6297,6 +6475,28 @@
           osc.start();
           osc.stop(ctxNode.currentTime + 0.35);
         } catch (e) {}
+      }
+
+      function openLightbox(dataUrl, caption) {
+        if (!polaroidLightbox || !lightboxImg || !lightboxCaption) return;
+        lightboxImg.src = dataUrl;
+        lightboxCaption.textContent = caption || '';
+        polaroidLightbox.classList.add('active');
+        
+        // Play ascending retro chime
+        playTone(330, 0.05, 'sine');
+        setTimeout(() => playTone(440, 0.05, 'sine'), 85);
+        setTimeout(() => playTone(550, 0.05, 'sine'), 170);
+      }
+
+      function closeLightbox() {
+        if (!polaroidLightbox) return;
+        polaroidLightbox.classList.remove('active');
+        
+        // Play descending retro chime
+        playTone(550, 0.04, 'sine');
+        setTimeout(() => playTone(440, 0.04, 'sine'), 85);
+        setTimeout(() => playTone(330, 0.04, 'sine'), 170);
       }
 
       function playShutterSound() {
@@ -6904,6 +7104,13 @@
           polaroidGallery.appendChild(el);
           bindHover(el);
 
+          if (!item.uploading) {
+            el.addEventListener('click', (e) => {
+              if (e.target.closest('.item-action-btn')) return;
+              openLightbox(item.dataUrl, item.caption);
+            });
+          }
+
           // Bind Actions
           el.querySelectorAll('.btn-dl').forEach(btn => {
             bindHover(btn);
@@ -6965,6 +7172,25 @@
       bindHover(btnToggleCam);
       bindHover(btnShutter);
       bindHover(cameraCaption);
+
+      // Lightbox close events and hover effects
+      if (lightboxClose) {
+        lightboxClose.addEventListener('click', closeLightbox);
+        bindHover(lightboxClose);
+      }
+      if (polaroidLightbox) {
+        polaroidLightbox.addEventListener('click', (e) => {
+          if (e.target === polaroidLightbox) {
+            closeLightbox();
+          }
+        });
+      }
+      // ESC key to close
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && polaroidLightbox && polaroidLightbox.classList.contains('active')) {
+          closeLightbox();
+        }
+      });
     })();
   </script>
 </body>

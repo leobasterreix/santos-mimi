@@ -4,7 +4,7 @@
 
 BRANCH=${1:-$(git rev-parse --abbrev-ref HEAD)}
 echo "🎵 Santos & Mimi — dev server"
-echo "📡 Branche suivie : $branch"
+echo "📡 Branche suivie : $BRANCH"
 echo "🔄 Auto-pull toutes les 4s"
 echo "-----------------------------------"
 

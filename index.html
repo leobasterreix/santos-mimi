@@ -3566,10 +3566,10 @@
         side: THREE.DoubleSide
       });
 
-      const insideMaterial = new THREE.MeshStandardMaterial({
-        color: 0x5a1818,      // deep velvet burgundy interior lining
-        roughness: 0.85,
-        metalness: 0.05
+      const transparentMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0.0,
+        depthWrite: false
       });
 
       const glowInsideMaterial = new THREE.MeshBasicMaterial({
@@ -3594,12 +3594,12 @@
         });
 
         const baseMaterials = [
-          woodMaterial,          // Right
-          woodMaterial,          // Left
-          glowInsideMaterial,    // Top (glowing gold)
-          woodMaterial,          // Bottom
-          baseFrontMaterial,     // Front
-          woodMaterial           // Back
+          transparentMaterial,    // Right
+          transparentMaterial,    // Left
+          glowInsideMaterial,     // Top (glowing gold)
+          transparentMaterial,    // Bottom
+          baseFrontMaterial,      // Front
+          transparentMaterial     // Back
         ];
 
         const baseGeo = new THREE.BoxGeometry(chestWidth, chestHeight, chestDepth);
@@ -3623,19 +3623,13 @@
           side: THREE.DoubleSide
         });
 
-        const transparentMaterial = new THREE.MeshBasicMaterial({
-          transparent: true,
-          opacity: 0.0,
-          depthWrite: false
-        });
-
         const lidBoxMaterials = [
-          woodMaterial,         // Right
-          woodMaterial,         // Left
-          woodMaterial,         // Top
+          transparentMaterial,  // Right
+          transparentMaterial,  // Left
+          transparentMaterial,  // Top
           transparentMaterial,  // Bottom (transparent to make it hollow!)
           lidFrontMaterial,     // Front
-          woodMaterial          // Back
+          transparentMaterial   // Back
         ];
 
         const lidBoxGeo = new THREE.BoxGeometry(chestWidth, 0.9, chestDepth);
@@ -3691,7 +3685,7 @@
         const easeProgress = progress * progress * (3 - 2 * progress);
 
         // 1. Rotate Lid back around hinge
-        const targetAngle = easeProgress * -1.65;
+        const targetAngle = easeProgress * -0.85;
         if (lidGroup) {
           lidGroup.rotation.x = targetAngle;
         }
@@ -3702,13 +3696,13 @@
         const aspect = w / h;
         
         let baseZ = 4.6;
-        let zoomOutFactor = 0.85;
+        let zoomOutFactor = 0.45;
         if (aspect < 1.0) {
           baseZ = 6.2;
-          zoomOutFactor = 1.2;
+          zoomOutFactor = 0.75;
         } else if (aspect < 1.4) {
           baseZ = 5.2;
-          zoomOutFactor = 1.0;
+          zoomOutFactor = 0.55;
         }
         
         camera.position.y = 0.85 + (easeProgress * 0.05);

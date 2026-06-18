@@ -5,9 +5,11 @@
   <script>
     (function() {
       try {
-        localStorage.removeItem('site-theme');
-      } catch (e) {}
-      document.documentElement.setAttribute('data-theme', 'light');
+        const savedTheme = localStorage.getItem('site-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -2005,6 +2007,11 @@
       color: var(--ruby-bright);
       border-color: var(--ruby-bright);
     }
+    html[data-theme="dark"] .fullscreen-btn:hover {
+      background: rgba(26, 16, 36, 0.85);
+      color: var(--turquoise);
+      border-color: var(--turquoise);
+    }
     .fullscreen-btn:active {
       transform: scale(0.95);
     }
@@ -2012,6 +2019,48 @@
       width: 20px; height: 20px;
       display: block;
       stroke-width: 2.2px;
+    }
+
+    /* ─── Bouton thème flottant ────────────────────────── */
+    .theme-btn {
+      position: fixed; top: 1.3rem; left: 1.3rem;
+      z-index: 9100;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      color: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(60, 10, 30, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      cursor: none;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s, border-color 0.3s, color 0.3s;
+      padding: 0;
+    }
+    .theme-btn:hover {
+      transform: scale(1.08);
+      background: rgba(255, 247, 237, 0.85);
+      color: var(--ruby-bright);
+      border-color: var(--ruby-bright);
+    }
+    html[data-theme="dark"] .theme-btn:hover {
+      background: rgba(26, 16, 36, 0.85);
+      color: var(--turquoise);
+      border-color: var(--turquoise);
+    }
+    .theme-btn:active {
+      transform: scale(0.95);
+    }
+    .theme-btn svg {
+      width: 20px; height: 20px;
+      display: block;
+      stroke-width: 2.2px;
+    }
+
+    /* Override motif logo pour le mode sombre */
+    html[data-theme="dark"] body::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cstyle%3E.txt%7Bfill:rgba(255,247,237,0.015);font-size:8px;font-family:'Londrina Solid','Outfit',system-ui,sans-serif;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-anchor:middle;%7D%3C/style%3E%3Ctext x='60' y='30' class='txt' transform='rotate(-12, 60, 30)'%3ESANTOS %26 MIMI%3C/text%3E%3Ctext x='180' y='90' class='txt' transform='rotate(-12, 180, 90)'%3ESANTOS %26 MIMI%3C/text%3E%3C/svg%3E");
     }
 
     /* ─── Jeu de mémoire ─────────────────────────────────── */
@@ -2276,6 +2325,12 @@
   <button class="fullscreen-btn" id="fullscreenBtn" type="button" aria-label="Mettre en plein écran">
     <i data-lucide="maximize" class="icon-max" aria-hidden="true"></i>
     <i data-lucide="minimize" class="icon-min" aria-hidden="true" style="display: none;"></i>
+  </button>
+
+  <!-- Bouton Thème (Sombre/Clair) -->
+  <button class="theme-btn" id="themeBtn" type="button" aria-label="Passer au mode sombre">
+    <i data-lucide="sun" class="icon-sun" aria-hidden="true" style="display: none;"></i>
+    <i data-lucide="moon" class="icon-moon" aria-hidden="true"></i>
   </button>
 
   <canvas class="ripples"></canvas>
@@ -3055,11 +3110,22 @@
       const t = TRACKS[currentTrack].tint;
       if (!t) return;
       const paint = () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        let h1Color = t.h1;
+        let h2Color = t.h2;
+        let dotColor = t.dot;
+
+        if (isDark) {
+          h1Color = h1Color.replace(/0\.\d+/g, '0.15');
+          h2Color = h2Color.replace(/0\.\d+/g, '0.10');
+          dotColor = 'rgba(255, 255, 255, 0.12)';
+        }
+
         boTint.style.background =
-          `radial-gradient(900px 480px at 26% 28%, ${t.h1}, transparent 62%),` +
-          `radial-gradient(780px 500px at 82% 80%, ${t.h2}, transparent 60%),` +
-          `radial-gradient(circle, ${t.dot} 0.8px, transparent 1.3px) 0 0 / 12px 12px,` +
-          `radial-gradient(circle, ${t.dot} 0.8px, transparent 1.3px) 6px 6px / 12px 12px`;
+          `radial-gradient(900px 480px at 26% 28%, ${h1Color}, transparent 62%),` +
+          `radial-gradient(780px 500px at 82% 80%, ${h2Color}, transparent 60%),` +
+          `radial-gradient(circle, ${dotColor} 0.8px, transparent 1.3px) 0 0 / 12px 12px,` +
+          `radial-gradient(circle, ${dotColor} 0.8px, transparent 1.3px) 6px 6px / 12px 12px`;
         boTint.style.opacity = '1';
         if (aboutSection) aboutSection.style.setProperty('--bo-em', `linear-gradient(135deg, ${t.em[0]}, ${t.em[1]})`);
       };
@@ -3363,7 +3429,7 @@
     }
     followRing();
 
-    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top, .fullscreen-btn').forEach(el => {
+    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top, .fullscreen-btn, .theme-btn').forEach(el => {
       el.addEventListener('mouseenter', () => {
         if (ring) ring.classList.add('hover');
       });
@@ -4165,8 +4231,46 @@
 
       document.addEventListener('fullscreenchange', updateUI);
       document.addEventListener('webkitfullscreenchange', updateUI);
-      document.addEventListener('mozfullscreenchange', updateUI);
-      document.addEventListener('MSFullscreenChange', updateUI);
+    })();
+
+    /* ── Bouton Thème (Sombre/Clair) et gestion du thème ── */
+    (function initTheme() {
+      const btn = document.getElementById('themeBtn');
+      if (!btn) return;
+      const iconSun = btn.querySelector('.icon-sun');
+      const iconMoon = btn.querySelector('.icon-moon');
+
+      function updateUI(theme) {
+        if (theme === 'dark') {
+          iconSun.style.display = 'block';
+          iconMoon.style.display = 'none';
+          btn.setAttribute('aria-label', 'Passer au mode clair');
+        } else {
+          iconSun.style.display = 'none';
+          iconMoon.style.display = 'block';
+          btn.setAttribute('aria-label', 'Passer au mode sombre');
+        }
+        
+        // Dispatch event to update boTint on theme toggle
+        document.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
+      }
+
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      updateUI(currentTheme);
+
+      btn.addEventListener('click', () => {
+        const activeTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', activeTheme);
+        try {
+          localStorage.setItem('site-theme', activeTheme);
+        } catch (e) {}
+        updateUI(activeTheme);
+      });
+
+      // Update music player background when theme changes
+      document.addEventListener('themechange', () => {
+        if (typeof applyBoTint === 'function') applyBoTint();
+      });
     })();
   </script>
 </body>

@@ -151,7 +151,14 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    html::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
 
     /* Images non sélectionnables / non déplaçables */
     img {
@@ -1385,10 +1392,14 @@
       .rv {
         opacity: 0;
         transform: translateY(22px);
-        transition: opacity 0.55s ease var(--rv-d, 0s),
-                    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0s);
+        transition: opacity 0.55s ease,
+                    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
       }
-      .rv.rv-in { opacity: 1; transform: none; }
+      .rv.rv-in {
+        opacity: 1;
+        transform: none;
+        transition-delay: var(--rv-d, 0s);
+      }
     }
 
     /* ─── Duo brooches (S & M) ───────────────────────────── */
@@ -1876,14 +1887,7 @@
     .filmstrip-reel {
       display: flex; align-items: center;
       gap: 5rem; width: max-content; padding: 5rem 0;
-      animation: filmscroll 55s linear infinite;
-      /* Remove will-change here to prevent Safari from scaling down the entire 4400px track texture */
-    }
-    /* Le marquee ne s'arrête jamais, même au survol */
-    .filmstrip-section:hover .filmstrip-reel { animation-play-state: running; }
-    @keyframes filmscroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
+      /* Animé en JS pour réagir au scroll (vitesse, sens) */
     }
     .film-frame {
       position: relative; flex-shrink: 0; width: 195px;
@@ -1983,6 +1987,12 @@
     }
     .to-top.show { opacity: 0.95; transform: translateY(0) scale(1); pointer-events: auto; }
     .to-top:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 16px 36px rgba(214, 51, 132, 0.62); opacity: 1; }
+    html[data-theme="dark"] .to-top {
+      box-shadow: 0 10px 28px rgba(214, 51, 132, 0.22);
+    }
+    html[data-theme="dark"] .to-top:hover {
+      box-shadow: 0 16px 36px rgba(214, 51, 132, 0.38);
+    }
 
     /* ─── Bouton plein écran flottant ────────────────────── */
     .fullscreen-btn {
@@ -2056,6 +2066,10 @@
       width: 20px; height: 20px;
       display: block;
       stroke-width: 2.2px;
+    }
+    html[data-theme="dark"] .theme-btn,
+    html[data-theme="dark"] .fullscreen-btn {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
     /* Override motif logo pour le mode sombre */
@@ -2165,6 +2179,12 @@
     }
     .memory-reset:hover {
       box-shadow: 0 10px 22px rgba(20, 184, 166, 0.48);
+    }
+    html[data-theme="dark"] .memory-reset {
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.16);
+    }
+    html[data-theme="dark"] .memory-reset:hover {
+      box-shadow: 0 10px 22px rgba(20, 184, 166, 0.32);
     }
     .memory-reset:hover .letter {
       animation: letter-stair 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
@@ -3895,19 +3915,10 @@
       }
       const io = new IntersectionObserver(entries => {
         entries.forEach(e => {
-          if (!e.isIntersecting) return;
-          e.target.classList.add('rv-in');
-          io.unobserve(e.target);
-          /* Une fois l'entrée jouée, on rend l'élément à ses styles
-             d'origine (hover des patch-cards, transforms internes…).
-             Minuteur plutôt que transitionend : fiable même si la
-             transition est interrompue par un scroll rapide. */
-          if (e.target.classList.contains('rv')) {
-            const delay = parseFloat(e.target.style.getPropertyValue('--rv-d')) || 0;
-            setTimeout(() => {
-              e.target.classList.remove('rv', 'rv-in');
-              e.target.style.removeProperty('--rv-d');
-            }, 700 + delay * 1000);
+          if (e.isIntersecting) {
+            e.target.classList.add('rv-in');
+          } else {
+            e.target.classList.remove('rv-in');
           }
         });
       }, { threshold: 0.05 });
@@ -4209,10 +4220,16 @@
           iconMax.style.display = 'none';
           iconMin.style.display = 'block';
           btn.setAttribute('aria-label', 'Quitter le plein écran');
+          try {
+            localStorage.setItem('site-fullscreen', 'true');
+          } catch (e) {}
         } else {
           iconMax.style.display = 'block';
           iconMin.style.display = 'none';
           btn.setAttribute('aria-label', 'Mettre en plein écran');
+          try {
+            localStorage.setItem('site-fullscreen', 'false');
+          } catch (e) {}
         }
       }
 
@@ -4231,6 +4248,24 @@
 
       document.addEventListener('fullscreenchange', updateUI);
       document.addEventListener('webkitfullscreenchange', updateUI);
+
+      // Restore fullscreen on first user interaction if it was active before reload
+      try {
+        if (localStorage.getItem('site-fullscreen') === 'true') {
+          const autoEnter = () => {
+            const doc = document.documentElement;
+            const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+            if (!isFS) {
+              const req = doc.requestFullscreen || doc.webkitRequestFullscreen || doc.mozRequestFullScreen || doc.msRequestFullscreen;
+              if (req) req.call(doc).catch(err => console.error(err));
+            }
+            document.removeEventListener('click', autoEnter);
+            document.removeEventListener('keydown', autoEnter);
+          };
+          document.addEventListener('click', autoEnter);
+          document.addEventListener('keydown', autoEnter);
+        }
+      } catch (e) {}
     })();
 
     /* ── Bouton Thème (Sombre/Clair) et gestion du thème ── */
@@ -4271,6 +4306,45 @@
       document.addEventListener('themechange', () => {
         if (typeof applyBoTint === 'function') applyBoTint();
       });
+    })();
+
+    /* ── Filmstrip Marquee piloté au Scroll (vitesse, sens, inertie) ── */
+    (function initFilmstripMarquee() {
+      const reel = document.querySelector('.filmstrip-reel');
+      if (!reel) return;
+
+      let baseSpeed = -0.8;
+      let scrollSpeed = 0;
+      let lastScrollY = window.scrollY;
+      let currentTranslation = 0;
+
+      window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        const delta = currentScrollY - lastScrollY;
+        lastScrollY = currentScrollY;
+        
+        scrollSpeed += delta * 0.35;
+      }, { passive: true });
+
+      function tick() {
+        scrollSpeed *= 0.92;
+        const speed = baseSpeed + scrollSpeed;
+        currentTranslation += speed;
+
+        const halfWidth = reel.offsetWidth / 2;
+        if (halfWidth > 0) {
+          if (currentTranslation <= -halfWidth) {
+            currentTranslation += halfWidth;
+          } else if (currentTranslation > 0) {
+            currentTranslation -= halfWidth;
+          }
+        }
+
+        reel.style.transform = `translate3d(${currentTranslation}px, 0, 0)`;
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
     })();
   </script>
 </body>

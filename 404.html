@@ -5,9 +5,11 @@
   <script>
     (function() {
       try {
-        localStorage.removeItem('site-theme');
-      } catch (e) {}
-      document.documentElement.setAttribute('data-theme', 'light');
+        const savedTheme = localStorage.getItem('site-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -46,7 +48,7 @@
       --subtitle-color: rgba(243, 240, 247, 0.75);
       --kicker-color: #ff4a68;
       --btn-bg: linear-gradient(135deg, #ff4a68, #db2777, #a855f7);
-      --btn-shadow: rgba(219, 39, 119, 0.38);
+      --btn-shadow: rgba(219, 39, 119, 0.16);
       --radial-1: rgba(168, 85, 247, 0.15);
       --radial-2: rgba(251, 191, 36, 0.12);
       --cursor-ring-color: rgba(251, 191, 36, 0.55);
@@ -62,7 +64,7 @@
       --subtitle-color: rgba(224, 242, 254, 0.7);
       --kicker-color: #7dd3fc;
       --btn-bg: linear-gradient(135deg, #0e7490, #22d3ee, #0891b2);
-      --btn-shadow: rgba(34, 211, 238, 0.38);
+      --btn-shadow: rgba(34, 211, 238, 0.15);
       --radial-1: rgba(14, 116, 144, 0.20);
       --radial-2: rgba(34, 211, 238, 0.12);
       --cursor-ring-color: rgba(214, 51, 132, 0.55);
@@ -72,6 +74,13 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    html::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
 
     body {
       font-family: 'Outfit', system-ui, sans-serif;
@@ -118,7 +127,7 @@
       width: 8px; height: 8px;
       background: radial-gradient(circle, #fff 0%, var(--cursor-dot-glow) 80%);
       border-radius: 50%;
-      box-shadow: 0 0 12px var(--cursor-dot-glow), 0 0 24px var(--cursor-dot-glow);
+      box-shadow: 0 0 8px var(--cursor-dot-glow), 0 0 16px var(--cursor-dot-glow);
     }
     .cursor-ring {
       width: 38px; height: 38px;
@@ -243,6 +252,46 @@
       stroke-width: 2.5px;
     }
 
+    /* ─── Bouton thème flottant ────────────────────────── */
+    .theme-btn {
+      position: fixed; top: 1.3rem; left: 1.3rem;
+      z-index: 9100;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      color: var(--text-color);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(60, 10, 30, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      cursor: none;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s, border-color 0.3s, color 0.3s;
+      padding: 0;
+    }
+    html[data-theme="dark"] .theme-btn {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+    .theme-btn:hover {
+      transform: scale(1.08);
+      background: rgba(255, 247, 237, 0.85);
+      color: var(--kicker-color);
+      border-color: var(--kicker-color);
+    }
+    html[data-theme="dark"] .theme-btn:hover {
+      background: rgba(26, 16, 36, 0.85);
+      color: var(--kicker-color);
+      border-color: var(--kicker-color);
+    }
+    .theme-btn:active {
+      transform: scale(0.95);
+    }
+    .theme-btn svg {
+      width: 20px; height: 20px;
+      display: block;
+      stroke-width: 2.2px;
+    }
+
     .particles, .ripples {
       position: fixed; inset: 0;
       width: 100%; height: 100%;
@@ -257,6 +306,12 @@
 <body>
   <div class="cursor-ring" id="cRing"></div>
   <div class="cursor-dot"  id="cDot"></div>
+  
+  <!-- Bouton Thème (Sombre/Clair) -->
+  <button class="theme-btn" id="themeBtn" type="button" aria-label="Passer au mode sombre">
+    <i data-lucide="sun" class="icon-sun" aria-hidden="true" style="display: none;"></i>
+    <i data-lucide="moon" class="icon-moon" aria-hidden="true"></i>
+  </button>
   <canvas class="particles" id="pCanvas"></canvas>
   <canvas class="ripples"   id="rCanvas"></canvas>
 
@@ -419,17 +474,17 @@
       cDot.style.transform = `translate(${mx - 4}px,${my - 4}px)`;
     }
   });
-  document.querySelectorAll('a').forEach(el => {
+  document.querySelectorAll('a, .theme-btn').forEach(el => {
     el.addEventListener('mouseenter', () => {
       rScale = 1.6;
       if (cRing) {
-        cRing.style.borderColor = '#0e7490';
+        cRing.style.borderColor = 'var(--kicker-color)';
       }
     });
     el.addEventListener('mouseleave', () => {
       rScale = 1;
       if (cRing) {
-        cRing.style.borderColor = 'rgba(214, 51, 132, 0.55)';
+        cRing.style.borderColor = 'var(--cursor-ring-color)';
       }
     });
   });
@@ -673,6 +728,38 @@
       btn.innerHTML = iconHTML +
         `<span class="scroll-text" aria-label="retour \u00e0 l'accueil">${wrapped}</span>`;
       lucide.createIcons();
+    })();
+
+    /* ── Bouton Thème (Sombre/Clair) et gestion du thème ── */
+    (function initTheme() {
+      const btn = document.getElementById('themeBtn');
+      if (!btn) return;
+      const iconSun = btn.querySelector('.icon-sun');
+      const iconMoon = btn.querySelector('.icon-moon');
+
+      function updateUI(theme) {
+        if (theme === 'dark') {
+          iconSun.style.display = 'block';
+          iconMoon.style.display = 'none';
+          btn.setAttribute('aria-label', 'Passer au mode clair');
+        } else {
+          iconSun.style.display = 'none';
+          iconMoon.style.display = 'block';
+          btn.setAttribute('aria-label', 'Passer au mode sombre');
+        }
+      }
+
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      updateUI(currentTheme);
+
+      btn.addEventListener('click', () => {
+        const activeTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', activeTheme);
+        try {
+          localStorage.setItem('site-theme', activeTheme);
+        } catch (e) {}
+        updateUI(activeTheme);
+      });
     })();
   </script>
 </body>

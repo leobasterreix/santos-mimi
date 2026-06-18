@@ -2141,6 +2141,152 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cstyle%3E.txt%7Bfill:rgba(255,247,237,0.015);font-size:8px;font-family:'Londrina Solid','Outfit',system-ui,sans-serif;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-anchor:middle;%7D%3C/style%3E%3Ctext x='60' y='30' class='txt' transform='rotate(-12, 60, 30)'%3ESANTOS %26 MIMI%3C/text%3E%3Ctext x='180' y='90' class='txt' transform='rotate(-12, 180, 90)'%3ESANTOS %26 MIMI%3C/text%3E%3C/svg%3E");
     }
 
+    /* ─── Easter Egg Section (Konami Code) ────────────────── */
+    .easter-egg-section {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 1.5rem;
+    }
+    .easter-egg-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(18, 9, 15, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .easter-egg-section.active .easter-egg-overlay {
+      opacity: 1;
+    }
+    .easter-egg-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      padding: 2.5rem;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      transform: scale(0.9) translateY(30px);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+    }
+    .easter-egg-section.active .easter-egg-container {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+    .easter-egg-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      transition: transform 0.25s ease, background-color 0.25s;
+    }
+    .easter-egg-close:hover {
+      transform: scale(1.1) rotate(90deg);
+      background: var(--ruby-bright);
+      color: #fff;
+    }
+    .easter-egg-header {
+      text-align: center;
+    }
+    .easter-egg-kicker {
+      font-family: 'Parisienne', cursive;
+      font-size: 1.4rem;
+      color: var(--ruby-bright);
+      letter-spacing: 0.1em;
+      display: block;
+      margin-bottom: 0.4rem;
+      text-shadow: 0 2px 10px rgba(196, 30, 58, 0.15);
+    }
+    .easter-egg-title {
+      font-family: 'Londrina Solid', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1;
+      letter-spacing: 0.05em;
+      background: linear-gradient(135deg, var(--ruby-bright) 0%, var(--gold) 50%, var(--turquoise) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.6rem;
+    }
+    .easter-egg-desc {
+      font-size: 0.95rem;
+      color: var(--ink);
+      opacity: 0.85;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .easter-egg-canvas-container {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: rgba(0, 0, 0, 0.12);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    #easterEggCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .easter-egg-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .easter-egg-btn {
+      font-family: 'Londrina Solid', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.7rem 1.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      color: var(--ink);
+      cursor: none;
+      transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .easter-egg-btn:hover {
+      transform: translateY(-2px) scale(1.04);
+      background: var(--ruby-bright);
+      color: #fff;
+      border-color: var(--ruby-bright);
+      box-shadow: 0 6px 18px rgba(196, 30, 58, 0.25);
+    }
+    .easter-egg-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
     /* ─── Jeu de mémoire ─────────────────────────────────── */
     .memory-section {
       text-align: center;
@@ -2844,6 +2990,28 @@
 
   </div>
   <button class="to-top" id="toTop" aria-label="Remonter en haut de la page"><i data-lucide="arrow-up" aria-hidden="true"></i></button>
+
+  <!-- ─── Easter Egg Section (Konami Code) ────────────────── -->
+  <section class="easter-egg-section" id="easterEggSection" aria-hidden="true" style="display: none;">
+    <div class="easter-egg-overlay"></div>
+    <div class="easter-egg-container">
+      <button class="easter-egg-close" id="easterEggClose" aria-label="Fermer l'Easter Egg">
+        <i data-lucide="x" aria-hidden="true"></i>
+      </button>
+      <div class="easter-egg-header">
+        <span class="easter-egg-kicker">✨ Code Secret Activé ✨</span>
+        <h2 class="easter-egg-title">LA FABRIQUE À PERLES</h2>
+        <p class="easter-egg-desc">Cliquez pour faire pleuvoir des perles colorées et interagissez avec elles !</p>
+      </div>
+      <div class="easter-egg-canvas-container">
+        <canvas id="easterEggCanvas"></canvas>
+      </div>
+      <div class="easter-egg-controls">
+        <button class="easter-egg-btn" id="easterEggClear">Vider les perles</button>
+        <button class="easter-egg-btn" id="easterEggGravity">Inverser la gravité</button>
+      </div>
+    </div>
+  </section>
 
   <script>
     /* ───────── Local bead-embroidery mosaic ───────── */
@@ -4427,6 +4595,391 @@
       }
 
       requestAnimationFrame(tick);
+    })();
+  </script>
+
+  <script>
+    /* ─── Easter Egg & Konami Code ────────────────────────── */
+    (function () {
+      const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+      let konamiIndex = 0;
+
+      const section = document.getElementById('easterEggSection');
+      const canvas = document.getElementById('easterEggCanvas');
+      const ctx = canvas.getContext('2d');
+      const closeBtn = document.getElementById('easterEggClose');
+      const clearBtn = document.getElementById('easterEggClear');
+      const gravityBtn = document.getElementById('easterEggGravity');
+      
+      let beads = [];
+      let width = 0;
+      let height = 0;
+      let animationFrameId = null;
+      let gravityEnabled = true;
+      let gravitySign = 1; // 1 for down, -1 for up
+      let mouseX = null;
+      let mouseY = null;
+      let colors = [];
+
+      // Konami code listener
+      document.addEventListener('keydown', (e) => {
+        const key = e.key;
+        const targetKey = konamiCode[konamiIndex];
+        
+        // Match key (case insensitive for b/a)
+        if (key.toLowerCase() === targetKey.toLowerCase()) {
+          konamiIndex++;
+          if (konamiIndex === konamiCode.length) {
+            konamiIndex = 0;
+            openEasterEgg();
+          }
+        } else {
+          // Reset if key doesn't match next code key, but check if it matches the first key
+          konamiIndex = (key.toLowerCase() === konamiCode[0].toLowerCase()) ? 1 : 0;
+        }
+      });
+
+      // Escape key listener to close
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && section.classList.contains('active')) {
+          closeEasterEgg();
+        }
+      });
+
+      // Audio setup
+      let audioCtx = null;
+      function getAudioContext() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      function playTone(freq, volume = 0.05, type = 'sine') {
+        try {
+          const ctxNode = getAudioContext();
+          const osc = ctxNode.createOscillator();
+          const gainNode = ctxNode.createGain();
+
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, ctxNode.currentTime);
+
+          gainNode.gain.setValueAtTime(volume, ctxNode.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, ctxNode.currentTime + 0.4);
+
+          osc.connect(gainNode);
+          gainNode.connect(ctxNode.destination);
+
+          osc.start();
+          osc.stop(ctxNode.currentTime + 0.45);
+        } catch (e) {}
+      }
+
+      function playSuccessChord() {
+        const chords = [130.81, 164.81, 196.00, 261.63, 329.63, 392.00, 523.25];
+        chords.forEach((freq, idx) => {
+          setTimeout(() => {
+            playTone(freq, 0.05, 'triangle');
+          }, idx * 60);
+        });
+      }
+
+      // Physics Bead class
+      const PENTATONIC = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
+
+      class Bead {
+        constructor(x, y, vx, vy, radius, color) {
+          this.x = x;
+          this.y = y;
+          this.vx = vx;
+          this.vy = vy;
+          this.radius = radius;
+          this.color = color;
+          this.mass = radius;
+          this.noteFreq = PENTATONIC[Math.floor(Math.random() * PENTATONIC.length)];
+        }
+        update() {
+          if (gravityEnabled) {
+            this.vy += 0.4 * gravitySign;
+          }
+          this.vx *= 0.985;
+          this.vy *= 0.985;
+          this.x += this.vx;
+          this.y += this.vy;
+
+          // Wall collision
+          const bounce = -0.7;
+          if (this.x - this.radius < 0) {
+            this.x = this.radius;
+            this.vx *= bounce;
+            this.playBounceSound();
+          } else if (this.x + this.radius > width) {
+            this.x = width - this.radius;
+            this.vx *= bounce;
+            this.playBounceSound();
+          }
+
+          if (this.y - this.radius < 0) {
+            this.y = this.radius;
+            this.vy *= bounce;
+            this.playBounceSound();
+          } else if (this.y + this.radius > height) {
+            this.y = height - this.radius;
+            this.vy *= bounce;
+            this.playBounceSound();
+          }
+        }
+        playBounceSound() {
+          const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+          if (speed > 1.2) {
+            playTone(this.noteFreq, 0.03 * Math.min(1, speed / 8));
+          }
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.shadowColor = this.color;
+          ctx.shadowBlur = 6;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          // Highlight/shine reflection
+          ctx.beginPath();
+          ctx.arc(this.x - this.radius * 0.35, this.y - this.radius * 0.35, this.radius * 0.25, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+          ctx.fill();
+        }
+      }
+
+      function resolveCollisions() {
+        for (let i = 0; i < beads.length; i++) {
+          for (let j = i + 1; j < beads.length; j++) {
+            const b1 = beads[i];
+            const b2 = beads[j];
+            const dx = b2.x - b1.x;
+            const dy = b2.y - b1.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const minDist = b1.radius + b2.radius;
+
+            if (dist < minDist) {
+              const overlap = minDist - dist;
+              const nx = dx / dist;
+              const ny = dy / dist;
+
+              // Mass ratios
+              const totalMass = b1.mass + b2.mass;
+              const ratio1 = b2.mass / totalMass;
+              const ratio2 = b1.mass / totalMass;
+
+              b1.x -= nx * overlap * ratio1;
+              b1.y -= ny * overlap * ratio1;
+              b2.x += nx * overlap * ratio2;
+              b2.y += ny * overlap * ratio2;
+
+              // Elastic collision math
+              const kx = b1.vx - b2.vx;
+              const ky = b1.vy - b2.vy;
+              const p = 2 * (nx * kx + ny * ky) / totalMass;
+
+              b1.vx -= p * b2.mass * nx;
+              b1.vy -= p * b2.mass * ny;
+              b2.vx += p * b1.mass * nx;
+              b2.vy += p * b1.mass * ny;
+
+              // Play bounce sound
+              const relativeVelocity = Math.sqrt(kx * kx + ky * ky);
+              if (relativeVelocity > 0.8) {
+                playTone(b1.noteFreq, 0.02 * Math.min(1, relativeVelocity / 5));
+              }
+            }
+          }
+        }
+      }
+
+      function spawnBeads(x, y, count) {
+        for (let i = 0; i < count; i++) {
+          const r = Math.random() * 8 + 9; // radius between 9px and 17px
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 6 + 1;
+          const vx = Math.cos(angle) * speed;
+          const vy = Math.sin(angle) * speed;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          beads.push(new Bead(x, y, vx, vy, r, color));
+        }
+      }
+
+      function getPaletteColors() {
+        const styles = getComputedStyle(document.documentElement);
+        return [
+          styles.getPropertyValue('--ruby-bright').trim() || '#ff526b',
+          styles.getPropertyValue('--gold').trim() || '#e5a93b',
+          styles.getPropertyValue('--turquoise').trim() || '#4ecdc4',
+          styles.getPropertyValue('--magenta').trim() || '#c43b7f',
+          styles.getPropertyValue('--purple').trim() || '#9e60a3',
+          styles.getPropertyValue('--emerald').trim() || '#3fa385',
+          styles.getPropertyValue('--coral').trim() || '#f27b93'
+        ];
+      }
+
+      function resizeCanvas() {
+        const rect = canvas.parentNode.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        width = rect.width;
+        height = rect.height;
+      }
+
+      function openEasterEgg() {
+        // Load active theme colors
+        colors = getPaletteColors();
+
+        // Reset settings
+        gravitySign = 1;
+        gravityBtn.textContent = 'Inverser la gravité';
+        beads = [];
+
+        // Show section
+        section.style.display = 'flex';
+        section.setAttribute('aria-hidden', 'false');
+        
+        // Sync icon display
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+
+        // Custom cursor hover binding
+        document.querySelectorAll('.easter-egg-btn, .easter-egg-close').forEach(el => {
+          el.addEventListener('mouseenter', () => {
+            const ring = document.querySelector('.cursor-ring');
+            if (ring) ring.classList.add('hover');
+          });
+          el.addEventListener('mouseleave', () => {
+            const ring = document.querySelector('.cursor-ring');
+            if (ring) ring.classList.remove('hover');
+          });
+        });
+
+        requestAnimationFrame(() => {
+          section.classList.add('active');
+          resizeCanvas();
+          playSuccessChord();
+
+          // Spawn initial beads in the center
+          spawnBeads(width / 2, height / 2 - 50, 40);
+
+          // Start loop
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
+          animationFrameId = requestAnimationFrame(loop);
+        });
+      }
+
+      function closeEasterEgg() {
+        section.classList.remove('active');
+        section.setAttribute('aria-hidden', 'true');
+        setTimeout(() => {
+          section.style.display = 'none';
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
+          beads = [];
+        }, 400);
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Physics updates
+        beads.forEach(b => {
+          // Mouse repulsion
+          if (mouseX !== null && mouseY !== null) {
+            const dx = b.x - mouseX;
+            const dy = b.y - mouseY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 90) {
+              const force = (90 - dist) / 90 * 0.9;
+              const angle = Math.atan2(dy, dx);
+              b.vx += Math.cos(angle) * force;
+              b.vy += Math.sin(angle) * force;
+            }
+          }
+          b.update();
+        });
+
+        resolveCollisions();
+
+        // Draw
+        beads.forEach(b => b.draw());
+
+        // Mouse overlay glow
+        if (mouseX !== null && mouseY !== null) {
+          ctx.beginPath();
+          ctx.arc(mouseX, mouseY, 90, 0, Math.PI * 2);
+          const grad = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 90);
+          grad.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+          grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+
+        animationFrameId = requestAnimationFrame(loop);
+      }
+
+      // Mouse/Touch Canvas interaction
+      function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        if (e.touches && e.touches.length > 0) {
+          mouseX = e.touches[0].clientX - rect.left;
+          mouseY = e.touches[0].clientY - rect.top;
+        } else {
+          mouseX = e.clientX - rect.left;
+          mouseY = e.clientY - rect.top;
+        }
+      }
+
+      canvas.addEventListener('mousemove', getMousePos);
+      canvas.addEventListener('touchmove', getMousePos, { passive: true });
+      canvas.addEventListener('mouseleave', () => {
+        mouseX = null;
+        mouseY = null;
+      });
+      canvas.addEventListener('touchend', () => {
+        mouseX = null;
+        mouseY = null;
+      });
+
+      canvas.addEventListener('mousedown', (e) => {
+        getMousePos(e);
+        spawnBeads(mouseX, mouseY, 15);
+        playTone(392.00, 0.06, 'sine');
+      });
+      canvas.addEventListener('touchstart', (e) => {
+        getMousePos(e);
+        spawnBeads(mouseX, mouseY, 15);
+        playTone(392.00, 0.06, 'sine');
+      }, { passive: true });
+
+      // Buttons listeners
+      closeBtn.addEventListener('click', closeEasterEgg);
+      clearBtn.addEventListener('click', () => {
+        beads = [];
+        playTone(220.00, 0.05, 'sine');
+      });
+      gravityBtn.addEventListener('click', () => {
+        gravitySign *= -1;
+        gravityBtn.textContent = gravitySign > 0 ? 'Inverser la gravité' : 'Gravité inversée ⬆';
+        playTone(gravitySign > 0 ? 329.63 : 659.25, 0.05, 'sine');
+      });
+
+      // Window resize
+      window.addEventListener('resize', () => {
+        if (section.classList.contains('active')) {
+          resizeCanvas();
+        }
+      });
     })();
   </script>
 </body>

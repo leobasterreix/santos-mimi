@@ -2273,28 +2273,38 @@
       flex-wrap: wrap;
     }
     .easter-egg-btn {
-      font-family: 'Londrina Solid', sans-serif;
-      font-size: 1.1rem;
-      letter-spacing: 0.05em;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: 0.7rem 1.6rem;
+      padding: 0.55rem 1.4rem;
       border-radius: 999px;
       border: 1px solid var(--glass-border);
       background: var(--glass-bg);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
       color: var(--ink);
       cursor: none;
-      transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
+      box-shadow: 0 8px 24px rgba(60, 10, 30, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4);
     }
     .easter-egg-btn:hover {
-      transform: translateY(-2px) scale(1.04);
-      background: var(--ruby-bright);
-      color: #fff;
+      transform: translateY(-2px) scale(1.06);
+      background: rgba(255, 247, 237, 0.85);
+      color: var(--ruby-bright);
       border-color: var(--ruby-bright);
-      box-shadow: 0 6px 18px rgba(196, 30, 58, 0.25);
+      box-shadow: 0 10px 22px rgba(196, 30, 58, 0.2);
+    }
+    html[data-theme="dark"] .easter-egg-btn:hover,
+    html[data-theme="abyss"] .easter-egg-btn:hover {
+      background: rgba(26, 16, 36, 0.85);
+      color: var(--turquoise);
+      border-color: var(--turquoise);
+      box-shadow: 0 10px 22px rgba(78, 205, 196, 0.2);
     }
     .easter-egg-btn:active {
-      transform: translateY(0) scale(0.98);
+      transform: translateY(0) scale(0.96);
     }
 
     /* Light Theme specifics for Easter Egg */
@@ -3368,6 +3378,7 @@
 
     /* ───────── Vinyl player (rotation RAF + drag-to-scratch) ───────── */
     const audio = document.getElementById('audio');
+    if (audio) audio.crossOrigin = 'anonymous';
     const vinyl = document.getElementById('vinyl');
     const vinylStage = document.getElementById('vinylStage');
     const vinylSleeve = document.getElementById('vinylSleeve');
@@ -3683,29 +3694,48 @@
       visCtx.fillStyle = glowGrad;
       visCtx.fill();
       
-      const binCount = dataArray.length;
+      const activeBins = 32;
+      const halfPoints = [];
+      for (let i = 0; i < activeBins; i++) {
+        const val = dataArray[i];
+        // Coefficient multiplicateur (plus fort pour les basses au début)
+        const scale = i < 8 ? 0.22 : (i < 20 ? 0.15 : 0.09);
+        const amplitude = (val / 255) * stageRect.width * scale;
+        halfPoints.push(amplitude);
+      }
+      
       const points = [];
       const outerPoints = [];
       
-      for (let i = 0; i < binCount; i++) {
-        const val = dataArray[i];
-        const scale = i < 15 ? 0.22 : 0.14; 
-        const amplitude = (val / 255) * stageRect.width * scale;
-        
-        const angle = (i / binCount) * Math.PI * 2;
-        const waveR = vinylRadius + amplitude;
-        
-        const x = cx + Math.cos(angle) * waveR;
-        const y = cy + Math.sin(angle) * waveR;
-        points.push({x, y});
-        
-        const waveROuter = vinylRadius + amplitude * 1.35 + 2;
-        const xOuter = cx + Math.cos(angle) * waveROuter;
-        const yOuter = cy + Math.sin(angle) * waveROuter;
-        outerPoints.push({x: xOuter, y: yOuter});
+      // 1. Côté droit (du bas vers le haut)
+      for (let i = 0; i < activeBins; i++) {
+        const amp = halfPoints[i];
+        const angle = Math.PI / 2 - (i / activeBins) * Math.PI;
+        points.push({
+          x: cx + Math.cos(angle) * (vinylRadius + amp),
+          y: cy + Math.sin(angle) * (vinylRadius + amp)
+        });
+        outerPoints.push({
+          x: cx + Math.cos(angle) * (vinylRadius + amp * 1.35 + 2),
+          y: cy + Math.sin(angle) * (vinylRadius + amp * 1.35 + 2)
+        });
       }
       
-      // Secondary wave
+      // 2. Côté gauche (du haut vers le bas)
+      for (let i = activeBins - 1; i >= 0; i--) {
+        const amp = halfPoints[i];
+        const angle = Math.PI / 2 + (i / activeBins) * Math.PI;
+        points.push({
+          x: cx + Math.cos(angle) * (vinylRadius + amp),
+          y: cy + Math.sin(angle) * (vinylRadius + amp)
+        });
+        outerPoints.push({
+          x: cx + Math.cos(angle) * (vinylRadius + amp * 1.35 + 2),
+          y: cy + Math.sin(angle) * (vinylRadius + amp * 1.35 + 2)
+        });
+      }
+      
+      // Vague secondaire externe
       visCtx.beginPath();
       visCtx.moveTo(outerPoints[0].x, outerPoints[0].y);
       for (let i = 0; i < outerPoints.length; i++) {
@@ -3719,7 +3749,7 @@
       visCtx.strokeStyle = hexToRgba(color2, 0.35);
       visCtx.stroke();
       
-      // Primary wave
+      // Vague principale
       visCtx.beginPath();
       visCtx.moveTo(points[0].x, points[0].y);
       for (let i = 0; i < points.length; i++) {
@@ -3746,7 +3776,7 @@
       resizeVisCanvas();
       
       function visLoop() {
-        if (!isPlaying) {
+        if (!isPlaying && !isDragging) {
           visAnimationFrameId = null;
           if (vinylVisualizer && visCtx) {
             const width = vinylVisualizer.width / (window.devicePixelRatio || 1);
@@ -3929,7 +3959,12 @@
       g.gain.linearRampToValueAtTime(0.6, t + 0.012);       // fondu d'entrée (anti-clic)
       g.gain.setValueAtTime(0.6, t + len);
       g.gain.linearRampToValueAtTime(0.0001, t + len + 0.045); // fondu de sortie
-      s.connect(g); g.connect(ctx.destination);
+      s.connect(g);
+      if (typeof analyser !== 'undefined' && analyser) {
+        g.connect(analyser);
+      } else {
+        g.connect(ctx.destination);
+      }
       try { s.start(t, offset, (len + 0.06) * rate); } catch (_) { try { s.start(t, offset); } catch (__) {} }
       try { s.stop(t + len + 0.06); } catch (_) {}
       scrubVoices.push(s);
@@ -3985,6 +4020,7 @@
       scrubStartAudio = audio.currentTime;
       scrubAccumDeg = 0;
       scrubStart(); // prépare le scrub de la musique
+      startVisualizer();
       updateArm();  // le bras reste posé pendant le scratch
       try { vinyl.setPointerCapture(e.pointerId); } catch (_) {}
     });
@@ -4077,7 +4113,7 @@
     }
     followRing();
 
-    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top, .fullscreen-btn, .theme-btn').forEach(el => {
+    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top, .fullscreen-btn, .theme-btn, .easter-egg-btn, .easter-egg-close').forEach(el => {
       el.addEventListener('mouseenter', () => {
         if (ring) ring.classList.add('hover');
       });
@@ -5286,17 +5322,7 @@
           lucide.createIcons();
         }
 
-        // Custom cursor hover binding
-        document.querySelectorAll('.easter-egg-btn, .easter-egg-close').forEach(el => {
-          el.addEventListener('mouseenter', () => {
-            const ring = document.querySelector('.cursor-ring');
-            if (ring) ring.classList.add('hover');
-          });
-          el.addEventListener('mouseleave', () => {
-            const ring = document.querySelector('.cursor-ring');
-            if (ring) ring.classList.remove('hover');
-          });
-        });
+
 
         requestAnimationFrame(() => {
           section.classList.add('active');

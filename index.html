@@ -3179,6 +3179,211 @@
       height: 36px;
       stroke-width: 1.5;
     }
+
+    /* ─── Filtres de caméra ────────────────────────────── */
+    .filter-normal { filter: sepia(0.2) contrast(1.1) brightness(0.95); }
+    .filter-vintage { filter: sepia(0.55) contrast(1.05) brightness(0.9) saturate(0.8); }
+    .filter-bw { filter: grayscale(1) contrast(1.35) brightness(0.95); }
+    .filter-rose { filter: sepia(0.25) saturate(1.4) hue-rotate(-15deg) contrast(1.05); }
+    .filter-abyss { filter: saturate(0.85) hue-rotate(140deg) contrast(1.1) brightness(0.9); }
+    .filter-gold { filter: sepia(0.3) saturate(1.5) brightness(1.05) contrast(0.95); }
+
+    /* Barre de sélecteur de filtres */
+    .camera-filters-section {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+    .camera-filters-section .label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      color: var(--ink);
+      opacity: 0.65;
+      padding-left: 0.5rem;
+    }
+    .filter-selector {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      padding: 0.2rem 0.4rem;
+      scrollbar-width: none;
+    }
+    .filter-selector::-webkit-scrollbar {
+      display: none;
+    }
+    .filter-btn {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--glass-border);
+      cursor: none;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.25s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      background: #000;
+    }
+    .filter-btn:hover {
+      transform: scale(1.15) translateY(-2px);
+    }
+    .filter-btn.active {
+      border-color: var(--ruby-bright);
+      box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.3), 0 6px 12px rgba(196, 30, 58, 0.2);
+      transform: scale(1.1);
+    }
+    /* Aperçus miniatures des filtres */
+    .filter-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, #ff526b 20%, #e5a93b 80%);
+    }
+    .filter-btn.f-normal::after { filter: sepia(0.2) contrast(1.1) brightness(0.95); }
+    .filter-btn.f-vintage::after { filter: sepia(0.55) contrast(1.05) brightness(0.9) saturate(0.8); }
+    .filter-btn.f-bw::after { filter: grayscale(1) contrast(1.35) brightness(0.95); }
+    .filter-btn.f-rose::after { filter: sepia(0.25) saturate(1.4) hue-rotate(-15deg) contrast(1.05); }
+    .filter-btn.f-abyss::after { filter: saturate(0.85) hue-rotate(140deg) contrast(1.1) brightness(0.9); }
+    .filter-btn.f-gold::after { filter: sepia(0.3) saturate(1.5) brightness(1.05) contrast(0.95); }
+
+    /* Infobulle nom du filtre au survol */
+    .filter-btn::before {
+      content: attr(data-name);
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      text-align: center;
+      font-size: 0.5rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      z-index: 5;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.9;
+    }
+
+    /* Barre de sélecteur d'emojis */
+    .camera-stickers-section {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+    .camera-stickers-section .label-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 0.5rem;
+    }
+    .camera-stickers-section .label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      color: var(--ink);
+      opacity: 0.65;
+      padding-left: 0.5rem;
+    }
+    .btn-clear-stickers {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      color: var(--ruby-bright);
+      background: transparent;
+      border: none;
+      cursor: none;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      opacity: 0.7;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-clear-stickers:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    .sticker-selector {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding: 0.2rem 0.4rem;
+      scrollbar-width: none;
+    }
+    .sticker-selector::-webkit-scrollbar {
+      display: none;
+    }
+    .sticker-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      cursor: none;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .sticker-btn:hover {
+      transform: scale(1.2) rotate(8deg);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .sticker-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Viseur stickers overlay */
+    .viewfinder-stickers-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden;
+      border-radius: 50%;
+    }
+    .viewfinder-sticker {
+      position: absolute;
+      font-size: 2rem;
+      transform-origin: center center;
+      pointer-events: none;
+      user-select: none;
+      animation: stickerPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes stickerPop {
+      0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      70% {
+        transform: translate(-50%, -50%) scale(1.3) rotate(var(--sticker-rot, 0deg));
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1) rotate(var(--sticker-rot, 0deg));
+        opacity: 1;
+      }
+    }
+
+    /* Viseur canvas pour le mode démo */
+    #cameraDemoCanvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      border-radius: 50%;
+    }
   </style>
 </head>
 <body class="is-loading">
@@ -3539,7 +3744,7 @@
     <div class="container">
       <div class="memory-info">
         <div class="ch-tag">
-          <span class="num">02½</span>
+          <span class="num">03</span>
           <span class="label">le jeu de la mémoire</span>
         </div>
         <h2>Retrouve les paires de <em>perles</em>.</h2>
@@ -3559,7 +3764,7 @@
   <section class="block chapter ch-camera" id="polaroid-studio">
     <div class="container">
       <div class="ch-tag">
-        <span class="num">02¾</span>
+        <span class="num">04</span>
         <span class="label">le studio photo</span>
       </div>
       <h2>Mon studio <em>Polaroïd</em>.</h2>
@@ -3576,12 +3781,27 @@
               <div class="camera-lens-inner">
                 <div class="camera-viewfinder" id="cameraViewfinder">
                   <video id="cameraVideo" autoplay playsinline muted></video>
+                  <canvas id="cameraDemoCanvas"></canvas>
+                  <div class="viewfinder-stickers-container" id="viewfinderStickers"></div>
                   <div class="camera-placeholder" id="cameraPlaceholder">
                     <i data-lucide="camera" class="cam-placeholder-icon" aria-hidden="true"></i>
                     <span>Allumer la caméra</span>
                   </div>
                   <div class="camera-overlay-noise"></div>
                 </div>
+              </div>
+            </div>
+            
+            <!-- Sélecteur de filtres rétro -->
+            <div class="camera-filters-section">
+              <span class="label">Ajuster l'effet</span>
+              <div class="filter-selector" id="filterSelector">
+                <button class="filter-btn f-normal active" type="button" data-filter="normal" data-name="Normal" aria-label="Filtre Normal"></button>
+                <button class="filter-btn f-vintage" type="button" data-filter="vintage" data-name="Vintage" aria-label="Filtre Vintage"></button>
+                <button class="filter-btn f-bw" type="button" data-filter="bw" data-name="N&amp;B" aria-label="Filtre Noir et Blanc"></button>
+                <button class="filter-btn f-rose" type="button" data-filter="rose" data-name="Rose" aria-label="Filtre Rose"></button>
+                <button class="filter-btn f-abyss" type="button" data-filter="abyss" data-name="Abysse" aria-label="Filtre Abysse"></button>
+                <button class="filter-btn f-gold" type="button" data-filter="gold" data-name="Doré" aria-label="Filtre Doré"></button>
               </div>
             </div>
             
@@ -3592,6 +3812,28 @@
               <button class="easter-egg-btn camera-btn" id="btnShutter" type="button" disabled>
                 <i data-lucide="aperture" aria-hidden="true"></i> Clic !
               </button>
+            </div>
+          </div>
+          
+          <!-- Sélecteur d'emojis/stickers -->
+          <div class="camera-stickers-section">
+            <div class="label-wrap">
+              <span class="label">Ajouter des stickers</span>
+              <button class="btn-clear-stickers" id="btnClearStickers" type="button" aria-label="Effacer tous les stickers">
+                <i data-lucide="trash-2" aria-hidden="true" style="width:12px;height:12px;"></i> Effacer
+              </button>
+            </div>
+            <div class="sticker-selector" id="stickerSelector">
+              <button class="sticker-btn" type="button" data-emoji="🐚">🐚</button>
+              <button class="sticker-btn" type="button" data-emoji="🌸">🌸</button>
+              <button class="sticker-btn" type="button" data-emoji="✨">✨</button>
+              <button class="sticker-btn" type="button" data-emoji="💖">💖</button>
+              <button class="sticker-btn" type="button" data-emoji="🎀">🎀</button>
+              <button class="sticker-btn" type="button" data-emoji="🍒">🍒</button>
+              <button class="sticker-btn" type="button" data-emoji="🧸">🧸</button>
+              <button class="sticker-btn" type="button" data-emoji="🌊">🌊</button>
+              <button class="sticker-btn" type="button" data-emoji="📸">📸</button>
+              <button class="sticker-btn" type="button" data-emoji="📿">📿</button>
             </div>
           </div>
           
@@ -3666,7 +3908,7 @@
     <div class="bo-tint" id="boTint" aria-hidden="true"></div>
     <div class="container">
       <div class="ch-tag">
-        <span class="num">03</span>
+        <span class="num">05</span>
         <span class="label">Santos &amp; Mimi mix</span>
       </div>
     </div>
@@ -5870,16 +6112,25 @@
       const btnToggleCamText = document.getElementById('btnToggleCamText');
       const btnShutter = document.getElementById('btnShutter');
       const cameraVideo = document.getElementById('cameraVideo');
+      const cameraDemoCanvas = document.getElementById('cameraDemoCanvas');
+      const viewfinderStickers = document.getElementById('viewfinderStickers');
       const cameraPlaceholder = document.getElementById('cameraPlaceholder');
       const cameraViewfinder = document.getElementById('cameraViewfinder');
       const printedPolaroidContainer = document.getElementById('printedPolaroidContainer');
       const polaroidGallery = document.getElementById('polaroidGallery');
       const galleryCount = document.getElementById('galleryCount');
       const cameraCaption = document.getElementById('cameraCaption');
+      const filterSelector = document.getElementById('filterSelector');
+      const stickerSelector = document.getElementById('stickerSelector');
+      const btnClearStickers = document.getElementById('btnClearStickers');
       
       let mediaStream = null;
       let isDemoMode = false;
       let dbPhotos = [];
+      let activeFilter = 'normal';
+      let activeStickers = [];
+      let demoAnimId = null;
+      let demoBeads = [];
 
       // Audio setup local to this module
       let polaroidAudioCtx = null;
@@ -6042,10 +6293,81 @@
         element.addEventListener('mouseleave', () => ring.classList.remove('hover'));
       }
 
+      // Generative animation for demo viewport
+      function initDemoBeads() {
+        demoBeads = [];
+        const colors = ['#ff526b', '#e5a93b', '#4ecdc4', '#9e60a3', '#c43b7f'];
+        for (let i = 0; i < 15; i++) {
+          demoBeads.push({
+            x: Math.random() * 260 + 20,
+            y: Math.random() * 260 + 20,
+            vx: (Math.random() - 0.5) * 1.8,
+            vy: (Math.random() - 0.5) * 1.8,
+            r: Math.random() * 15 + 10,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          });
+        }
+      }
+
+      function tickDemoAnim() {
+        if (!isDemoMode || !cameraDemoCanvas) return;
+        const ctx = cameraDemoCanvas.getContext('2d');
+        const w = cameraDemoCanvas.width = 300;
+        const h = cameraDemoCanvas.height = 300;
+        
+        // Background gradient
+        const bgGrad = ctx.createRadialGradient(w/2, h/2, 10, w/2, h/2, w/2);
+        bgGrad.addColorStop(0, '#fffcf8');
+        bgGrad.addColorStop(1, '#ffeed5');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
+        
+        // Draw decorative background grid/stripes
+        ctx.strokeStyle = 'rgba(196, 30, 58, 0.05)';
+        ctx.lineWidth = 1.5;
+        for (let x = 20; x < w; x += 30) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+        }
+        for (let y = 20; y < h; y += 30) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+
+        // Draw animated beads
+        ctx.globalAlpha = 0.8;
+        demoBeads.forEach(b => {
+          b.x += b.vx;
+          b.y += b.vy;
+          
+          // Wall bouncing
+          if (b.x - b.r < 0 || b.x + b.r > w) b.vx *= -1;
+          if (b.y - b.r < 0 || b.y + b.r > h) b.vy *= -1;
+          
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+          ctx.fillStyle = b.color;
+          ctx.fill();
+          
+          // Little reflection shine
+          ctx.beginPath();
+          ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.25, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+          ctx.fill();
+        });
+        
+        ctx.globalAlpha = 1.0;
+        demoAnimId = requestAnimationFrame(tickDemoAnim);
+      }
+
       // Initialize camera stream
       async function startCamera() {
         try {
           isDemoMode = false;
+          if (demoAnimId) {
+            cancelAnimationFrame(demoAnimId);
+            demoAnimId = null;
+          }
+          cameraDemoCanvas.style.display = 'none';
+          
           mediaStream = await navigator.mediaDevices.getUserMedia({
             video: {
               width: { ideal: 640 },
@@ -6063,10 +6385,15 @@
         } catch (e) {
           console.warn("Webcam access error, entering demo mode:", e);
           isDemoMode = true;
-          // Use canvas animation or simple feedback
-          cameraPlaceholder.querySelector('span').textContent = "Mode Démo Actif 🎨";
+          cameraVideo.style.display = 'none';
+          cameraDemoCanvas.style.display = 'block';
+          cameraPlaceholder.style.display = 'none';
+          cameraViewfinder.classList.add('active');
           btnToggleCamText.textContent = "Arrêter";
           btnShutter.disabled = false;
+          
+          initDemoBeads();
+          tickDemoAnim();
         }
       }
 
@@ -6075,14 +6402,23 @@
           mediaStream.getTracks().forEach(track => track.stop());
           mediaStream = null;
         }
+        if (demoAnimId) {
+          cancelAnimationFrame(demoAnimId);
+          demoAnimId = null;
+        }
+        
         cameraVideo.srcObject = null;
         cameraVideo.style.display = 'none';
+        cameraDemoCanvas.style.display = 'none';
         cameraPlaceholder.style.display = 'flex';
-        cameraPlaceholder.querySelector('span').textContent = "Allumer la caméra";
         cameraViewfinder.classList.remove('active');
         btnToggleCamText.textContent = "Démarrer";
         btnShutter.disabled = true;
         isDemoMode = false;
+        
+        // Reset stickers
+        activeStickers = [];
+        viewfinderStickers.innerHTML = '';
       }
 
       btnToggleCam.addEventListener('click', () => {
@@ -6094,6 +6430,68 @@
           startCamera();
         }
       });
+
+      // Filter Selector bindings
+      filterSelector.querySelectorAll('.filter-btn').forEach(btn => {
+        bindHover(btn);
+        btn.addEventListener('click', () => {
+          filterSelector.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter');
+          
+          // Update live preview styling classes
+          const filterClasses = ['filter-normal', 'filter-vintage', 'filter-bw', 'filter-rose', 'filter-abyss', 'filter-gold'];
+          filterClasses.forEach(c => {
+            cameraVideo.classList.remove(c);
+            cameraDemoCanvas.classList.remove(c);
+          });
+          
+          cameraVideo.classList.add(`filter-${activeFilter}`);
+          cameraDemoCanvas.classList.add(`filter-${activeFilter}`);
+        });
+      });
+
+      // Emoji Stickers Selector bindings
+      stickerSelector.querySelectorAll('.sticker-btn').forEach(btn => {
+        bindHover(btn);
+        btn.addEventListener('click', () => {
+          if (!mediaStream && !isDemoMode) return; // Only allow when camera is running
+          
+          const emoji = btn.getAttribute('data-emoji');
+          // Add sticker within circular safety zone (25% to 75% coordinate bounds)
+          const xPercent = Math.round(Math.random() * 50 + 25);
+          const yPercent = Math.round(Math.random() * 50 + 25);
+          const rot = Math.round(Math.random() * 40 - 20);
+          
+          activeStickers.push({ emoji, xPercent, yPercent, rot });
+          
+          // Render sticker on viewport
+          const stickerEl = document.createElement('span');
+          stickerEl.className = 'viewfinder-sticker';
+          stickerEl.textContent = emoji;
+          stickerEl.style.left = `${xPercent}%`;
+          stickerEl.style.top = `${yPercent}%`;
+          stickerEl.style.setProperty('--sticker-rot', `${rot}deg`);
+          viewfinderStickers.appendChild(stickerEl);
+        });
+      });
+
+      btnClearStickers.addEventListener('click', () => {
+        activeStickers = [];
+        viewfinderStickers.innerHTML = '';
+      });
+      bindHover(btnClearStickers);
+
+      function getCanvasFilter(filterName) {
+        switch(filterName) {
+          case 'vintage': return 'sepia(0.55) contrast(1.05) brightness(0.9) saturate(0.8)';
+          case 'bw': return 'grayscale(1) contrast(1.35) brightness(0.95)';
+          case 'rose': return 'sepia(0.25) saturate(1.4) hue-rotate(-15deg) contrast(1.05)';
+          case 'abyss': return 'saturate(0.85) hue-rotate(140deg) contrast(1.1) brightness(0.9)';
+          case 'gold': return 'sepia(0.3) saturate(1.5) brightness(1.05) contrast(0.95)';
+          default: return 'sepia(0.2) contrast(1.1) brightness(0.95)';
+        }
+      }
 
       // Capturing action
       btnShutter.addEventListener('click', () => {
@@ -6110,41 +6508,38 @@
         canvas.height = 600;
         const ctx = canvas.getContext('2d');
         
+        // Apply camera filter to canvas context
+        ctx.filter = getCanvasFilter(activeFilter);
+        
         if (mediaStream && !isDemoMode) {
-          // Draw video frames
+          // Draw video frame (mirrored)
           ctx.translate(canvas.width, 0);
           ctx.scale(-1, 1);
           ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
           ctx.setTransform(1, 0, 0, 1, 0, 0);
         } else {
-          // Fallback: draw a beautiful generative bead gradient pattern
-          ctx.fillStyle = '#1e1b19';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-          grad.addColorStop(0, '#c41e3a');
-          grad.addColorStop(0.5, '#e5a93b');
-          grad.addColorStop(1, '#4ecdc4');
-          ctx.fillStyle = grad;
-          ctx.fillRect(40, 40, canvas.width - 80, canvas.height - 80);
-          
-          // Draw circles to represent beads
-          ctx.fillStyle = '#fffcf8';
-          ctx.globalAlpha = 0.85;
-          ctx.beginPath();
-          ctx.arc(canvas.width/2, canvas.height/2, 120, 0, Math.PI*2);
-          ctx.fill();
-          
-          ctx.font = 'bold 36px Outfit';
-          ctx.fillStyle = '#1e1b19';
-          ctx.textAlign = 'center';
-          ctx.fillText('SANTOS & MIMI', canvas.width/2, canvas.height/2 - 10);
-          ctx.font = '24px Parisienne';
-          ctx.fillText('Souvenir magique ✨', canvas.width/2, canvas.height/2 + 30);
-          ctx.globalAlpha = 1.0;
+          // Draw the current state of the demo canvas
+          ctx.drawImage(cameraDemoCanvas, 0, 0, canvas.width, canvas.height);
         }
         
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        // Draw emoji stickers on top of the image
+        ctx.save();
+        ctx.filter = 'none'; // reset filter so stickers stay colorful and sharp
+        activeStickers.forEach(sticker => {
+          const cx = (sticker.xPercent / 100) * canvas.width;
+          const cy = (sticker.yPercent / 100) * canvas.height;
+          
+          ctx.translate(cx, cy);
+          ctx.rotate(sticker.rot * Math.PI / 180);
+          ctx.font = '52px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(sticker.emoji, 0, 0);
+          ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset translation for next one
+        });
+        ctx.restore();
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
         
         // Trigger print & sound
         playShutterSound();
@@ -6235,6 +6630,10 @@
               btnShutter.disabled = false;
               btnToggleCam.disabled = false;
               cameraCaption.value = '';
+              
+              // Clear stickers
+              activeStickers = [];
+              viewfinderStickers.innerHTML = '';
             }, 800);
           }
           

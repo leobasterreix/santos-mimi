@@ -1971,6 +1971,38 @@
     .to-top.show { opacity: 0.95; transform: translateY(0) scale(1); pointer-events: auto; }
     .to-top:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 16px 36px rgba(214, 51, 132, 0.62); opacity: 1; }
 
+    /* ─── Bouton plein écran flottant ────────────────────── */
+    .fullscreen-btn {
+      position: fixed; top: 1.3rem; right: 1.3rem;
+      z-index: 9100;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      color: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(60, 10, 30, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      cursor: none;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s, border-color 0.3s, color 0.3s;
+      padding: 0;
+    }
+    .fullscreen-btn:hover {
+      transform: scale(1.08);
+      background: rgba(255, 247, 237, 0.85);
+      color: var(--ruby-bright);
+      border-color: var(--ruby-bright);
+    }
+    .fullscreen-btn:active {
+      transform: scale(0.95);
+    }
+    .fullscreen-btn svg {
+      width: 20px; height: 20px;
+      display: block;
+      stroke-width: 2.2px;
+    }
+
     /* ─── Jeu de mémoire ─────────────────────────────────── */
     .memory-section {
       text-align: center;
@@ -2228,6 +2260,12 @@
 
   <div class="cursor-ring"></div>
   <div class="cursor-dot"></div>
+
+  <!-- Bouton Plein Écran -->
+  <button class="fullscreen-btn" id="fullscreenBtn" type="button" aria-label="Mettre en plein écran">
+    <i data-lucide="maximize" class="icon-max" aria-hidden="true"></i>
+    <i data-lucide="minimize" class="icon-min" aria-hidden="true" style="display: none;"></i>
+  </button>
 
   <canvas class="ripples"></canvas>
   <canvas class="particles"></canvas>
@@ -3312,7 +3350,7 @@
     }
     followRing();
 
-    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top').forEach(el => {
+    document.querySelectorAll('a, .cta, .patch, .track, .patch-card, .brooch, .vinyl-record, .photobooth, .polaroid, .mini-btn, .mini-play, .mini-bar-wrap, .film-frame, .to-top, .fullscreen-btn').forEach(el => {
       el.addEventListener('mouseenter', () => {
         if (ring) ring.classList.add('hover');
       });
@@ -4077,6 +4115,45 @@
         `<span class="scroll-text" aria-label="rejouer">${wrapped}</span> ` +
         (icon ? icon.outerHTML : '');
       lucide.createIcons();
+    })();
+
+    /* ── Bouton plein écran flottant et gestion Fullscreen ── */
+    (function initFullscreen() {
+      const btn = document.getElementById('fullscreenBtn');
+      if (!btn) return;
+      const iconMax = btn.querySelector('.icon-max');
+      const iconMin = btn.querySelector('.icon-min');
+
+      function updateUI() {
+        const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        if (isFS) {
+          iconMax.style.display = 'none';
+          iconMin.style.display = 'block';
+          btn.setAttribute('aria-label', 'Quitter le plein écran');
+        } else {
+          iconMax.style.display = 'block';
+          iconMin.style.display = 'none';
+          btn.setAttribute('aria-label', 'Mettre en plein écran');
+        }
+      }
+
+      btn.addEventListener('click', () => {
+        const doc = document.documentElement;
+        const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        
+        if (!isFS) {
+          const req = doc.requestFullscreen || doc.webkitRequestFullscreen || doc.mozRequestFullScreen || doc.msRequestFullscreen;
+          if (req) req.call(doc).catch(err => console.error(err));
+        } else {
+          const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+          if (exit) exit.call(document).catch(err => console.error(err));
+        }
+      });
+
+      document.addEventListener('fullscreenchange', updateUI);
+      document.addEventListener('webkitfullscreenchange', updateUI);
+      document.addEventListener('mozfullscreenchange', updateUI);
+      document.addEventListener('MSFullscreenChange', updateUI);
     })();
   </script>
 </body>

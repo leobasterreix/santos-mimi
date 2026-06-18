@@ -2681,7 +2681,7 @@
       border-radius: 24px;
       width: 100%;
       max-width: 420px;
-      padding: 2.5rem 1.8rem 1.8rem;
+      padding: 3rem 1.8rem 1.8rem;
       position: relative;
       box-shadow: 
         0 24px 48px rgba(30, 10, 15, 0.35),
@@ -2691,6 +2691,90 @@
       flex-direction: column;
       align-items: center;
       gap: 1.5rem;
+    }
+    
+    /* Déclencheur physique rouge en 3D */
+    .camera-shutter-physical {
+      position: absolute;
+      top: -14px;
+      right: 36px;
+      width: 28px;
+      height: 14px;
+      background: #ff3b30;
+      border: 3px solid #141211;
+      border-bottom: none;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), 0 -2px 5px rgba(0, 0, 0, 0.2);
+      cursor: none;
+      transition: transform 0.1s, height 0.1s;
+      z-index: 10;
+    }
+    .camera-shutter-physical:active {
+      transform: translateY(3px);
+      height: 11px;
+    }
+    
+    /* Fenêtre de flash vintage */
+    .camera-flash-window {
+      position: absolute;
+      top: 14px;
+      left: 28px;
+      width: 55px;
+      height: 32px;
+      background: linear-gradient(135deg, #f1f3f5, #cfd4da);
+      border: 3px solid #141211;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .camera-flash-window::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: radial-gradient(circle, #fff 30%, #ffd43b 90%);
+      opacity: 0.85;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+    }
+    .camera-flash-window::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 50%;
+      background: rgba(255,255,255,0.4);
+      transform: skewY(-15deg);
+      z-index: 2;
+    }
+    
+    /* Inscription de marque cursive */
+    .camera-brand-text {
+      font-family: 'Parisienne', cursive;
+      font-size: 1.6rem;
+      color: var(--gold);
+      opacity: 0.85;
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+    
+    /* Indicateur LED d'état de caméra */
+    .camera-led-indicator {
+      position: absolute;
+      top: 55px;
+      right: 32px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4a0e17; /* Dark red when off */
+      border: 1px solid #141211;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    .camera-led-indicator.active {
+      background: #39ff14; /* Neon green when active */
+      box-shadow: 0 0 8px #39ff14, inset 0 1px 2px rgba(255,255,255,0.6);
     }
     
     /* Bande arc-en-ciel rétro sur le corps de l'appareil */
@@ -2834,7 +2918,7 @@
       left: 50%;
       transform: translateX(-50%);
       width: 250px;
-      z-index: 3;
+      z-index: 25; /* Rendre prioritaire pour flotter au-dessus */
       pointer-events: none;
       perspective: 800px;
     }
@@ -2856,21 +2940,21 @@
       cursor: none;
     }
     
-    /* Animation de sortie de l'imprimante (slide down) */
+    /* Animation de sortie de l'imprimante (slide down complet) */
     .polaroid-card.printing {
       animation: polaroidPrint 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
     
     @keyframes polaroidPrint {
       0% {
-        transform: translate3d(-50%, -100%, -100px) rotateX(15deg);
+        transform: translate3d(0, -100%, -100px) rotateX(15deg);
         opacity: 0;
       }
       15% {
         opacity: 1;
       }
       100% {
-        transform: translate3d(-50%, 40px, 0) rotateX(0deg);
+        transform: translate3d(0, 290px, 0) rotateX(0deg);
         opacity: 1;
       }
     }
@@ -3039,7 +3123,7 @@
     /* Galerie de droite (l'album) */
     .gallery-panel {
       background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
+      border: 2px dashed rgba(196, 30, 58, 0.15); /* Bordure couture */
       border-radius: 20px;
       padding: 1.8rem;
       box-shadow: 
@@ -3049,6 +3133,8 @@
       flex-direction: column;
       gap: 1.2rem;
       height: 480px;
+      background-image: radial-gradient(var(--glass-border) 1px, transparent 1px);
+      background-size: 16px 16px; /* Motif couture points scrapbook */
     }
     @media (max-width: 992px) {
       .gallery-panel {
@@ -3326,15 +3412,60 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      border: 1px solid var(--glass-border);
-      background: var(--glass-bg);
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      background: radial-gradient(circle at 30% 30%, #fff 0%, rgba(255,255,255,0) 70%), var(--bead-color, #e5a93b);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.3rem;
       cursor: none;
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s;
+      box-shadow: 0 4px 8px rgba(60, 10, 30, 0.18), inset 0 -3px 6px rgba(0,0,0,0.3);
+    }
+    
+    /* Actions au survol sur les polaroids de l'album */
+    .polaroid-gallery-item .item-actions {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 15;
+    }
+    .polaroid-gallery-item:hover .item-actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .item-action-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1.5px solid #141211;
+      background: #e5a93b; /* Look laiton vintage */
+      color: #141211;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      box-shadow: 
+        0 3px 6px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+      transition: transform 0.2s, background-color 0.2s, color 0.2s;
+    }
+    .item-action-btn:hover {
+      transform: scale(1.2);
+      background: #ff526b;
+      color: #fff;
+      border-color: #fff;
+    }
+    .item-action-btn svg {
+      width: 13px;
+      height: 13px;
+      stroke-width: 2.5;
     }
     .sticker-btn:hover {
       transform: scale(1.2) rotate(8deg);
@@ -3776,6 +3907,12 @@
         <!-- Appareil photo Polaroid -->
         <div class="camera-device">
           <div class="camera-body">
+            <!-- Composants physiques rétro de l'appareil photo -->
+            <button class="camera-shutter-physical" id="shutterPhysicalBtn" type="button" aria-label="Déclencheur photo" disabled></button>
+            <div class="camera-flash-window"></div>
+            <div class="camera-brand-text">Mimi-matic 600</div>
+            <div class="camera-led-indicator" id="cameraLedIndicator"></div>
+
             <div class="camera-stripe"></div>
             <div class="camera-lens-outer">
               <div class="camera-lens-inner">
@@ -3824,16 +3961,16 @@
               </button>
             </div>
             <div class="sticker-selector" id="stickerSelector">
-              <button class="sticker-btn" type="button" data-emoji="🐚">🐚</button>
-              <button class="sticker-btn" type="button" data-emoji="🌸">🌸</button>
-              <button class="sticker-btn" type="button" data-emoji="✨">✨</button>
-              <button class="sticker-btn" type="button" data-emoji="💖">💖</button>
-              <button class="sticker-btn" type="button" data-emoji="🎀">🎀</button>
-              <button class="sticker-btn" type="button" data-emoji="🍒">🍒</button>
-              <button class="sticker-btn" type="button" data-emoji="🧸">🧸</button>
-              <button class="sticker-btn" type="button" data-emoji="🌊">🌊</button>
-              <button class="sticker-btn" type="button" data-emoji="📸">📸</button>
-              <button class="sticker-btn" type="button" data-emoji="📿">📿</button>
+              <button class="sticker-btn" type="button" data-emoji="🐚" style="--bead-color: #ffd8a8;">🐚</button>
+              <button class="sticker-btn" type="button" data-emoji="🌸" style="--bead-color: #ffdeeb;">🌸</button>
+              <button class="sticker-btn" type="button" data-emoji="✨" style="--bead-color: #fff3bf;">✨</button>
+              <button class="sticker-btn" type="button" data-emoji="💖" style="--bead-color: #ffc9c9;">💖</button>
+              <button class="sticker-btn" type="button" data-emoji="🎀" style="--bead-color: #fcc2d7;">🎀</button>
+              <button class="sticker-btn" type="button" data-emoji="🍒" style="--bead-color: #ffc9db;">🍒</button>
+              <button class="sticker-btn" type="button" data-emoji="🧸" style="--bead-color: #e5dbff;">🧸</button>
+              <button class="sticker-btn" type="button" data-emoji="🌊" style="--bead-color: #a5d8ff;">🌊</button>
+              <button class="sticker-btn" type="button" data-emoji="📸" style="--bead-color: #c5f6fa;">📸</button>
+              <button class="sticker-btn" type="button" data-emoji="📿" style="--bead-color: #b2f2bb;">📿</button>
             </div>
           </div>
           
@@ -6111,6 +6248,8 @@
       const btnToggleCam = document.getElementById('btnToggleCam');
       const btnToggleCamText = document.getElementById('btnToggleCamText');
       const btnShutter = document.getElementById('btnShutter');
+      const shutterPhysicalBtn = document.getElementById('shutterPhysicalBtn');
+      const cameraLedIndicator = document.getElementById('cameraLedIndicator');
       const cameraVideo = document.getElementById('cameraVideo');
       const cameraDemoCanvas = document.getElementById('cameraDemoCanvas');
       const viewfinderStickers = document.getElementById('viewfinderStickers');
@@ -6142,6 +6281,22 @@
           polaroidAudioCtx.resume();
         }
         return polaroidAudioCtx;
+      }
+
+      function playTone(freq, volume = 0.05, type = 'sine') {
+        try {
+          const ctxNode = getPolaroidAudioContext();
+          const osc = ctxNode.createOscillator();
+          const gainNode = ctxNode.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, ctxNode.currentTime);
+          gainNode.gain.setValueAtTime(volume, ctxNode.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, ctxNode.currentTime + 0.3);
+          osc.connect(gainNode);
+          gainNode.connect(ctxNode.destination);
+          osc.start();
+          osc.stop(ctxNode.currentTime + 0.35);
+        } catch (e) {}
       }
 
       function playShutterSound() {
@@ -6200,7 +6355,7 @@
           const now = ctx.currentTime;
           const duration = 1.8;
           
-          // Stepper motor hum (Triangle + Vibrato)
+          // Stepper hum
           const osc = ctx.createOscillator();
           const oscGain = ctx.createGain();
           const lfo = ctx.createOscillator();
@@ -6211,7 +6366,7 @@
           
           lfo.type = 'sine';
           lfo.frequency.value = 16;
-          lfoGain.gain.value = 12; // Frequency modulation depth
+          lfoGain.gain.value = 12;
           
           oscGain.gain.setValueAtTime(0.001, now);
           oscGain.gain.linearRampToValueAtTime(0.08, now + 0.15);
@@ -6382,6 +6537,8 @@
           cameraViewfinder.classList.add('active');
           btnToggleCamText.textContent = "Arrêter";
           btnShutter.disabled = false;
+          shutterPhysicalBtn.disabled = false;
+          cameraLedIndicator.classList.add('active');
         } catch (e) {
           console.warn("Webcam access error, entering demo mode:", e);
           isDemoMode = true;
@@ -6391,6 +6548,8 @@
           cameraViewfinder.classList.add('active');
           btnToggleCamText.textContent = "Arrêter";
           btnShutter.disabled = false;
+          shutterPhysicalBtn.disabled = false;
+          cameraLedIndicator.classList.add('active');
           
           initDemoBeads();
           tickDemoAnim();
@@ -6414,6 +6573,8 @@
         cameraViewfinder.classList.remove('active');
         btnToggleCamText.textContent = "Démarrer";
         btnShutter.disabled = true;
+        shutterPhysicalBtn.disabled = true;
+        cameraLedIndicator.classList.remove('active');
         isDemoMode = false;
         
         // Reset stickers
@@ -6430,6 +6591,14 @@
           startCamera();
         }
       });
+
+      // Shutter click pipe
+      shutterPhysicalBtn.addEventListener('click', () => {
+        if (!shutterPhysicalBtn.disabled) {
+          btnShutter.click();
+        }
+      });
+      bindHover(shutterPhysicalBtn);
 
       // Filter Selector bindings
       filterSelector.querySelectorAll('.filter-btn').forEach(btn => {
@@ -6498,6 +6667,7 @@
         if (btnShutter.disabled) return;
         
         btnShutter.disabled = true;
+        shutterPhysicalBtn.disabled = true;
         btnToggleCam.disabled = true;
         
         const captionText = cameraCaption.value.trim() || getRandomCaption();
@@ -6535,12 +6705,21 @@
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(sticker.emoji, 0, 0);
-          ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset translation for next one
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
         });
         ctx.restore();
         
         const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
         
+        // Push IMMEDIATELY to the gallery with uploading status
+        const timestamp = new Date().toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const photoItem = { dataUrl, caption: captionText, timestamp, uploading: true };
+        dbPhotos.unshift(photoItem);
+        if (dbPhotos.length > 24) {
+          dbPhotos.pop();
+        }
+        renderGallery();
+
         // Trigger print & sound
         playShutterSound();
         
@@ -6565,7 +6744,7 @@
       }
 
       function printPolaroidCard(dataUrl, captionText) {
-        // Create Polaroid Element
+        // Create Polaroid Element on camera body
         printedPolaroidContainer.innerHTML = ''; // Clear older prints
         
         const card = document.createElement('div');
@@ -6593,11 +6772,7 @@
           lucide.createIcons();
         }
         
-        // Animate simulated upload progress
-        const progressBar = card.querySelector('.upload-progress-bar');
-        const progressText = card.querySelector('.upload-text');
-        const overlay = card.querySelector('.upload-overlay');
-        
+        // Animate simulated upload progress on both the camera print and the gallery card
         let progress = 0;
         const uploadDuration = 2200; // 2.2 seconds
         const stepTime = 50;
@@ -6609,8 +6784,11 @@
             progress = 100;
             clearInterval(interval);
             
-            // Upload success state
-            overlay.classList.add('success');
+            // Success state on all overlays
+            document.querySelectorAll('.upload-overlay').forEach(overlay => {
+              overlay.classList.add('success');
+            });
+            
             if (typeof lucide !== 'undefined') {
               lucide.createIcons();
             }
@@ -6618,16 +6796,33 @@
             
             setTimeout(() => {
               // Fade out upload indicator
-              overlay.classList.add('fade-out');
-              // Develop image
+              document.querySelectorAll('.upload-overlay').forEach(overlay => {
+                overlay.classList.add('fade-out');
+              });
+              
+              // Fade out printed camera card
               card.classList.remove('developing');
               card.classList.add('developed');
               
-              // Add to saved gallery and store
-              savePhoto(dataUrl, captionText);
+              setTimeout(() => {
+                printedPolaroidContainer.innerHTML = '';
+              }, 900);
+
+              // Update the first photo status (completed upload) and save
+              if (dbPhotos[0]) {
+                dbPhotos[0].uploading = false;
+                try {
+                  localStorage.setItem('santos-mimi-polaroids', JSON.stringify(dbPhotos));
+                } catch (e) {
+                  console.error("Storage error:", e);
+                }
+              }
+              
+              renderGallery();
               
               // Reset buttons
               btnShutter.disabled = false;
+              shutterPhysicalBtn.disabled = false;
               btnToggleCam.disabled = false;
               cameraCaption.value = '';
               
@@ -6637,28 +6832,14 @@
             }, 800);
           }
           
-          progressBar.style.width = `${progress}%`;
-          progressText.textContent = `Upload en cours... ${Math.round(progress)}%`;
+          // Update all progress bars & text (in print container + gallery)
+          document.querySelectorAll('.upload-progress-bar').forEach(bar => {
+            bar.style.width = `${progress}%`;
+          });
+          document.querySelectorAll('.upload-text').forEach(text => {
+            text.textContent = `Upload... ${Math.round(progress)}%`;
+          });
         }, stepTime);
-      }
-
-      function savePhoto(dataUrl, caption) {
-        const timestamp = new Date().toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        const photoItem = { dataUrl, caption, timestamp };
-        
-        dbPhotos.unshift(photoItem);
-        // Prune older photos if storage exceeds limits (e.g. keep max 24 photos)
-        if (dbPhotos.length > 24) {
-          dbPhotos.pop();
-        }
-        
-        try {
-          localStorage.setItem('santos-mimi-polaroids', JSON.stringify(dbPhotos));
-        } catch (e) {
-          console.error("Storage error:", e);
-        }
-        
-        renderGallery();
       }
 
       function renderGallery() {
@@ -6676,21 +6857,86 @@
         }
 
         dbPhotos.forEach((item, idx) => {
-          const randomRot = (Math.random() * 12 - 6).toFixed(1);
-          const randomTapeRot = (Math.random() * 10 - 5).toFixed(1);
+          const randomRot = (Math.random() * 8 - 4).toFixed(1);
+          const randomTapeRot = (Math.random() * 8 - 4).toFixed(1);
           
           const el = document.createElement('div');
-          el.className = 'polaroid-gallery-item';
-          el.setAttribute('style', `--item-rot: ${randomRot}deg; --tape-rot: ${randomTapeRot}deg;`);
-          el.innerHTML = `
-            <div class="gallery-img-wrap">
-              <img src="${item.dataUrl}" alt="Photo de l'album" loading="lazy" />
-            </div>
-            <div class="gallery-caption">${item.caption}</div>
-          `;
+          
+          if (item.uploading) {
+            // Card in uploading state
+            el.className = 'polaroid-gallery-item polaroid-card developing has-tape';
+            el.setAttribute('style', `--item-rot: ${randomRot}deg; --tape-rot: ${randomTapeRot}deg;`);
+            el.innerHTML = `
+              <div class="gallery-img-wrap polaroid-img-wrap">
+                <img src="${item.dataUrl}" alt="Photo de l'album" />
+              </div>
+              <div class="gallery-caption caption">${item.caption}</div>
+              <div class="upload-overlay">
+                <div class="upload-text">Upload... 0%</div>
+                <div class="upload-progress-container">
+                  <div class="upload-progress-bar"></div>
+                </div>
+                <div class="upload-success-icon">
+                  <i data-lucide="check-circle-2"></i>
+                </div>
+              </div>
+            `;
+          } else {
+            // Completed card with actions
+            el.className = 'polaroid-gallery-item polaroid-card developed has-tape';
+            el.setAttribute('style', `--item-rot: ${randomRot}deg; --tape-rot: ${randomTapeRot}deg;`);
+            el.innerHTML = `
+              <div class="item-actions">
+                <button class="item-action-btn btn-dl" type="button" title="Télécharger" data-index="${idx}" aria-label="Télécharger la photo">
+                  <i data-lucide="download"></i>
+                </button>
+                <button class="item-action-btn btn-del" type="button" title="Supprimer" data-index="${idx}" aria-label="Supprimer la photo">
+                  <i data-lucide="trash-2"></i>
+                </button>
+              </div>
+              <div class="gallery-img-wrap polaroid-img-wrap">
+                <img src="${item.dataUrl}" alt="Photo de l'album" loading="lazy" />
+              </div>
+              <div class="gallery-caption caption">${item.caption}</div>
+            `;
+          }
           
           polaroidGallery.appendChild(el);
           bindHover(el);
+
+          // Bind Actions
+          el.querySelectorAll('.btn-dl').forEach(btn => {
+            bindHover(btn);
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const index = parseInt(btn.getAttribute('data-index'));
+              const photo = dbPhotos[index];
+              if (photo) {
+                const dlLink = document.createElement('a');
+                dlLink.href = photo.dataUrl;
+                dlLink.download = `polaroid-${index + 1}.jpg`;
+                document.body.appendChild(dlLink);
+                dlLink.click();
+                document.body.removeChild(dlLink);
+              }
+            });
+          });
+
+          el.querySelectorAll('.btn-del').forEach(btn => {
+            bindHover(btn);
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const index = parseInt(btn.getAttribute('data-index'));
+              playTone(180, 0.04, 'sine');
+              setTimeout(() => playTone(120, 0.03, 'sine'), 65);
+              
+              dbPhotos.splice(index, 1);
+              try {
+                localStorage.setItem('santos-mimi-polaroids', JSON.stringify(dbPhotos));
+              } catch (err) {}
+              renderGallery();
+            });
+          });
         });
 
         galleryCount.textContent = `${dbPhotos.length} photo${dbPhotos.length > 1 ? 's' : ''}`;
@@ -6705,6 +6951,8 @@
           const stored = localStorage.getItem('santos-mimi-polaroids');
           if (stored) {
             dbPhotos = JSON.parse(stored);
+            // Ensure no items are stuck in uploading state on reload
+            dbPhotos.forEach(p => p.uploading = false);
           }
         } catch (e) {
           dbPhotos = [];

@@ -76,6 +76,15 @@
       --glass-bg: rgba(255, 247, 237, 0.55);
       --glass-border: rgba(196, 30, 58, 0.18);
 
+      /* Custom theme-aware navigation & hero styles */
+      --nav-bg: rgba(205, 238, 255, 0.70);
+      --nav-border: rgba(205, 238, 255, 0.5);
+      --nav-shadow: rgba(125, 211, 252, 0.35);
+      --hero-glow-rgb: 255, 247, 237;
+      --hero-title-shadow-color: rgba(255, 247, 237, 0.95);
+      --hero-kicker-shadow: 0 1px 0 #fff;
+      --glass-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
       /* Dynamic gradients */
       --bg-radial-1: #ffe2ef;
       --bg-radial-2: #ffd6c6;
@@ -108,6 +117,15 @@
       --glass-bg: rgba(27, 14, 23, 0.65);
       --glass-border: rgba(255, 82, 107, 0.15);
 
+      /* Custom theme-aware navigation & hero styles */
+      --nav-bg: rgba(27, 14, 23, 0.70);
+      --nav-border: rgba(255, 82, 107, 0.20);
+      --nav-shadow: rgba(0, 0, 0, 0.5);
+      --hero-glow-rgb: 27, 14, 23;
+      --hero-title-shadow-color: rgba(27, 14, 23, 0.8);
+      --hero-kicker-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+      --glass-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
       /* Dynamic gradients */
       --bg-radial-1: #4a182d;
       --bg-radial-2: #1d0a18;
@@ -139,6 +157,15 @@
       --ch3: #10b981;      --ch3-tint: rgba(16, 185, 129, 0.18);
       --glass-bg: rgba(5, 25, 38, 0.55);
       --glass-border: rgba(34, 211, 238, 0.15);
+
+      /* Custom theme-aware navigation & hero styles */
+      --nav-bg: rgba(5, 25, 38, 0.70);
+      --nav-border: rgba(45, 212, 191, 0.20);
+      --nav-shadow: rgba(0, 0, 0, 0.6);
+      --hero-glow-rgb: 5, 25, 38;
+      --hero-title-shadow-color: rgba(5, 25, 38, 0.8);
+      --hero-kicker-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+      --glass-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
       /* Dynamic gradients */
       --bg-radial-1: #0f3d59;
@@ -337,12 +364,12 @@
       z-index: 9000;
       display: flex; justify-content: center; align-items: center;
       padding: 0.85rem 2.4rem;
-      background: rgba(205, 238, 255, 0.70);
+      background: var(--nav-bg);
       backdrop-filter: blur(16px) saturate(160%);
       -webkit-backdrop-filter: blur(16px) saturate(160%);
       border-radius: 999px;
-      border: 1px solid rgba(205, 238, 255, 0.5);
-      box-shadow: 0 8px 28px rgba(125, 211, 252, 0.35),
+      border: 1px solid var(--nav-border);
+      box-shadow: 0 8px 28px var(--nav-shadow),
                   0 2px 8px rgba(0,0,0,0.08);
       pointer-events: none;
       opacity: 0;
@@ -427,8 +454,8 @@
       line-height: 1;
       padding: 0.85rem 2.4rem;
       border-radius: 999px;
-      border: 1px solid rgba(205, 238, 255, 0.5);
-      background: rgba(205, 238, 255, 0.70);
+      border: 1px solid var(--nav-border);
+      background: var(--nav-bg);
       opacity: 0;
       will-change: opacity;
     }
@@ -463,9 +490,9 @@
       /* Centre bien opaque pour le titre, fondu vers les bords */
       background:
         radial-gradient(620px 380px at 50% 42%,
-          rgba(255, 247, 237, 0.96) 0%,
-          rgba(255, 247, 237, 0.82) 28%,
-          rgba(255, 247, 237, 0.40) 55%,
+          rgba(var(--hero-glow-rgb), 0.96) 0%,
+          rgba(var(--hero-glow-rgb), 0.82) 28%,
+          rgba(var(--hero-glow-rgb), 0.40) 55%,
           transparent 75%);
       pointer-events: none;
       z-index: 2;
@@ -506,7 +533,7 @@
       margin-bottom: 1.2rem;
       opacity: 0.85;
       color: var(--ruby);
-      text-shadow: 0 1px 0 #fff;
+      text-shadow: var(--hero-kicker-shadow);
     }
 
     .hero h1 {
@@ -521,7 +548,7 @@
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 18px rgba(255, 247, 237, 0.95))
+      filter: drop-shadow(0 4px 18px var(--hero-title-shadow-color))
               drop-shadow(0 8px 22px rgba(196, 30, 58, 0.28));
       animation: shimmer 8s ease-in-out infinite;
     }
@@ -547,7 +574,7 @@
       padding: 0.7rem 1.2rem;
       border-radius: 999px;
       backdrop-filter: blur(10px);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+      box-shadow: var(--glass-inset-shadow);
       border: 1px solid var(--glass-border);
     }
 

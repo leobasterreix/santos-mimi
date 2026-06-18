@@ -2287,6 +2287,103 @@
       transform: translateY(0) scale(0.98);
     }
 
+    /* Light Theme specifics for Easter Egg */
+    html[data-theme="light"] .easter-egg-overlay {
+      background: rgba(255, 247, 237, 0.65); /* soft cream blurred overlay */
+    }
+    html[data-theme="light"] .easter-egg-container {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(139, 30, 43, 0.15);
+      box-shadow: 0 24px 60px rgba(139, 30, 43, 0.12), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    html[data-theme="light"] .easter-egg-canvas-container {
+      background: rgba(139, 30, 43, 0.03);
+      border: 1px solid rgba(139, 30, 43, 0.08);
+    }
+    html[data-theme="light"] .easter-egg-btn {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(139, 30, 43, 0.15);
+      box-shadow: 0 4px 12px rgba(139, 30, 43, 0.05);
+    }
+    html[data-theme="light"] .easter-egg-close {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(139, 30, 43, 0.15);
+    }
+
+    /* ─── Section Teaser Konami Code ─────────────────────── */
+    .ch-teaser {
+      padding: 3rem 2rem !important;
+      min-height: auto;
+      text-align: center;
+    }
+    .teaser-box {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--glass-bg);
+      border: 1px dashed var(--glass-border);
+      border-radius: 18px;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .teaser-box:hover {
+      border-color: var(--pink-hot);
+      box-shadow: 0 12px 40px var(--ch1-tint);
+    }
+    .teaser-title {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 0.8rem;
+    }
+    .teaser-icon {
+      width: 22px;
+      height: 22px;
+      color: var(--ruby-bright);
+    }
+    .teaser-title h3 {
+      font-family: 'Londrina Solid', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .teaser-box p {
+      font-size: 0.95rem;
+      color: var(--ink);
+      opacity: 0.85;
+      margin-bottom: 1.5rem;
+    }
+    .teaser-combination {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+    .teaser-combination .key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 32px;
+      padding: 0 0.4rem;
+      background: var(--pearl);
+      border: 1px solid var(--glass-border);
+      border-bottom-width: 3px;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--ink);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      user-select: none;
+    }
+
     /* ─── Jeu de mémoire ─────────────────────────────────── */
     .memory-section {
       text-align: center;
@@ -2907,6 +3004,31 @@
         <p class="memory-win" id="memWin" hidden>bravo ! toutes les paires en <strong id="memWinMoves">0</strong> coups 🎉</p>
       </div>
       <div class="memory-grid" id="memoryGrid"></div>
+    </div>
+  </section>
+
+  <!-- ─── Section Teaser Konami Code ─────────────────────── -->
+  <section class="block chapter ch-teaser" id="teaser">
+    <div class="container">
+      <div class="teaser-box">
+        <div class="teaser-title">
+          <i data-lucide="gamepad-2" class="teaser-icon" aria-hidden="true"></i>
+          <h3>Le Code Secret</h3>
+        </div>
+        <p>Un mystérieux mini-jeu rétro de perles musicales est dissimulé sur ce site... Débloquez-le en saisissant le code secret au clavier !</p>
+        <div class="teaser-combination">
+          <span class="key">↑</span>
+          <span class="key">↑</span>
+          <span class="key">↓</span>
+          <span class="key">↓</span>
+          <span class="key">←</span>
+          <span class="key">→</span>
+          <span class="key">←</span>
+          <span class="key">→</span>
+          <span class="key">B</span>
+          <span class="key">A</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -4622,6 +4744,8 @@
       let colors = [];
       const PENTATONIC = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
       let soundsPlayedThisFrame = 0;
+      let rectLeft = 0;
+      let rectTop = 0;
 
       // Konami code listener
       document.addEventListener('keydown', (e) => {
@@ -4850,6 +4974,10 @@
         ctx.scale(dpr, dpr);
         width = rect.width;
         height = rect.height;
+
+        const canvasRect = canvas.getBoundingClientRect();
+        rectLeft = canvasRect.left;
+        rectTop = canvasRect.top;
       }
 
       function openEasterEgg() {
@@ -4907,6 +5035,10 @@
       }
 
       function loop() {
+        if (!section.classList.contains('active')) {
+          animationFrameId = null;
+          return;
+        }
         soundsPlayedThisFrame = 0;
         ctx.clearRect(0, 0, width, height);
 
@@ -4949,13 +5081,12 @@
 
       // Mouse/Touch Canvas interaction
       function getMousePos(e) {
-        const rect = canvas.getBoundingClientRect();
         if (e.touches && e.touches.length > 0) {
-          mouseX = e.touches[0].clientX - rect.left;
-          mouseY = e.touches[0].clientY - rect.top;
+          mouseX = e.touches[0].clientX - rectLeft;
+          mouseY = e.touches[0].clientY - rectTop;
         } else {
-          mouseX = e.clientX - rect.left;
-          mouseY = e.clientY - rect.top;
+          mouseX = e.clientX - rectLeft;
+          mouseY = e.clientY - rectTop;
         }
       }
 

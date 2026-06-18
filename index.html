@@ -1458,14 +1458,14 @@
     .chest-wrapper {
       position: relative;
       width: 580px;
-      height: 400px;
+      height: 460px;
       margin-top: 1.5rem;
     }
     @media (max-width: 768px) {
       .chest-wrapper {
         width: 100%;
         max-width: 440px;
-        height: 320px;
+        height: 360px;
       }
     }
     #chest3DCanvas {
@@ -3485,7 +3485,7 @@
 
       // 2. Camera setup
       const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
-      camera.position.set(0, 0.8, 4.4); 
+      camera.position.set(0, 0.85, 4.6); 
       camera.lookAt(0, 0.25, 0);
 
       // 3. Renderer setup
@@ -3552,7 +3552,8 @@
       const woodMaterial = new THREE.MeshStandardMaterial({
         color: 0x422210,      // dark rich wood brown
         roughness: 0.72,
-        metalness: 0.05
+        metalness: 0.05,
+        side: THREE.DoubleSide
       });
 
       const insideMaterial = new THREE.MeshStandardMaterial({
@@ -3608,16 +3609,23 @@
           map: lidTex,
           transparent: true,
           roughness: 0.6,
-          metalness: 0.1
+          metalness: 0.1,
+          side: THREE.DoubleSide
+        });
+
+        const transparentMaterial = new THREE.MeshBasicMaterial({
+          transparent: true,
+          opacity: 0.0,
+          depthWrite: false
         });
 
         const lidBoxMaterials = [
-          woodMaterial,      // Right
-          woodMaterial,      // Left
-          woodMaterial,      // Top
-          insideMaterial,    // Bottom
-          lidFrontMaterial,  // Front
-          woodMaterial       // Back
+          woodMaterial,         // Right
+          woodMaterial,         // Left
+          woodMaterial,         // Top
+          transparentMaterial,  // Bottom (transparent to make it hollow!)
+          lidFrontMaterial,     // Front
+          woodMaterial          // Back
         ];
 
         const lidBoxGeo = new THREE.BoxGeometry(chestWidth, 0.9, chestDepth);
@@ -3679,8 +3687,8 @@
         }
 
         // 2. Camera perspective tilt (controlled vertical movement to prevent clipping!)
-        camera.position.y = 0.8 + (easeProgress * 0.1);
-        camera.position.z = 4.4 + (easeProgress * 0.75);
+        camera.position.y = 0.85 + (easeProgress * 0.05);
+        camera.position.z = 4.6 + (easeProgress * 0.85);
         camera.lookAt(0, 0.25 + easeProgress * 0.05, 0);
 
         // 3. Inside glow

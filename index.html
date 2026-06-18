@@ -501,7 +501,7 @@
     .patch {
       position: absolute;
       filter: drop-shadow(0 8px 14px rgba(60, 10, 30, 0.32));
-      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
     }
     .patch:hover {
       will-change: transform;
@@ -823,8 +823,8 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.7);
       position: relative;
       overflow: hidden;
-      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                  box-shadow 0.5s ease;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.3s ease;
     }
     .card:hover {
       transform: translateY(-6px);
@@ -848,7 +848,7 @@
     .project .thumb img {
       width: 92%; height: 92%; object-fit: contain; display: block;
       filter: drop-shadow(0 8px 16px rgba(60, 10, 30, 0.22));
-      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       /* Fix Safari scale/transform blurriness */
       will-change: transform;
       transform: translate3d(0, 0, 0);
@@ -1067,7 +1067,7 @@
       pointer-events: none;
       opacity: 0;
       transform: translateX(-135%) rotate(-6deg);
-      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
     }
     .sleeve-ring {
       width: 46%; aspect-ratio: 1;
@@ -1393,23 +1393,23 @@
     @media (prefers-reduced-motion: no-preference) {
       .ch-tag .num {
         opacity: 0;
-        transform: translateY(18px) rotate(-8deg) scale(0.7);
-        transition: opacity 0.6s ease,
-                    transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform: translateY(14px) rotate(-8deg) scale(0.7);
+        transition: opacity 0.35s ease,
+                    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .ch-tag .label {
         opacity: 0;
-        transform: translateX(-16px);
+        transform: translateX(-12px);
         letter-spacing: 0.18em;
-        transition: opacity 0.6s ease 0.15s,
-                    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
-                    letter-spacing 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+        transition: opacity 0.35s ease 0.08s,
+                    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.08s,
+                    letter-spacing 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
       }
       .chapter h2 {
         opacity: 0;
-        transform: translateY(26px);
-        transition: opacity 0.7s ease 0.1s,
-                    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+        transform: translateY(18px);
+        transition: opacity 0.4s ease 0.05s,
+                    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
       }
       .ch-tag.rv-in .num { opacity: 1; transform: none; }
       .ch-tag.rv-in .label { opacity: 0.75; transform: none; letter-spacing: 0.45em; }
@@ -1418,9 +1418,9 @@
       /* Reveal générique pour le reste du contenu */
       .rv {
         opacity: 0;
-        transform: translateY(22px);
-        transition: opacity 0.55s ease,
-                    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        transform: translateY(18px);
+        transition: opacity 0.35s ease,
+                    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .rv.rv-in {
         opacity: 1;
@@ -3799,13 +3799,13 @@
     let rx = mx, ry = my;
     document.addEventListener('pointermove', e => {
       mx = e.clientX; my = e.clientY;
-      dot.style.transform = `translate(${mx - 4}px, ${my - 4}px)`;
-    });
+      dot.style.transform = `translate3d(${mx - 4}px, ${my - 4}px, 0)`;
+    }, { passive: true });
     function followRing() {
-      rx += (mx - rx) * 0.18;
-      ry += (my - ry) * 0.18;
+      rx += (mx - rx) * 0.28;
+      ry += (my - ry) * 0.28;
       if (ring) {
-        ring.style.transform = `translate(${rx - 19}px, ${ry - 19}px)`;
+        ring.style.transform = `translate3d(${rx - 19}px, ${ry - 19}px, 0)`;
       }
       requestAnimationFrame(followRing);
     }
@@ -3820,21 +3820,24 @@
       });
     });
 
-    /* Magnetic CTA */
+    /* Magnetic CTA - Optimized to prevent layout thrashing */
     const cta = document.querySelector('.cta');
     if (cta) {
+      let ctaRect = null;
       cta.addEventListener('mouseenter', () => {
-        cta.style.transition = 'transform 0.18s ease-out';
+        cta.style.transition = 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)';
+        ctaRect = cta.getBoundingClientRect();
       });
       cta.addEventListener('mousemove', (e) => {
-        const r = cta.getBoundingClientRect();
-        const x = e.clientX - r.left - r.width / 2;
-        const y = e.clientY - r.top - r.height / 2;
-        cta.style.transform = `translate(${x * 0.28}px, ${y * 0.45}px) scale(1.04)`;
+        if (!ctaRect) return;
+        const x = e.clientX - ctaRect.left - ctaRect.width / 2;
+        const y = e.clientY - ctaRect.top - ctaRect.height / 2;
+        cta.style.transform = `translate3d(${x * 0.28}px, ${y * 0.45}px, 0) scale(1.04)`;
       });
       cta.addEventListener('mouseleave', () => {
-        cta.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+        cta.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
         cta.style.transform = '';
+        ctaRect = null;
       });
     }
 
@@ -4207,9 +4210,13 @@
     /* ─── Bouton retour en haut — apparaît après le hero ─── */
     const toTop = document.getElementById('toTop');
     if (toTop) {
+      const hero = document.querySelector('header.hero');
+      let threshold = hero ? hero.offsetHeight : window.innerHeight;
+      window.addEventListener('resize', () => {
+        threshold = hero ? hero.offsetHeight : window.innerHeight;
+      }, { passive: true });
+
       const handleScroll = () => {
-        const hero = document.querySelector('header.hero');
-        const threshold = hero ? hero.offsetHeight : window.innerHeight;
         if (window.scrollY > threshold - 100) {
           toTop.classList.add('show');
         } else {

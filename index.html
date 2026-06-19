@@ -75,6 +75,7 @@
       --ch3: #c41e3a;      --ch3-tint: rgba(214, 51, 132, 0.18);
       --glass-bg: rgba(255, 247, 237, 0.55);
       --glass-border: rgba(196, 30, 58, 0.18);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
 
       /* Custom theme-aware navigation & hero styles */
       --nav-bg: rgba(205, 238, 255, 0.70);
@@ -93,6 +94,7 @@
       --bg-grad-2: #ffe2f1;
       --bg-grad-3: #cdeeff;
       --bg-grad-4: #fff1d6;
+      --bg-soft: #fffbf7;
     }
 
     html[data-theme="dark"] {
@@ -116,6 +118,7 @@
       --ch3: #ff526b;      --ch3-tint: rgba(255, 82, 107, 0.12);
       --glass-bg: rgba(27, 14, 23, 0.65);
       --glass-border: rgba(255, 82, 107, 0.15);
+      --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.4);
 
       /* Custom theme-aware navigation & hero styles */
       --nav-bg: rgba(27, 14, 23, 0.70);
@@ -134,6 +137,7 @@
       --bg-grad-2: #10070e;
       --bg-grad-3: #180b15;
       --bg-grad-4: #0e070c;
+      --bg-soft: rgba(27, 14, 23, 0.45);
     }
 
     html[data-theme="abyss"] {
@@ -157,6 +161,7 @@
       --ch3: #10b981;      --ch3-tint: rgba(16, 185, 129, 0.18);
       --glass-bg: rgba(5, 25, 38, 0.55);
       --glass-border: rgba(34, 211, 238, 0.15);
+      --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.5);
 
       /* Custom theme-aware navigation & hero styles */
       --nav-bg: rgba(5, 25, 38, 0.70);
@@ -175,6 +180,7 @@
       --bg-grad-2: #041724;
       --bg-grad-3: #020c12;
       --bg-grad-4: #051d2e;
+      --bg-soft: rgba(5, 25, 38, 0.45);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1660,7 +1666,7 @@
     .photobooth-caption {
       font-family: 'Parisienne', cursive;
       font-size: 1rem; text-align: center;
-      color: var(--ink); opacity: 0.65;
+      color: #1a1230; opacity: 0.8;
       margin-top: 4px;
     }
 
@@ -1693,7 +1699,7 @@
       text-align: center;
       font-family: 'Parisienne', cursive;
       font-size: 1rem;
-      color: var(--ink); opacity: 0.7;
+      color: #1a1230; opacity: 0.8;
     }
     .polaroid:hover { transform: scale(1.07); rotate: 0deg; z-index: 6; }
     .polaroid::before {
@@ -2686,8 +2692,8 @@
       padding: 2.8rem 1.8rem 1.8rem;
       position: relative;
       box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.08),
-        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        var(--shadow-sm),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2769,7 +2775,7 @@
       height: 100%;
       overflow: hidden;
       position: relative;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      box-shadow: var(--shadow-sm);
       border: 1.5px solid var(--glass-border);
     }
     
@@ -2834,10 +2840,55 @@
       z-index: 2;
     }
     
-    /* Boutons de contrôle de la caméra - Style capsules modernes */
+    /* ── Bouton Toggle Cam ── Petit icône flottant top-right du body */
+    #btnToggleCam.camera-btn-float {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 20;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      cursor: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-sm);
+      font-size: 0;
+    }
+    #btnToggleCam.camera-btn-float svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.5;
+    }
+    #btnToggleCam.camera-btn-float:not(:disabled):hover {
+      background: var(--pink-hot);
+      color: #fff;
+      border-color: var(--pink-hot);
+      transform: scale(1.12);
+      box-shadow: 0 4px 16px rgba(214, 51, 132, 0.35);
+    }
+    #btnToggleCam.camera-btn-float.cam-active {
+      background: var(--emerald);
+      color: #fff;
+      border-color: var(--emerald);
+    }
+    #btnToggleCam.camera-btn-float.cam-active:hover {
+      background: var(--ruby-bright);
+      border-color: var(--ruby-bright);
+      box-shadow: 0 4px 16px rgba(255, 82, 107, 0.35);
+    }
+    
+    /* ── Bouton shutter - pleine largeur centré */
     .camera-controls {
       display: flex;
-      gap: 1rem;
       width: 100%;
       justify-content: center;
       background: transparent;
@@ -2847,69 +2898,95 @@
     }
     button.camera-btn {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: 0.8rem 1.2rem;
-      border-radius: 14px;
+      padding: 0.85rem 1.6rem;
+      border-radius: 16px;
       cursor: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      flex: 1;
-      border: 1px solid var(--glass-border) !important;
-      background: var(--glass-bg);
-      color: var(--ink);
-      box-shadow: var(--shadow-sm);
-    }
-    
-    /* Style Démarrer (Allumer) */
-    #btnToggleCam.camera-btn {
-      background: var(--glass-bg);
-      color: var(--ink);
-    }
-    #btnToggleCam.camera-btn:not(:disabled):hover {
-      background: var(--pink-hot);
+      width: 100%;
+      border: none !important;
+      background: linear-gradient(135deg, var(--coral), var(--pink-hot));
       color: #fff;
-      border-color: var(--pink-hot) !important;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(214, 51, 132, 0.3);
-    }
-    #btnToggleCam.camera-btn:active {
-      transform: translateY(0);
+      box-shadow: 0 4px 15px rgba(255, 82, 107, 0.35);
     }
     
     /* Style Prendre (CLIC !) */
-    #btnShutter.camera-btn {
-      background: linear-gradient(135deg, var(--coral), var(--pink-hot));
-      color: #fff;
-      border: none !important;
-      box-shadow: 0 4px 15px rgba(255, 82, 107, 0.25);
-    }
     #btnShutter.camera-btn:not(:disabled):hover {
       background: linear-gradient(135deg, var(--pink-hot), var(--purple));
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(214, 51, 132, 0.4);
+      box-shadow: 0 8px 25px rgba(214, 51, 132, 0.45);
     }
     #btnShutter.camera-btn:active {
-      transform: translateY(0);
+      transform: translateY(1px);
     }
     
-    /* Boutons de caméra désactivés */
+    /* Bouton shutter désactivé */
     .camera-controls button.camera-btn:disabled {
-      background: rgba(0, 0, 0, 0.04) !important;
+      background: var(--glass-bg) !important;
       color: var(--ink) !important;
-      border-color: var(--glass-border) !important;
+      border: 1px solid var(--glass-border) !important;
       box-shadow: none !important;
       transform: none !important;
       opacity: 0.35;
     }
-    html[data-theme="dark"] .camera-controls button.camera-btn:disabled,
-    html[data-theme="abyss"] .camera-controls button.camera-btn:disabled {
-      background: rgba(255, 255, 255, 0.03) !important;
+
+    /* ── Viewfinder zoom ── */
+    .camera-viewfinder video,
+    .camera-viewfinder #cameraDemoCanvas {
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .camera-viewfinder.zoomed video,
+    .camera-viewfinder.zoomed #cameraDemoCanvas {
+      transform: scaleX(-1) scale(1.5);
+    }
+    .camera-viewfinder.zoomed #cameraDemoCanvas {
+      transform: scale(1.5);
+    }
+    .camera-zoom-toggle {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 10;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+    .camera-zoom-toggle svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.5;
+    }
+    .camera-viewfinder.active .camera-zoom-toggle {
+      opacity: 0.7;
+      pointer-events: auto;
+    }
+    .camera-viewfinder.active .camera-zoom-toggle:hover {
+      opacity: 1;
+      transform: scale(1.12);
+      background: rgba(0,0,0,0.6);
+    }
+    .camera-zoom-toggle.active {
+      background: var(--pink-hot) !important;
+      border-color: var(--pink-hot) !important;
+      opacity: 1 !important;
     }
     
     /* Fente d'impression moderne et épurée */
@@ -2948,13 +3025,12 @@
     
     /* Le Polaroid imprimé */
     .polaroid-card {
-      background: #fffcf8;
+      background: var(--pearl);
       border-radius: 2px;
       padding: 10px 10px 36px 10px;
       box-shadow: 
-        0 18px 36px rgba(0,0,0,0.35),
-        0 2px 5px rgba(0,0,0,0.15),
-        inset 0 0 0 1px rgba(0,0,0,0.06);
+        0 18px 36px rgba(0,0,0,0.25),
+        0 2px 5px rgba(0,0,0,0.1);
       width: 100%;
       position: relative;
       transform-style: preserve-3d;
@@ -3014,7 +3090,7 @@
     .polaroid-card .caption {
       font-family: 'Parisienne', cursive;
       font-size: 1.15rem;
-      color: #2e2620;
+      color: var(--ink);
       text-align: center;
       position: absolute;
       bottom: 8px;
@@ -3231,12 +3307,10 @@
     /* Galerie de droite (l'album) */
     .gallery-panel {
       background: var(--glass-bg);
-      border: 2px dashed rgba(196, 30, 58, 0.15); /* Bordure couture */
+      border: 2px dashed var(--glass-border);
       border-radius: 20px;
       padding: 1.8rem;
-      box-shadow: 
-        0 16px 32px rgba(60, 10, 30, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
@@ -3270,7 +3344,7 @@
       letter-spacing: 0.08em;
       color: var(--ruby-bright);
       font-weight: 600;
-      background: rgba(196, 30, 58, 0.08);
+      background: var(--ch3-tint);
       padding: 0.25rem 0.65rem;
       border-radius: 999px;
     }
@@ -3301,13 +3375,10 @@
     
     /* Petites cartes polaroid dans l'album */
     .polaroid-gallery-item {
-      background: #fffcf8;
+      background: var(--pearl);
       border-radius: 2px;
       padding: 6px 6px 20px 6px;
-      box-shadow: 
-        0 8px 16px rgba(60, 10, 30, 0.12),
-        0 1px 3px rgba(0,0,0,0.1),
-        inset 0 0 0 1px rgba(0,0,0,0.04);
+      box-shadow: var(--shadow-sm);
       transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
       position: relative;
       cursor: none;
@@ -3316,8 +3387,8 @@
     .polaroid-gallery-item:hover {
       transform: scale(1.08) rotate(0deg) translate3d(0, -5px, 0);
       box-shadow: 
-        0 16px 28px rgba(60, 10, 30, 0.22),
-        0 3px 8px rgba(0,0,0,0.15);
+        0 16px 28px rgba(0, 0, 0, 0.2),
+        0 3px 8px rgba(0,0,0,0.1);
       z-index: 10;
     }
     .polaroid-gallery-item::before {
@@ -3326,16 +3397,16 @@
       top: -6px; left: 50%;
       transform: translateX(-50%) rotate(var(--tape-rot, -4deg));
       width: 32px; height: 12px;
-      background: rgba(255, 220, 130, 0.45);
-      border: 1px solid rgba(200, 160, 70, 0.22);
+      background: rgba(255, 220, 130, 0.35);
+      border: 1px solid rgba(200, 160, 70, 0.18);
     }
     .polaroid-gallery-item .gallery-img-wrap {
       width: 100%;
       aspect-ratio: 1 / 1;
-      background: #eee;
+      background: var(--glass-bg);
       overflow: hidden;
-      box-shadow: inset 0 1px 4px rgba(0,0,0,0.15);
-      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.1);
+      border: 1px solid var(--glass-border);
     }
     .polaroid-gallery-item .gallery-img-wrap img {
       width: 100%;
@@ -3346,13 +3417,13 @@
     .polaroid-gallery-item .gallery-caption {
       font-family: 'Parisienne', cursive;
       font-size: 0.8rem;
-      color: #2e2620;
+      color: var(--ink);
       text-align: center;
       margin-top: 4px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      opacity: 0.85;
+      opacity: 0.75;
     }
     .gallery-empty-state {
       display: flex;
@@ -3388,24 +3459,24 @@
       max-width: 420px;
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.5rem;
       margin-top: 0.5rem;
     }
     .camera-filters-section .label {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 600;
+      letter-spacing: 0.1em;
+      font-weight: 700;
       color: var(--ink);
-      opacity: 0.65;
-      padding-left: 0.5rem;
+      opacity: 0.5;
+      padding-left: 0.3rem;
     }
     .filter-selector {
       display: flex;
-      gap: 0.6rem;
+      gap: 0.45rem;
       overflow-x: auto;
-      padding: 0.2rem 0.4rem;
+      padding: 0.3rem 0.2rem;
       scrollbar-width: none;
     }
     .filter-selector::-webkit-scrollbar {
@@ -3413,66 +3484,45 @@
     }
     .filter-btn {
       flex: 0 0 auto;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.7rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--glass-border);
       cursor: none;
       position: relative;
       overflow: hidden;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: var(--shadow-sm);
       background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--ink);
+      opacity: 0.75;
     }
     .filter-btn:hover {
-      transform: scale(1.12) translateY(-2px);
+      opacity: 1;
       border-color: var(--pink-hot);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(214, 51, 132, 0.15);
     }
     .filter-btn.active {
       border-color: var(--pink-hot);
-      box-shadow: 
-        0 0 15px rgba(214, 51, 132, 0.45),
-        0 4px 10px rgba(0, 0, 0, 0.1);
-      transform: scale(1.18);
-    }
-    /* Aperçus miniatures des filtres */
-    .filter-btn::after {
-      content: '';
-      position: absolute;
-      inset: 2px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #ff526b 20%, #e5a93b 80%);
-      transition: transform 0.3s ease;
-    }
-    .filter-btn:hover::after {
-      transform: scale(1.08);
-    }
-    .filter-btn.f-normal::after { filter: sepia(0.2) contrast(1.1) brightness(0.95); }
-    .filter-btn.f-vintage::after { filter: sepia(0.55) contrast(1.05) brightness(0.9) saturate(0.8); }
-    .filter-btn.f-bw::after { filter: grayscale(1) contrast(1.35) brightness(0.95); }
-    .filter-btn.f-rose::after { filter: sepia(0.25) saturate(1.4) hue-rotate(-15deg) contrast(1.05); }
-    .filter-btn.f-abyss::after { filter: saturate(0.85) hue-rotate(140deg) contrast(1.1) brightness(0.9); }
-    .filter-btn.f-gold::after { filter: sepia(0.3) saturate(1.5) brightness(1.05) contrast(0.95); }
-
-    /* Infobulle nom du filtre au survol */
-    .filter-btn::before {
-      content: attr(data-name);
-      position: absolute;
-      bottom: 2px; left: 0; right: 0;
-      text-align: center;
-      font-size: 0.45rem;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
+      background: var(--pink-hot);
       color: #fff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-      z-index: 5;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-    .filter-btn:hover::before {
       opacity: 1;
+      box-shadow: 0 4px 16px rgba(214, 51, 132, 0.3);
+    }
+    .filter-btn .filter-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.08);
     }
 
     /* Barre de sélecteur d'emojis */
@@ -3532,15 +3582,15 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.45);
-      background: radial-gradient(circle at 30% 30%, #fff 0%, rgba(255,255,255,0) 70%), var(--bead-color, #e5a93b);
+      border: 1.5px solid var(--glass-border);
+      background: var(--bead-color, #e5a93b);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.3rem;
       cursor: none;
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s;
-      box-shadow: 0 4px 8px rgba(60, 10, 30, 0.18), inset 0 -3px 6px rgba(0,0,0,0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-sm);
     }
     
     /* Actions au survol sur les polaroids de l'album */
@@ -3561,26 +3611,26 @@
       pointer-events: auto;
     }
     .item-action-btn {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      border: 1.5px solid #141211;
-      background: #e5a93b; /* Look laiton vintage */
-      color: #141211;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--ink);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: none;
-      box-shadow: 
-        0 3px 6px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.4);
-      transition: transform 0.2s, background-color 0.2s, color 0.2s;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .item-action-btn:hover {
-      transform: scale(1.2);
-      background: #ff526b;
+      transform: scale(1.15);
+      background: var(--pink-hot);
       color: #fff;
-      border-color: #fff;
+      border-color: var(--pink-hot);
     }
     .item-action-btn svg {
       width: 13px;
@@ -4031,7 +4081,9 @@
             <button class="camera-shutter-physical" id="shutterPhysicalBtn" type="button" aria-label="Déclencheur photo" disabled></button>
             <div class="camera-flash-window"></div>
             <div class="camera-brand-text">Mimi-matic 600</div>
-            <div class="camera-led-indicator" id="cameraLedIndicator"></div>
+            <button class="easter-egg-btn camera-btn-float" id="btnToggleCam" type="button">
+              <i data-lucide="power" aria-hidden="true"></i>
+            </button>
 
             <div class="camera-stripe"></div>
             <div class="camera-lens-outer">
@@ -4044,28 +4096,40 @@
                     <i data-lucide="camera" class="cam-placeholder-icon" aria-hidden="true"></i>
                     <span>Allumer la caméra</span>
                   </div>
+                  <button class="camera-zoom-toggle" id="cameraZoomToggle" type="button" aria-label="Zoom">
+                    <i data-lucide="zoom-in" aria-hidden="true"></i>
+                  </button>
                   <div class="camera-overlay-noise"></div>
                 </div>
               </div>
             </div>
             
-            <!-- Sélecteur de filtres rétro -->
+            <!-- Sélecteur d'effets moderne (pilules labellisées) -->
             <div class="camera-filters-section">
-              <span class="label">Ajuster l'effet</span>
+              <span class="label">Effets</span>
               <div class="filter-selector" id="filterSelector">
-                <button class="filter-btn f-normal active" type="button" data-filter="normal" data-name="Normal" aria-label="Filtre Normal"></button>
-                <button class="filter-btn f-vintage" type="button" data-filter="vintage" data-name="Vintage" aria-label="Filtre Vintage"></button>
-                <button class="filter-btn f-bw" type="button" data-filter="bw" data-name="N&amp;B" aria-label="Filtre Noir et Blanc"></button>
-                <button class="filter-btn f-rose" type="button" data-filter="rose" data-name="Rose" aria-label="Filtre Rose"></button>
-                <button class="filter-btn f-abyss" type="button" data-filter="abyss" data-name="Abysse" aria-label="Filtre Abysse"></button>
-                <button class="filter-btn f-gold" type="button" data-filter="gold" data-name="Doré" aria-label="Filtre Doré"></button>
+                <button class="filter-btn active" type="button" data-filter="normal" aria-label="Filtre Normal">
+                  <span class="filter-dot" style="background: linear-gradient(135deg, #f5a0b8, #e8a87c);"></span> Normal
+                </button>
+                <button class="filter-btn" type="button" data-filter="vintage" aria-label="Filtre Vintage">
+                  <span class="filter-dot" style="background: linear-gradient(135deg, #c9a96e, #8b7355);"></span> Vintage
+                </button>
+                <button class="filter-btn" type="button" data-filter="bw" aria-label="Filtre N&amp;B">
+                  <span class="filter-dot" style="background: linear-gradient(135deg, #888, #333);"></span> N&amp;B
+                </button>
+                <button class="filter-btn" type="button" data-filter="rose" aria-label="Filtre Rose">
+                  <span class="filter-dot" style="background: linear-gradient(135deg, #f7a8c4, #e56b9a);"></span> Rose
+                </button>
+                <button class="filter-btn" type="button" data-filter="abyss" aria-label="Filtre Abysse">
+                  <span class="filter-dot" style="background: linear-gradient(135deg, #5ba3cf, #2d6a8f);"></span> Abysse
+                </button>
+                <button class="filter-btn" type="button" data-filter="gold" aria-label="Filtre Doré">
+                  <span class="filter-dot" style="background: linear-gradient(135deg, #f0c75e, #d4a030);"></span> Doré
+                </button>
               </div>
             </div>
             
             <div class="camera-controls">
-              <button class="easter-egg-btn camera-btn" id="btnToggleCam" type="button">
-                <i data-lucide="power" aria-hidden="true"></i> <span id="btnToggleCamText">Démarrer</span>
-              </button>
               <button class="easter-egg-btn camera-btn" id="btnShutter" type="button" disabled>
                 <i data-lucide="aperture" aria-hidden="true"></i> Clic !
               </button>
@@ -6381,10 +6445,9 @@
     /* ─── Studio Polaroid Rétro Logic ──────────────────────── */
     (function () {
       const btnToggleCam = document.getElementById('btnToggleCam');
-      const btnToggleCamText = document.getElementById('btnToggleCamText');
       const btnShutter = document.getElementById('btnShutter');
       const shutterPhysicalBtn = document.getElementById('shutterPhysicalBtn');
-      const cameraLedIndicator = document.getElementById('cameraLedIndicator');
+      const cameraZoomToggle = document.getElementById('cameraZoomToggle');
       const cameraVideo = document.getElementById('cameraVideo');
       const cameraDemoCanvas = document.getElementById('cameraDemoCanvas');
       const viewfinderStickers = document.getElementById('viewfinderStickers');
@@ -6465,8 +6528,8 @@
           const ctx = getPolaroidAudioContext();
           const now = ctx.currentTime;
           
-          // Sound 1: Shutter snap (Filtered Noise)
-          const bufferSize = ctx.sampleRate * 0.08;
+          // Sound 1: Crisp shutter snap (Filtered Noise burst)
+          const bufferSize = ctx.sampleRate * 0.1;
           const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
           const data = buffer.getChannelData(0);
           for (let i = 0; i < bufferSize; i++) {
@@ -6478,33 +6541,49 @@
           
           const filter = ctx.createBiquadFilter();
           filter.type = 'bandpass';
-          filter.frequency.setValueAtTime(1000, now);
-          filter.frequency.exponentialRampToValueAtTime(150, now + 0.08);
-          filter.Q.value = 4;
+          filter.frequency.setValueAtTime(2200, now);
+          filter.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+          filter.Q.value = 3;
           
           const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.3, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
           
           noise.connect(filter);
           filter.connect(gain);
           gain.connect(ctx.destination);
           noise.start(now);
           
-          // Sound 2: Mechanical click (Triangle drop)
+          // Sound 2: Mechanical click (Triangle drop) 
           const osc = ctx.createOscillator();
           const oscGain = ctx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(700, now);
-          osc.frequency.exponentialRampToValueAtTime(80, now + 0.06);
+          osc.frequency.setValueAtTime(900, now);
+          osc.frequency.exponentialRampToValueAtTime(100, now + 0.05);
           
-          oscGain.gain.setValueAtTime(0.15, now);
-          oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          oscGain.gain.setValueAtTime(0.2, now);
+          oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
           
           osc.connect(oscGain);
           oscGain.connect(ctx.destination);
           osc.start(now);
-          osc.stop(now + 0.065);
+          osc.stop(now + 0.055);
+          
+          // Sound 3: Bright flash chime (short sine ping)
+          const chime = ctx.createOscillator();
+          const chimeGain = ctx.createGain();
+          chime.type = 'sine';
+          chime.frequency.setValueAtTime(1200, now + 0.04);
+          chime.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+          
+          chimeGain.gain.setValueAtTime(0.001, now);
+          chimeGain.gain.linearRampToValueAtTime(0.12, now + 0.05);
+          chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          
+          chime.connect(chimeGain);
+          chimeGain.connect(ctx.destination);
+          chime.start(now + 0.03);
+          chime.stop(now + 0.16);
         } catch (e) {
           console.warn("Audio synthesis error:", e);
         }
@@ -6696,10 +6775,9 @@
           cameraVideo.style.display = 'block';
           cameraPlaceholder.style.display = 'none';
           cameraViewfinder.classList.add('active');
-          btnToggleCamText.textContent = "Arrêter";
+          btnToggleCam.classList.add('cam-active');
           btnShutter.disabled = false;
           shutterPhysicalBtn.disabled = false;
-          cameraLedIndicator.classList.add('active');
         } catch (e) {
           console.warn("Webcam access error, entering demo mode:", e);
           isDemoMode = true;
@@ -6707,10 +6785,9 @@
           cameraDemoCanvas.style.display = 'block';
           cameraPlaceholder.style.display = 'none';
           cameraViewfinder.classList.add('active');
-          btnToggleCamText.textContent = "Arrêter";
+          btnToggleCam.classList.add('cam-active');
           btnShutter.disabled = false;
           shutterPhysicalBtn.disabled = false;
-          cameraLedIndicator.classList.add('active');
           
           initDemoBeads();
           tickDemoAnim();
@@ -6732,10 +6809,11 @@
         cameraDemoCanvas.style.display = 'none';
         cameraPlaceholder.style.display = 'flex';
         cameraViewfinder.classList.remove('active');
-        btnToggleCamText.textContent = "Démarrer";
+        cameraViewfinder.classList.remove('zoomed');
+        cameraZoomToggle.classList.remove('active');
+        btnToggleCam.classList.remove('cam-active');
         btnShutter.disabled = true;
         shutterPhysicalBtn.disabled = true;
-        cameraLedIndicator.classList.remove('active');
         isDemoMode = false;
         
         // Reset stickers
@@ -6760,6 +6838,15 @@
         }
       });
       bindHover(shutterPhysicalBtn);
+
+      // Zoom toggle
+      cameraZoomToggle.addEventListener('click', () => {
+        cameraViewfinder.classList.toggle('zoomed');
+        cameraZoomToggle.classList.toggle('active');
+        // Play subtle click
+        playTone(880, 0.03, 'sine');
+      });
+      bindHover(cameraZoomToggle);
 
       // Filter Selector bindings
       filterSelector.querySelectorAll('.filter-btn').forEach(btn => {
@@ -6881,7 +6968,15 @@
         }
         renderGallery();
 
-        // Trigger print & sound
+        // Trigger flash effect + sound
+        const flashEl = document.createElement('div');
+        flashEl.style.cssText = 'position:absolute;inset:0;background:#fff;z-index:50;opacity:0.9;pointer-events:none;border-radius:20px;transition:opacity 0.4s ease;';
+        cameraViewfinder.appendChild(flashEl);
+        requestAnimationFrame(() => {
+          flashEl.style.opacity = '0';
+          setTimeout(() => flashEl.remove(), 450);
+        });
+        
         playShutterSound();
         
         setTimeout(() => {
